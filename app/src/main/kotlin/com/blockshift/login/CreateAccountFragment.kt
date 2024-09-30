@@ -114,7 +114,6 @@ class CreateAccountFragment : Fragment() {
                 <li>At least $MIN_PASSWORD_LENGTH characters</li>
                 <li>At least one uppercase letter</li>
                 <li>At least one number</li>
-                <li>At least one special character</li>
             </ul>
             """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
 
