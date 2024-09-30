@@ -1,11 +1,15 @@
 package com.blockshift.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import com.blockshift.R
+import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,7 +39,69 @@ class CreateAccountFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_account, container, false)
+        val view =  inflater.inflate(R.layout.fragment_create_account, container, false)
+
+        val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+        createAccountButton.setOnClickListener {
+            Log.d("Create Account", "Create Account Button Clicked")
+
+            // temp checking
+            var userNamesAndPasswords = mutableMapOf(
+                "Patrick" to "Dempsey1!",
+                "Michael" to "Labib1!",
+                "Jackson" to "Hoyt1!"
+            )
+
+            // get username and password from text input fields
+            val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
+            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString() //TODO: hash password
+
+            // perform logic to check against stored usernames / passwords
+            var allowedUsername = !userNamesAndPasswords.containsKey(desiredUsername)
+            var allowedPassword = isValidPassword(desiredPassword)
+
+            if(allowedUsername && allowedPassword) {
+                Log.d("Create Account", "Successfully created account")
+                parentFragmentManager.popBackStack()
+
+                // add username to dict (temporary)
+                userNamesAndPasswords[desiredUsername] = desiredPassword
+
+                // Show a banner saying the account was successfully created
+                val banner = Snackbar.make(view, "Account Successfully Created", Snackbar.LENGTH_SHORT).setAction("OK"){}
+                banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                banner.show()
+            }
+            else {
+                val reason = if(allowedUsername) "Invalid Password" else "Invalid Username"
+
+                Log.d("Create Account", "Failed to create account {$reason}")
+
+                val banner = Snackbar.make(view, reason, Snackbar.LENGTH_LONG).setAction("OK"){}
+                banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                banner.show()
+            }
+        }
+
+        val backButton = view.findViewById<Button>(R.id.create_account_back_button)
+        backButton.setOnClickListener {
+            Log.d("Create Account", "Back Button Clicked")
+            parentFragmentManager.popBackStack()
+        }
+
+        return view
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        //val specialCharacters = "!@#\$%^&*()_+\\-=;':\"\\\\|,.<>/?}][{"
+        //val minLength = 8
+
+        // pattern must be {minLength} long, containing 1 special character, uppercase letter, and number
+        //val pattern = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[$specialCharacters]).{$minLength,}$"
+
+        //val passwordRegex = Regex(pattern)
+
+        return true//passwordRegex.matches(password)
     }
 
     companion object {

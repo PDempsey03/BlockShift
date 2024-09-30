@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".login.CreateAccountFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Username input field -->
+    <EditText
+        android:id="@+id/create_account_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:inputType="text"
+        android:padding="15dp"
+        android:backgroundTint="#000" />
+
+    <!-- Password input field -->
+    <EditText
+        android:id="@+id/create_account_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="15dp"
+        android:backgroundTint="#000" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        tools:context=".login.CreateAccountFragment">
 
-</FrameLayout>
+        <!-- Back Button -->
+        <Button
+            android:id="@+id/create_account_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:paddingEnd="15dp"
+            android:padding="12dp" />
+
+        <!-- Create Account Button -->
+        <Button
+            android:id="@+id/create_account_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Account"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="16dp"
+            android:padding="12dp" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

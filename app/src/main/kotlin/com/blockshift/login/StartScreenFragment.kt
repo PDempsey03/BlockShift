@@ -26,11 +26,19 @@ class StartScreenFragment : Fragment() {
         val loginButton = view.findViewById<Button>(R.id.login_button)
         loginButton.setOnClickListener {
             Log.d("Start Screen", "Login Button Clicked")
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, LoginFragment()) // fragment_container is the container for fragments
+                .addToBackStack(null)  // This ensures you can go back
+                .commit()
         }
 
-        val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+        val createAccountButton = view.findViewById<Button>(R.id.start_screen_create_account_button)
         createAccountButton.setOnClickListener {
             Log.d("Start Screen", "Create Account Button Clicked")
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, CreateAccountFragment()) // fragment_container is the container for fragments
+                .addToBackStack(null)  // This ensures you can go back
+                .commit()
         }
 
         return view
