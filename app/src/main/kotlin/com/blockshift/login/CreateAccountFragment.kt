@@ -13,15 +13,6 @@ import android.widget.EditText
 import android.widget.TextView
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
-import java.lang.reflect.Type
-import javax.crypto.SecretKey
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
-
-private const val MIN_PASSWORD_LENGTH = 8
-private const val MIN_USERNAME_LENGTH = 4
-
-private val userNamesAndPasswords = mutableMapOf<String, String>()
 
 /**
  * A simple [Fragment] subclass.
@@ -46,28 +37,26 @@ class CreateAccountFragment : Fragment() {
         setDescriptions(view)
 
         val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+
+        // set action to be taken on create account button click
         createAccountButton.setOnClickListener {
-            Log.d("Create Account", "Create Account Button Clicked")
 
             // get username and password from text input fields
             val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
-            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString() //TODO: hash password
+            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString()
 
             // Check for valid username
-            val userNameTaken = userNamesAndPasswords.containsKey(desiredUsername)
-            val allowedUsername = !userNameTaken && isValidUsername(desiredUsername)
+            val userNameTaken = LoginManager.doesUsernameExist(desiredUsername)
+            val allowedUsername = !userNameTaken && LoginManager.isValidUsername(desiredUsername)
 
             // check for valid password
-            val allowedPassword = isValidPassword(desiredPassword)
+            val allowedPassword = LoginManager.isValidPassword(desiredPassword)
 
             if(allowedUsername && allowedPassword) {
                 Log.d("Create Account", "Successfully created account")
 
-                // hash password
-                val hashedPassword = Base64.encodeToString(hashPassword(desiredPassword).encoded, Base64.NO_WRAP)
-
-                // add username to dict (temporary)
-                userNamesAndPasswords[desiredUsername] = hashedPassword
+                // add username to to login manager
+                LoginManager.addUser(desiredUsername, desiredPassword)
 
                 // go back to start screen
                 parentFragmentManager.popBackStack()
@@ -111,7 +100,7 @@ class CreateAccountFragment : Fragment() {
         passwordTextView.text = Html.fromHtml("""
             Password must meet the following<br/>
             <ul>
-                <li>At least $MIN_PASSWORD_LENGTH characters</li>
+                <li>At least ${LoginManager.MIN_PASSWORD_LENGTH} characters</li>
                 <li>At least one uppercase letter</li>
                 <li>At least one number</li>
             </ul>
@@ -121,42 +110,10 @@ class CreateAccountFragment : Fragment() {
         userNameTextView.text = Html.fromHtml("""
             Username must meet the following<br/>
             <ul>
-                <li>At least $MIN_USERNAME_LENGTH characters</li>
+                <li>At least ${LoginManager.MIN_USERNAME_LENGTH} characters</li>
                 <li>Only alpha-numeric characters</li>
             </ul>
             """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
-    }
-
-    private fun isValidUsername(username: String): Boolean{
-        return username.length > MIN_USERNAME_LENGTH
-                && username.all{it.isLetterOrDigit()}
-    }
-
-    private fun isValidPassword(password: String): Boolean {
-        // check length
-        if(password.length < MIN_PASSWORD_LENGTH) return false
-
-        var containsDigit = false
-        var containsUppercaseLetter = false
-
-        // check contains at least one of each special character, digit, and capital letter
-        password.forEach {
-            if(it.isLetter() && it.isUpperCase()) containsUppercaseLetter = true
-            if(it.isDigit()) containsDigit = true
-        }
-
-        return containsDigit && containsUppercaseLetter
-    }
-
-    // functionality from https://www.danielhugenroth.com/posts/2021_06_password_hashing_on_android/
-    private fun hashPassword(password: String): SecretKey {
-        val hashFunction = "PBKDF2WithHmacSha1"
-        val hashLength = 256
-        val iterationCount = 2048
-        val salt = "#B!S@h#i#f#t@*" // TODO: fix the salt
-        val factory = SecretKeyFactory.getInstance(hashFunction)
-        val spec = PBEKeySpec(password.toCharArray(), salt.toByteArray(), iterationCount, hashLength)
-        return factory.generateSecret(spec)
     }
 
     companion object {
