@@ -12,7 +12,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        loadFragment(StartScreenFragment())
+        loadFragment(LoginFragment())
     }
 
     private fun loadFragment(fragment: Fragment){
