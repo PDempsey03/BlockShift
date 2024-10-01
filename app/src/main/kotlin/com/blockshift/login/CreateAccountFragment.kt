@@ -1,6 +1,8 @@
 package com.blockshift.login
 
 import android.os.Bundle
+import android.text.Html
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,13 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val temp1 = "param1"
-private const val temp2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -22,16 +20,10 @@ private const val temp2 = "param2"
  * create an instance of this fragment.
  */
 class CreateAccountFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(temp1)
-            param2 = it.getString(temp2)
-        }
+        arguments?.let{}
     }
 
     override fun onCreateView(
@@ -41,31 +33,33 @@ class CreateAccountFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_create_account, container, false)
 
-        val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
-        createAccountButton.setOnClickListener {
-            Log.d("Create Account", "Create Account Button Clicked")
+        // set descriptions for username / password
+        setDescriptions(view)
 
-            // temp checking
-            var userNamesAndPasswords = mutableMapOf(
-                "Patrick" to "Dempsey1!",
-                "Michael" to "Labib1!",
-                "Jackson" to "Hoyt1!"
-            )
+        val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+
+        // set action to be taken on create account button click
+        createAccountButton.setOnClickListener {
 
             // get username and password from text input fields
             val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
-            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString() //TODO: hash password
+            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString()
 
-            // perform logic to check against stored usernames / passwords
-            var allowedUsername = !userNamesAndPasswords.containsKey(desiredUsername)
-            var allowedPassword = isValidPassword(desiredPassword)
+            // Check for valid username
+            val userNameTaken = LoginManager.doesUsernameExist(desiredUsername)
+            val allowedUsername = !userNameTaken && LoginManager.isValidUsername(desiredUsername)
+
+            // check for valid password
+            val allowedPassword = LoginManager.isValidPassword(desiredPassword)
 
             if(allowedUsername && allowedPassword) {
                 Log.d("Create Account", "Successfully created account")
-                parentFragmentManager.popBackStack()
 
-                // add username to dict (temporary)
-                userNamesAndPasswords[desiredUsername] = desiredPassword
+                // add username to to login manager
+                LoginManager.addUser(desiredUsername, desiredPassword)
+
+                // go back to start screen
+                parentFragmentManager.popBackStack()
 
                 // Show a banner saying the account was successfully created
                 val banner = Snackbar.make(view, "Account Successfully Created", Snackbar.LENGTH_SHORT).setAction("OK"){}
@@ -73,13 +67,22 @@ class CreateAccountFragment : Fragment() {
                 banner.show()
             }
             else {
-                val reason = if(allowedUsername) "Invalid Password" else "Invalid Username"
+                if(!allowedPassword) {
+                    // password must have been invalid
+                    val reason = "Password does not meet criteria"
+                    view.findViewById<TextView>(R.id.create_account_password_error_message).text = reason
+                    Log.d("Create Account", "Failed to create account ($reason)")
+                } else {
+                    view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
+                }
 
-                Log.d("Create Account", "Failed to create account {$reason}")
-
-                val banner = Snackbar.make(view, reason, Snackbar.LENGTH_LONG).setAction("OK"){}
-                banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                banner.show()
+                if(!allowedUsername){
+                    val reason = if(userNameTaken) "Username is taken" else "Invalid username"
+                    view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
+                    Log.d("Create Account", "Failed to create account ($reason)")
+                } else {
+                    view.findViewById<TextView>(R.id.create_account_username_error_message).text = ""
+                }
             }
         }
 
@@ -92,35 +95,35 @@ class CreateAccountFragment : Fragment() {
         return view
     }
 
-    private fun isValidPassword(password: String): Boolean {
-        //val specialCharacters = "!@#\$%^&*()_+\\-=;':\"\\\\|,.<>/?}][{"
-        //val minLength = 8
+    private fun setDescriptions(view: View) {
+        val passwordTextView = view.findViewById<TextView>(R.id.create_account_password_description)
+        passwordTextView.text = Html.fromHtml("""
+            Password must meet the following<br/>
+            <ul>
+                <li>At least ${LoginManager.MIN_PASSWORD_LENGTH} characters</li>
+                <li>At least one uppercase letter</li>
+                <li>At least one number</li>
+            </ul>
+            """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
 
-        // pattern must be {minLength} long, containing 1 special character, uppercase letter, and number
-        //val pattern = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[$specialCharacters]).{$minLength,}$"
-
-        //val passwordRegex = Regex(pattern)
-
-        return true//passwordRegex.matches(password)
+        val userNameTextView = view.findViewById<TextView>(R.id.create_account_username_description)
+        userNameTextView.text = Html.fromHtml("""
+            Username must meet the following<br/>
+            <ul>
+                <li>At least ${LoginManager.MIN_USERNAME_LENGTH} characters</li>
+                <li>Only alpha-numeric characters</li>
+            </ul>
+            """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
     }
 
     companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment CreateAccountFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            CreateAccountFragment().apply {
-                arguments = Bundle().apply {
-                    putString(temp1, param1)
-                    putString(temp2, param2)
-                }
-            }
+            CreateAccountFragment().apply {}
     }
 }
