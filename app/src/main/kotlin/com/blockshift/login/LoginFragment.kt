@@ -41,7 +41,7 @@ class LoginFragment : Fragment() {
             Log.d("Login Screen","Enter Login Info Button Clicked")
             val username = usernameText.getText().toString()
             val password = passwordText.getText().toString()
-            val validLogin = this.verifyLogin(username,password)
+            val validLogin = LoginManager.tryLogin(username, password)
 
             if(validLogin) {
                 Log.d("Login Screen","Valid Login")
@@ -63,26 +63,6 @@ class LoginFragment : Fragment() {
                 .commit()
         }
         return view
-    }
-
-    private fun verifyLogin(username:String,password:String) : Boolean{
-        //TODO: Use Firebase to verify login
-        Log.d("Login Screen","Username: $username")
-        Log.d("Login Screen","Password: $password")
-
-        val userNamesAndPasswords = mapOf(
-            "Patrick" to "Dempsey1!",
-            "Michael" to "Labib1!",
-            "Jackson" to "Hoyt1!"
-        )
-
-        val validUsername = userNamesAndPasswords.containsKey(username)
-        if(!validUsername) {
-            return false
-        }
-
-
-        return (userNamesAndPasswords[username].equals(password))
     }
 
     companion object {

@@ -8,8 +8,16 @@ import javax.crypto.spec.PBEKeySpec
 
 internal object LoginManager {
 
-    private val userNamesAndPasswords = mutableMapOf<String, String>()
-    private val userNamesAndSaltValues = mutableMapOf<String, String>()
+    private val userNamesAndPasswords = mutableMapOf(
+        "Patrick" to "IR1V2wW5A2dPh1K+qmqg7uC+Z56RplNyEQn6CKBfHIU=", // Patrick1
+        "Michael" to "3b29B9317+U3beByqDrQyvO1warHv9oUBi2dKiYelqU=", // Michael1
+        "Jackson" to "sP8W3h33MqHtVlTrpBjHJN76NPN3LgP7RouPymEXLVE=" // Jackson1
+    )
+    private val userNamesAndSaltValues = mutableMapOf(
+        "Patrick" to "uuKFSXkW1LJOKjtDIptf2g==",
+        "Michael" to "edkeJdgG93aNv1Rl31ljRw==",
+        "Jackson" to "LgNv+Y2FVdEls6Ao8/btZA=="
+    )
 
     const val MIN_PASSWORD_LENGTH = 8
     const val MIN_USERNAME_LENGTH = 4
@@ -38,10 +46,12 @@ internal object LoginManager {
 
         // generate user's unique salt string
         val saltValue = generateSaltString()
-        Log.d("Login Manager", "Salt Value Generated $saltValue")
 
         val hashedPassword = hashPassword(password, saltValue)
 
+        Log.d("Login Manager", "User $userName gets password $hashedPassword and salt value $saltValue")
+
+        // TODO: could put firebase connection here or give it its own class
         userNamesAndPasswords[userName] = hashedPassword // temporary solution
         userNamesAndSaltValues[userName] = saltValue // temporary solution
     }
