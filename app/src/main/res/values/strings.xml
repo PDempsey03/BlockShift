@@ -10,4 +10,5 @@
     <string name="password_hint">Enter Password</string>
     <string name="enter_login_info">Login</string>
     <string name="new_user">New User</string>
+    <string name="welcome_back">Welcome Back</string>
 </resources>

@@ -7,16 +7,20 @@
     android:orientation="vertical"
     tools:context=".login.LoginFragment">
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/loginTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/black"
-        android:textSize="32sp"
+        android:textColor="@android:color/black"
+        android:textSize="48sp"
         android:textStyle="bold"
-        android:padding="15dp"
         android:visibility="visible"
+        android:text="@string/welcome_back"
         tools:text="Welcome Back"
         tools:visibility="visible" />
 
