@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +38,7 @@ class LoginFragment : Fragment() {
 
         val usernameText = view.findViewById<EditText>(R.id.usernameText)
         val passwordText = view.findViewById<EditText>(R.id.passwordText)
+        val rememberMeCheckBox = view.findViewById<CheckBox>(R.id.rememberMe)
 
         val enterInfoButton = view.findViewById<Button>(R.id.enterLoginButton)
         enterInfoButton.setOnClickListener {
@@ -47,11 +49,20 @@ class LoginFragment : Fragment() {
                 // get username and password from text boxes
                 val username = usernameText.getText().toString()
                 val password = passwordText.getText().toString()
+                val rememberMe = rememberMeCheckBox.isChecked
 
                 LoginManager.tryLogin(username, password, {
                     success ->
                         if(success) {
                             Log.d("Login Screen", "Valid Login")
+                            val context = activity?.applicationContext
+                            if(rememberMe) {
+                                // add auth token locally and possibly generate new one
+                                if(context != null) LoginManager.registerAuthToken(username, context)
+                            } else {
+                                // explicitly remove the auth token from local store if the user unselects
+                                if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
+                            }
                         } else {
                             Log.e("Login Screen", "Invalid Login")
                             val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}
