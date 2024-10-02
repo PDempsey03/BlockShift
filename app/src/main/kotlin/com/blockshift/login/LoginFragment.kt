@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**
@@ -39,18 +41,30 @@ class LoginFragment : Fragment() {
         val enterInfoButton = view.findViewById<Button>(R.id.enterLoginButton)
         enterInfoButton.setOnClickListener {
             Log.d("Login Screen","Enter Login Info Button Clicked")
-            val username = usernameText.getText().toString()
-            val password = passwordText.getText().toString()
-            val validLogin = LoginManager.tryLogin(username, password)
 
-            if(validLogin) {
-                Log.d("Login Screen","Valid Login")
-                parentFragmentManager.popBackStack()
-            } else {
-                Log.e("Login Screen", "Invalid Login")
-                val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}
-                eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                eMessage.show()
+            // start coroutine to attempt to login
+            CoroutineScope(Dispatchers.Main).launch {
+                // get username and password from text boxes
+                val username = usernameText.getText().toString()
+                val password = passwordText.getText().toString()
+
+                LoginManager.tryLogin(username, password, {
+                    success ->
+                        if(success) {
+                            Log.d("Login Screen", "Valid Login")
+                        } else {
+                            Log.e("Login Screen", "Invalid Login")
+                            val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}
+                            eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                            eMessage.show()
+                        }
+                }, {
+                    exception ->
+                        Log.e("Login Screen", "Error in connecting to the firebase database", exception)
+                        val eMessage = Snackbar.make(view,"Login Currently Unavailable", Snackbar.LENGTH_LONG).setAction("OK") {}
+                        eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                        eMessage.show()
+                })
             }
         }
 

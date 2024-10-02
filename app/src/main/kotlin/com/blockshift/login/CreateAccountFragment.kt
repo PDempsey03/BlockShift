@@ -2,7 +2,6 @@ package com.blockshift.login
 
 import android.os.Bundle
 import android.text.Html
-import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +12,9 @@ import android.widget.EditText
 import android.widget.TextView
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -30,7 +32,7 @@ class CreateAccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_create_account, container, false)
 
         // set descriptions for username / password
@@ -41,48 +43,47 @@ class CreateAccountFragment : Fragment() {
         // set action to be taken on create account button click
         createAccountButton.setOnClickListener {
 
-            // get username and password from text input fields
-            val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
-            val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString()
+            // launch a coroutine to attempt creating a new account
+            CoroutineScope(Dispatchers.Main).launch {
+                // get username and password from text input fields
+                val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
+                val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString()
 
-            // Check for valid username
-            val userNameTaken = LoginManager.doesUsernameExist(desiredUsername)
-            val allowedUsername = !userNameTaken && LoginManager.isValidUsername(desiredUsername)
+                // get login manager to try adding the user
+                LoginManager.tryAddUser(desiredUsername, desiredPassword, {
+                    accountCreationResult ->
+                    when(accountCreationResult) {
+                        AccountCreationResult.SUCCESS -> {
+                            // go back to start screen
+                            parentFragmentManager.popBackStack()
 
-            // check for valid password
-            val allowedPassword = LoginManager.isValidPassword(desiredPassword)
-
-            if(allowedUsername && allowedPassword) {
-                Log.d("Create Account", "Successfully created account")
-
-                // add username to to login manager
-                LoginManager.addUser(desiredUsername, desiredPassword)
-
-                // go back to start screen
-                parentFragmentManager.popBackStack()
-
-                // Show a banner saying the account was successfully created
-                val banner = Snackbar.make(view, "Account Successfully Created", Snackbar.LENGTH_SHORT).setAction("OK"){}
-                banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                banner.show()
-            }
-            else {
-                if(!allowedPassword) {
-                    // password must have been invalid
-                    val reason = "Password does not meet criteria"
-                    view.findViewById<TextView>(R.id.create_account_password_error_message).text = reason
-                    Log.d("Create Account", "Failed to create account ($reason)")
-                } else {
-                    view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
-                }
-
-                if(!allowedUsername){
-                    val reason = if(userNameTaken) "Username is taken" else "Invalid username"
-                    view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
-                    Log.d("Create Account", "Failed to create account ($reason)")
-                } else {
-                    view.findViewById<TextView>(R.id.create_account_username_error_message).text = ""
-                }
+                            Log.d("Account Creation", "Account successfully created")
+                            showBasicBanner(view, "Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
+                        }
+                        AccountCreationResult.INVALID_USERNAME -> {
+                            val reason = "Invalid username"
+                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
+                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                        }
+                        AccountCreationResult.INVALID_PASSWORD -> {
+                            val reason = "Password does not meet criteria"
+                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = reason
+                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = ""
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                        }
+                        AccountCreationResult.USERNAME_TAKEN -> {
+                            val reason = "Username is taken"
+                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
+                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                        }
+                    }
+                }, {
+                    exception ->
+                    Log.e("Account Creation", "Exception was thrown during account creation", exception)
+                    showBasicBanner(view, "Error Connecting to Server", "OK", Snackbar.LENGTH_LONG)
+                })
             }
         }
 
@@ -93,6 +94,12 @@ class CreateAccountFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun showBasicBanner(view: View, text: String, actionText: String, length: Int) {
+        val banner = Snackbar.make(view, text, length).setAction(actionText){}
+        banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+        banner.show()
     }
 
     private fun setDescriptions(view: View) {
@@ -123,7 +130,6 @@ class CreateAccountFragment : Fragment() {
          * @return A new instance of fragment CreateAccountFragment.
          */
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CreateAccountFragment().apply {}
+        fun newInstance() = CreateAccountFragment()
     }
 }

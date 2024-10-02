@@ -1,23 +1,13 @@
 package com.blockshift.login
 
 import android.util.Base64
-import android.util.Log
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
 internal object LoginManager {
-
-    private val userNamesAndPasswords = mutableMapOf(
-        "Patrick" to "IR1V2wW5A2dPh1K+qmqg7uC+Z56RplNyEQn6CKBfHIU=", // Patrick1
-        "Michael" to "3b29B9317+U3beByqDrQyvO1warHv9oUBi2dKiYelqU=", // Michael1
-        "Jackson" to "sP8W3h33MqHtVlTrpBjHJN76NPN3LgP7RouPymEXLVE=" // Jackson1
-    )
-    private val userNamesAndSaltValues = mutableMapOf(
-        "Patrick" to "uuKFSXkW1LJOKjtDIptf2g==",
-        "Michael" to "edkeJdgG93aNv1Rl31ljRw==",
-        "Jackson" to "LgNv+Y2FVdEls6Ao8/btZA=="
-    )
 
     const val MIN_PASSWORD_LENGTH = 8
     const val MIN_USERNAME_LENGTH = 4
@@ -26,6 +16,15 @@ internal object LoginManager {
     private const val HASH_ITERATION_COUNT = 2048
     private const val SALT_LENGTH = 16
     private val hashFactory: SecretKeyFactory = SecretKeyFactory.getInstance(HASH_FUNCTION)
+    private lateinit var dataBaseUsers: CollectionReference
+
+    init {
+        loadUserDataBase()
+    }
+
+    private fun loadUserDataBase(){
+        dataBaseUsers = FirebaseFirestore.getInstance().collection("users")
+    }
 
     // functionality from https://www.danielhugenroth.com/posts/2021_06_password_hashing_on_android/
     private fun hashPassword(password: String, salt: String): String {
@@ -33,27 +32,62 @@ internal object LoginManager {
         return Base64.encodeToString(hashFactory.generateSecret(spec).encoded, Base64.NO_WRAP)
     }
 
-    fun isValidUsername(username: String): Boolean {
+    private fun isValidUsername(username: String): Boolean {
         return username.length >= MIN_USERNAME_LENGTH
                 && username.all{it.isLetterOrDigit()}
     }
 
-    fun doesUsernameExist(username: String): Boolean {
-        return userNamesAndPasswords.containsKey(username)
+    private fun doesUsernameExist(username: String, onResultCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseUsers.whereEqualTo("username", username)
+            .get()
+            .addOnSuccessListener { documents ->
+                onResultCallback(!documents.isEmpty)
+            }
+            .addOnFailureListener { exception ->
+                onFailureCallback(exception)
+            }
     }
 
-    fun addUser(userName: String, password: String) {
+    fun tryAddUser(username: String, password: String, successCallback: (AccountCreationResult) -> Unit, failureCallback: (Exception) -> Unit) {
+        val validUsername = isValidUsername(username)
+        val validPassword = isValidPassword(password)
 
-        // generate user's unique salt string
-        val saltValue = generateSaltString()
+        // don't need to check if username exists if either username or password was not even valid
+        if(!validUsername) {
+            successCallback(AccountCreationResult.INVALID_USERNAME)
+            return
+        }
 
-        val hashedPassword = hashPassword(password, saltValue)
+        if(!validPassword) {
+            successCallback(AccountCreationResult.INVALID_PASSWORD)
+            return
+        }
 
-        Log.d("Login Manager", "User $userName gets password $hashedPassword and salt value $saltValue")
+        // if valid username and password, proceed to check if username exists
+        doesUsernameExist(username, {
+            exists ->
+                if (exists) {
+                    successCallback(AccountCreationResult.USERNAME_TAKEN)
+                } else {
+                    // get salt value and hashed password to store in database
+                    val saltValue = generateSaltString()
+                    val hashedPassword = hashPassword(password, saltValue)
 
-        // TODO: could put firebase connection here or give it its own class
-        userNamesAndPasswords[userName] = hashedPassword // temporary solution
-        userNamesAndSaltValues[userName] = saltValue // temporary solution
+                    // instantiate class that firebase can store
+                    val userData = UserLoginData(username, hashedPassword, saltValue)
+
+                    // make the call to firestore to attempt to record the data
+                    dataBaseUsers.add(userData)
+                        .addOnSuccessListener {
+                            successCallback(AccountCreationResult.SUCCESS)
+                        }
+                        .addOnFailureListener { exception ->
+                            failureCallback(exception)
+                        }
+                }
+        }, {
+            exception -> failureCallback(exception)
+        })
     }
 
     // functionality from https://codersee.com/kotlin-pbkdf2-secure-password-hashing/
@@ -64,7 +98,7 @@ internal object LoginManager {
         return Base64.encodeToString(salt, Base64.NO_WRAP)
     }
 
-    fun isValidPassword(password: String): Boolean {
+    private fun isValidPassword(password: String): Boolean {
         // check length
         if(password.length < MIN_PASSWORD_LENGTH) return false
 
@@ -80,11 +114,39 @@ internal object LoginManager {
         return containsDigit && containsUppercaseLetter
     }
 
-    fun tryLogin(username: String, password: String): Boolean{
-        if(!doesUsernameExist(username)) return false
+    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit){
+        dataBaseUsers.whereEqualTo("username", username)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // no user found
+                    successCallback(false)
+                } else {
+                    // non-empty, and unique usernames should only return 1 result
+                    val userDocument = documents.documents[0]
 
-        val saltValue = userNamesAndSaltValues.getOrDefault(username, "0")
-        val hashedPassword = hashPassword(password, saltValue)
-        return userNamesAndPasswords[username] == hashedPassword
+                    // get the stored hashed password and salt to compare the entered password to
+                    val storedHashedPassword = userDocument.getString("password")
+                    val storedSalt = userDocument.getString("salt")
+
+                    // null check just in case
+                    if(storedSalt == null || storedHashedPassword == null) {
+                        successCallback(false)
+                        return@addOnSuccessListener
+                    }
+
+                    val enteredHashPassword = hashPassword(password, storedSalt)
+                    successCallback(enteredHashPassword == storedHashedPassword)
+                }
+            }
+            .addOnFailureListener { exception ->
+                failureCallback(exception)
+            }
     }
+}
+
+data class UserLoginData(val username: String, val password: String, val salt: String)
+
+enum class AccountCreationResult{
+    SUCCESS, INVALID_USERNAME, INVALID_PASSWORD, USERNAME_TAKEN
 }
