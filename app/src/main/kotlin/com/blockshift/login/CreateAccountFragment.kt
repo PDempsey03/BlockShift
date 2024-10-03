@@ -1,7 +1,10 @@
 package com.blockshift.login
 
+import android.graphics.Color
 import android.os.Bundle
-import android.text.Html
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,12 +13,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.compose.ui.text.toUpperCase
+import androidx.core.text.set
 import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 /**
  * A simple [Fragment] subclass.
@@ -37,7 +43,7 @@ class CreateAccountFragment : Fragment() {
         val view =  inflater.inflate(R.layout.fragment_create_account, container, false)
 
         // set descriptions for username / password
-        setDescriptions(view)
+        setInitialTextInputDescriptions(view)
 
         val usernameEditText = view.findViewById<EditText>(R.id.create_account_username)
         val passwordEditText = view.findViewById<EditText>(R.id.create_account_password)
@@ -71,16 +77,25 @@ class CreateAccountFragment : Fragment() {
                             showBasicBanner(view, "Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
                         }
                         AccountCreationResult.INVALID_USERNAME -> {
-                            Log.d("Create Account", "Failed to create account (${getString(R.string.username_invalid_error)})")
+                            val reason = getString(R.string.username_invalid_error)
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                            usernameErrorText.text = reason.uppercase()
+                            passwordErrorText.text = ""
                         }
                         AccountCreationResult.INVALID_PASSWORD -> {
-                            Log.d("Create Account", "Failed to create account (${getString(R.string.password_invalid_error)})")
+                            val reason = getString(R.string.password_invalid_error)
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                            passwordErrorText.text = reason.uppercase()
+                            usernameErrorText.text = ""
                         }
                         AccountCreationResult.USERNAME_TAKEN -> {
-                            usernameErrorText.text = getString(R.string.username_taken_error)
-                            Log.d("Create Account", "Failed to create account (${getString(R.string.username_taken_error)})")
+                            val reason = getString(R.string.username_taken_error)
+                            Log.d("Create Account", "Failed to create account ($reason)")
+                            usernameErrorText.text = reason.uppercase()
+                            passwordErrorText.text = ""
                         }
                         AccountCreationResult.PASSWORD_MISMATCH -> {
+                            // message will already be there for password mismatch, no need put it there again
                             Log.d("Create Account", "Failed to create account (${getString(R.string.confirm_password_mismatch_error)})")
                         }
                     }
@@ -99,25 +114,24 @@ class CreateAccountFragment : Fragment() {
         }
 
         usernameEditText.addTextChangedListener { text ->
-            // if username is invalid after text change, display error message
-            if(LoginManager.isValidUsername(text.toString())) {
-                usernameErrorText.text = ""
-            } else {
-                usernameErrorText.text = getString(R.string.username_invalid_error)
-            }
+            val username = text.toString()
+            updateUsernameDescription(view, LoginManager.usernameMeetsLength(username),
+                LoginManager.usernameMeetsOnlyAlphaNumeric(username))
+
+            if(usernameErrorText.text.isNotEmpty()) usernameErrorText.text = ""
         }
 
         passwordEditText.addTextChangedListener { text ->
-            // if password is invalid after text change, display error message
-            if(LoginManager.isValidPassword(text.toString())) {
-                passwordErrorText.text = ""
-            } else {
-                passwordErrorText.text = getString(R.string.password_invalid_error)
-            }
+            val password = text.toString()
+            updatePasswordDescription(view, LoginManager.passwordMeetsLength(password),
+                LoginManager.passwordMeetsUppercase(password),
+                LoginManager.passwordMeetsDigit(password))
+
+            if(passwordErrorText.text.isNotEmpty()) passwordErrorText.text = ""
 
             // update confirmed password error text if the confirmed password isn't empty
             val confirmPasswordString = confirmPasswordEditText.text.toString()
-            if(confirmPasswordString.isEmpty() || text.toString() == confirmPasswordString) {
+            if(confirmPasswordString.isEmpty() || password == confirmPasswordString) {
                 confirmPasswordErrorText.text = ""
             } else {
                 confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
@@ -142,25 +156,62 @@ class CreateAccountFragment : Fragment() {
         banner.show()
     }
 
-    private fun setDescriptions(view: View) {
-        val passwordTextView = view.findViewById<TextView>(R.id.create_account_password_description)
-        passwordTextView.text = Html.fromHtml("""
-            Password must meet the following<br/>
-            <ul>
-                <li>At least ${LoginManager.MIN_PASSWORD_LENGTH} characters</li>
-                <li>At least one uppercase letter</li>
-                <li>At least one number</li>
-            </ul>
-            """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
+    private fun setInitialTextInputDescriptions(view: View) {
+        // before user starts typing, default them to meeting rule, even though they technically don't
+        val ruleMet = true
+        updateUsernameDescription(view, ruleMet, ruleMet)
+        updatePasswordDescription(view, ruleMet, ruleMet, ruleMet)
+    }
 
+    private fun updateUsernameDescription(view: View, rule1: Boolean, rule2: Boolean) {
         val userNameTextView = view.findViewById<TextView>(R.id.create_account_username_description)
-        userNameTextView.text = Html.fromHtml("""
-            Username must meet the following<br/>
-            <ul>
-                <li>At least ${LoginManager.MIN_USERNAME_LENGTH} characters</li>
-                <li>Only alpha-numeric characters</li>
-            </ul>
-            """.trimIndent(), Html.FROM_HTML_MODE_COMPACT)
+        val usernameSpannableStringBuilder = SpannableStringBuilder()
+        var start = 0
+        var end = 0
+
+        usernameSpannableStringBuilder.append("Username must meet the following:\n")
+
+        start = usernameSpannableStringBuilder.length
+        usernameSpannableStringBuilder.append("\t\u2022 Between ${LoginManager.MIN_USERNAME_LENGTH} and ${LoginManager.MAX_USERNAME_LENGTH} characters\n")
+        end = usernameSpannableStringBuilder.length
+        usernameSpannableStringBuilder.setSpan(getColorFromRule(rule1), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        start = usernameSpannableStringBuilder.length
+        usernameSpannableStringBuilder.append("\t\u2022 Only alpha-numeric characters\n")
+        end = usernameSpannableStringBuilder.length
+        usernameSpannableStringBuilder.setSpan(getColorFromRule(rule2), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        userNameTextView.text = usernameSpannableStringBuilder
+    }
+
+    private fun updatePasswordDescription(view: View, rule1: Boolean, rule2: Boolean, rule3: Boolean) {
+        val passwordTextView = view.findViewById<TextView>(R.id.create_account_password_description)
+        val passwordSpannableStringBuilder = SpannableStringBuilder()
+        var start = 0
+        var end = 0
+
+        passwordSpannableStringBuilder.append("Password must meet the following:\n")
+
+        start = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.append("\t\u2022 Between ${LoginManager.MIN_PASSWORD_LENGTH} and ${LoginManager.MAX_PASSWORD_LENGTH} characters\n")
+        end = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.setSpan(getColorFromRule(rule1), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        start = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.append("\t\u2022 At least one uppercase letter\n")
+        end = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.setSpan(getColorFromRule(rule2), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        start = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.append("\t\u2022 At least one number")
+        end = passwordSpannableStringBuilder.length
+        passwordSpannableStringBuilder.setSpan(getColorFromRule(rule3), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        passwordTextView.text = passwordSpannableStringBuilder
+    }
+
+    private fun getColorFromRule(rule: Boolean): ForegroundColorSpan {
+        return if (rule) ForegroundColorSpan(Color.BLACK) else ForegroundColorSpan(Color.RED)
     }
 
     companion object {

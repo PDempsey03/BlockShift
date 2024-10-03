@@ -15,7 +15,9 @@ import javax.crypto.spec.PBEKeySpec
 internal object LoginManager {
 
     const val MIN_PASSWORD_LENGTH = 8
+    const val MAX_PASSWORD_LENGTH = 32
     const val MIN_USERNAME_LENGTH = 4
+    const val MAX_USERNAME_LENGTH = 16
     private const val HASH_FUNCTION = "PBKDF2WithHmacSha1"
     private const val HASH_LENGTH = 256 // bits
     private const val HASH_ITERATION_COUNT = 2048
@@ -33,16 +35,34 @@ internal object LoginManager {
         dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
     }
 
-    fun isValidUsername(username: String): Boolean {
-        return username.length >= MIN_USERNAME_LENGTH
-                && username.all{it.isLetterOrDigit()}
+    fun usernameMeetsLength(username: String): Boolean {
+        return username.length in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH
     }
 
-    fun isValidPassword(password: String): Boolean {
-        // check length, containing digit, and containing uppercase letter
-        return password.length >= MIN_PASSWORD_LENGTH
-                && password.any { it.isDigit() }
-                && password.any{ it.isUpperCase() }
+    fun usernameMeetsOnlyAlphaNumeric(username: String): Boolean {
+        return username.all{it.isLetterOrDigit()}
+    }
+
+    private fun isValidUsername(username: String): Boolean {
+        return usernameMeetsLength(username) && usernameMeetsOnlyAlphaNumeric(username)
+    }
+
+    fun passwordMeetsLength(password: String): Boolean {
+        return password.length in MIN_PASSWORD_LENGTH .. MAX_PASSWORD_LENGTH
+    }
+
+    fun passwordMeetsDigit(password: String): Boolean{
+        return password.any { it.isDigit() }
+    }
+
+    fun passwordMeetsUppercase(password: String): Boolean {
+        return password.any{ it.isUpperCase() }
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        return passwordMeetsLength(password)
+                && passwordMeetsDigit(password)
+                && passwordMeetsUppercase(password)
     }
 
     // functionality from https://www.danielhugenroth.com/posts/2021_06_password_hashing_on_android/
