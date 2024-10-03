@@ -33,15 +33,30 @@ internal object LoginManager {
         dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
     }
 
+    fun isValidUsername(username: String): Boolean {
+        return username.length >= MIN_USERNAME_LENGTH
+                && username.all{it.isLetterOrDigit()}
+    }
+
+    fun isValidPassword(password: String): Boolean {
+        // check length, containing digit, and containing uppercase letter
+        return password.length >= MIN_PASSWORD_LENGTH
+                && password.any { it.isDigit() }
+                && password.any{ it.isUpperCase() }
+    }
+
     // functionality from https://www.danielhugenroth.com/posts/2021_06_password_hashing_on_android/
     private fun hashPassword(password: String, salt: String): String {
         val spec = PBEKeySpec(password.toCharArray(), salt.toByteArray(), HASH_ITERATION_COUNT, HASH_LENGTH)
         return Base64.encodeToString(hashFactory.generateSecret(spec).encoded, Base64.NO_WRAP)
     }
 
-    fun isValidUsername(username: String): Boolean {
-        return username.length >= MIN_USERNAME_LENGTH
-                && username.all{it.isLetterOrDigit()}
+    // functionality from https://codersee.com/kotlin-pbkdf2-secure-password-hashing/
+    private fun generateSaltString(): String {
+        val secureRandom = SecureRandom()
+        val salt = ByteArray(SALT_LENGTH)
+        secureRandom.nextBytes(salt)
+        return Base64.encodeToString(salt, Base64.NO_WRAP)
     }
 
     private fun doesUsernameExist(username: String, onResultCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
@@ -101,12 +116,56 @@ internal object LoginManager {
         })
     }
 
-    // functionality from https://codersee.com/kotlin-pbkdf2-secure-password-hashing/
-    private fun generateSaltString(): String {
-        val secureRandom = SecureRandom()
-        val salt = ByteArray(SALT_LENGTH)
-        secureRandom.nextBytes(salt)
-        return Base64.encodeToString(salt, Base64.NO_WRAP)
+    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
+        val userDoc = dataBaseUsers.document(username)
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // get the stored hashed password and salt to compare the entered password to
+                    val storedHashedPassword = document.getString(UserTableNames.PASSWORD)
+                    val storedSalt = document.getString(UserTableNames.SALT)
+
+                    // null check just in case
+                    if(storedSalt == null || storedHashedPassword == null) {
+                        successCallback(false)
+                        return@addOnSuccessListener
+                    }
+
+                    val enteredHashPassword = hashPassword(password, storedSalt)
+                    successCallback(enteredHashPassword == storedHashedPassword)
+                } else {
+                    // no user found
+                    successCallback(false)
+                }
+            }
+            .addOnFailureListener { exception ->
+                failureCallback(exception)
+            }
+    }
+
+    fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
+        val userDoc = dataBaseUsers.document(authUsername)
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val actualAuthToken = document.getString(UserTableNames.AUTH_TOKEN)
+                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
+                    val currentTime = System.currentTimeMillis()
+
+                    if(actualAuthToken != null && authTokenExpirationTime != null
+                        && authTokenExpirationTime - currentTime > 0 && authToken == actualAuthToken)  {
+                        successCallback(true)
+                    } else {
+                        successCallback(false)
+                    }
+                } else {
+                    // no user found
+                    successCallback(false)
+                }
+            }
+            .addOnFailureListener { exception ->
+                failureCallback(exception)
+            }
     }
 
     private fun generateAuthToken(): String {
@@ -165,74 +224,6 @@ internal object LoginManager {
             dataStore.setString(UserTableNames.AUTH_USERNAME, username)
             dataStore.setString(UserTableNames.AUTH_TOKEN, authToken)
         }
-    }
-
-    fun isValidPassword(password: String): Boolean {
-        // check length
-        if(password.length < MIN_PASSWORD_LENGTH) return false
-
-        var containsDigit = false
-        var containsUppercaseLetter = false
-
-        // check contains at least one of each digit and capital letter
-        password.forEach {
-            if(it.isLetter() && it.isUpperCase()) containsUppercaseLetter = true
-            if(it.isDigit()) containsDigit = true
-        }
-
-        return containsDigit && containsUppercaseLetter
-    }
-
-    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        val userDoc = dataBaseUsers.document(username)
-        userDoc.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    // get the stored hashed password and salt to compare the entered password to
-                    val storedHashedPassword = document.getString(UserTableNames.PASSWORD)
-                    val storedSalt = document.getString(UserTableNames.SALT)
-
-                    // null check just in case
-                    if(storedSalt == null || storedHashedPassword == null) {
-                        successCallback(false)
-                        return@addOnSuccessListener
-                    }
-
-                    val enteredHashPassword = hashPassword(password, storedSalt)
-                    successCallback(enteredHashPassword == storedHashedPassword)
-                } else {
-                    // no user found
-                    successCallback(false)
-                }
-            }
-            .addOnFailureListener { exception ->
-                failureCallback(exception)
-            }
-    }
-
-    fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        val userDoc = dataBaseUsers.document(authUsername)
-        userDoc.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val actualAuthToken = document.getString(UserTableNames.AUTH_TOKEN)
-                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
-                    val currentTime = System.currentTimeMillis()
-
-                    if(actualAuthToken != null && authTokenExpirationTime != null
-                        && authTokenExpirationTime - currentTime > 0 && authToken == actualAuthToken)  {
-                        successCallback(true)
-                    } else {
-                        successCallback(false)
-                    }
-                } else {
-                    // no user found
-                    successCallback(false)
-                }
-            }
-            .addOnFailureListener { exception ->
-                failureCallback(exception)
-            }
     }
 }
 
