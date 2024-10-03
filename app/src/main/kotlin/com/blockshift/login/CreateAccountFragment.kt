@@ -13,15 +13,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.compose.ui.text.toUpperCase
-import androidx.core.text.set
 import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 /**
  * A simple [Fragment] subclass.
@@ -29,6 +26,11 @@ import java.util.Locale
  * create an instance of this fragment.
  */
 class CreateAccountFragment : Fragment() {
+
+    // state variables for editable text in fragment
+    private var validUsername = false
+    private var validPassword = false
+    private var passwordsMatch = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,36 +117,38 @@ class CreateAccountFragment : Fragment() {
 
         usernameEditText.addTextChangedListener { text ->
             val username = text.toString()
-            updateUsernameDescription(view, LoginManager.usernameMeetsLength(username),
+            updateUsernameState(view, LoginManager.usernameMeetsLength(username),
                 LoginManager.usernameMeetsOnlyAlphaNumeric(username))
 
             if(usernameErrorText.text.isNotEmpty()) usernameErrorText.text = ""
+
+            // after all else is done, update whether create account button should be enabled
+            updateCreateButtonActive(view)
         }
 
         passwordEditText.addTextChangedListener { text ->
             val password = text.toString()
-            updatePasswordDescription(view, LoginManager.passwordMeetsLength(password),
+            updatePasswordState(view, LoginManager.passwordMeetsLength(password),
                 LoginManager.passwordMeetsUppercase(password),
                 LoginManager.passwordMeetsDigit(password))
 
+            // reset any error message after start typing again
             if(passwordErrorText.text.isNotEmpty()) passwordErrorText.text = ""
 
             // update confirmed password error text if the confirmed password isn't empty
             val confirmPasswordString = confirmPasswordEditText.text.toString()
-            if(confirmPasswordString.isEmpty() || password == confirmPasswordString) {
-                confirmPasswordErrorText.text = ""
-            } else {
-                confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
-            }
+            updateConfirmPasswordState(view, password == confirmPasswordString)
+
+            // after all else is done, update whether create account button should be enabled
+            updateCreateButtonActive(view)
         }
 
         confirmPasswordEditText.addTextChangedListener { text ->
             // if confirmed password doesn't match password after text change, display error message
-            if(text.toString() == passwordEditText.text.toString()) {
-                confirmPasswordErrorText.text = ""
-            } else {
-                confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
-            }
+            updateConfirmPasswordState(view, text.toString() == passwordEditText.text.toString())
+
+            // after all else is done, update whether create account button should be enabled
+            updateCreateButtonActive(view)
         }
 
         return view
@@ -161,6 +165,11 @@ class CreateAccountFragment : Fragment() {
         val ruleMet = true
         updateUsernameDescription(view, ruleMet, ruleMet)
         updatePasswordDescription(view, ruleMet, ruleMet, ruleMet)
+    }
+
+    private fun updateUsernameState(view: View, rule1: Boolean, rule2: Boolean) {
+        this.validUsername = rule1 && rule2
+        updateUsernameDescription(view, rule1, rule2)
     }
 
     private fun updateUsernameDescription(view: View, rule1: Boolean, rule2: Boolean) {
@@ -182,6 +191,11 @@ class CreateAccountFragment : Fragment() {
         usernameSpannableStringBuilder.setSpan(getColorFromRule(rule2), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         userNameTextView.text = usernameSpannableStringBuilder
+    }
+
+    private fun updatePasswordState(view: View, rule1: Boolean, rule2: Boolean, rule3: Boolean) {
+        this.validPassword = rule1 && rule2 && rule3
+        updatePasswordDescription(view, rule1, rule2, rule3)
     }
 
     private fun updatePasswordDescription(view: View, rule1: Boolean, rule2: Boolean, rule3: Boolean) {
@@ -210,8 +224,24 @@ class CreateAccountFragment : Fragment() {
         passwordTextView.text = passwordSpannableStringBuilder
     }
 
+    private fun updateConfirmPasswordState(view: View, rule1: Boolean) {
+        passwordsMatch = rule1
+        val confirmPasswordErrorText = view.findViewById<TextView>(R.id.create_account_confirm_password_error_message)
+        if(rule1) {
+            confirmPasswordErrorText.text = ""
+        } else {
+            confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
+        }
+    }
+
     private fun getColorFromRule(rule: Boolean): ForegroundColorSpan {
         return if (rule) ForegroundColorSpan(Color.BLACK) else ForegroundColorSpan(Color.RED)
+    }
+
+    private fun updateCreateButtonActive(view: View) {
+        val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+
+        createAccountButton.isEnabled = validPassword && validPassword && passwordsMatch
     }
 
     companion object {
