@@ -56,6 +56,24 @@
         android:paddingBottom="15dp"
         android:paddingStart="5dp" />
 
+    <EditText
+        android:id="@+id/create_account_confirm_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/confirm_password_hint"
+        android:inputType="textPassword"
+        android:padding="15dp"
+        android:backgroundTint="@color/black" />
+
+    <TextView
+        android:id="@+id/create_account_confirm_password_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:paddingBottom="15dp"
+        android:text=""
+        android:paddingStart="5dp" />
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"

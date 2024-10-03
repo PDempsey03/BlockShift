@@ -39,7 +39,7 @@ internal object LoginManager {
         return Base64.encodeToString(hashFactory.generateSecret(spec).encoded, Base64.NO_WRAP)
     }
 
-    private fun isValidUsername(username: String): Boolean {
+    fun isValidUsername(username: String): Boolean {
         return username.length >= MIN_USERNAME_LENGTH
                 && username.all{it.isLetterOrDigit()}
     }
@@ -55,18 +55,23 @@ internal object LoginManager {
             }
     }
 
-    fun tryAddUser(username: String, password: String, successCallback: (AccountCreationResult) -> Unit, failureCallback: (Exception) -> Unit) {
+    fun tryAddUser(username: String, password: String, confirmPassword: String,
+                   successCallback: (AccountCreationResult) -> Unit, failureCallback: (Exception) -> Unit) {
         val validUsername = isValidUsername(username)
         val validPassword = isValidPassword(password)
+        val passwordMatch = password == confirmPassword
 
-        // don't need to check if username exists if either username or password was not even valid
+        // exit if the basic criteria were not met
         if(!validUsername) {
             successCallback(AccountCreationResult.INVALID_USERNAME)
             return
         }
-
-        if(!validPassword) {
+        else if(!validPassword) {
             successCallback(AccountCreationResult.INVALID_PASSWORD)
+            return
+        }
+        else if(!passwordMatch) {
+            successCallback(AccountCreationResult.PASSWORD_MISMATCH)
             return
         }
 
@@ -166,7 +171,7 @@ internal object LoginManager {
         }
     }
 
-    private fun isValidPassword(password: String): Boolean {
+    fun isValidPassword(password: String): Boolean {
         // check length
         if(password.length < MIN_PASSWORD_LENGTH) return false
 
@@ -244,5 +249,5 @@ internal object LoginManager {
 data class UserLoginData(val username: String, val password: String, val salt: String)
 
 enum class AccountCreationResult{
-    SUCCESS, INVALID_USERNAME, INVALID_PASSWORD, USERNAME_TAKEN
+    SUCCESS, INVALID_USERNAME, USERNAME_TAKEN, INVALID_PASSWORD, PASSWORD_MISMATCH
 }

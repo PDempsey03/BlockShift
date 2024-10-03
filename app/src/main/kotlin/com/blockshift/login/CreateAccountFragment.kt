@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -38,45 +39,49 @@ class CreateAccountFragment : Fragment() {
         // set descriptions for username / password
         setDescriptions(view)
 
+        val usernameEditText = view.findViewById<EditText>(R.id.create_account_username)
+        val passwordEditText = view.findViewById<EditText>(R.id.create_account_password)
+        val confirmPasswordEditText = view.findViewById<EditText>(R.id.create_account_confirm_password)
         val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
+        var confirmPasswordErrorText = view.findViewById<TextView>(R.id.create_account_confirm_password_error_message)
+        val usernameErrorText = view.findViewById<TextView>(R.id.create_account_username_error_message)
+        val passwordErrorText = view.findViewById<TextView>(R.id.create_account_password_error_message)
 
         // set action to be taken on create account button click
         createAccountButton.setOnClickListener {
 
             // launch a coroutine to attempt creating a new account
             CoroutineScope(Dispatchers.Main).launch {
+                view.findViewById<EditText>(R.id.create_account_username)
+
                 // get username and password from text input fields
                 val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
-                val desiredPassword = view.findViewById<EditText>(R.id.create_account_password).text.toString()
+                val desiredPassword = passwordEditText.text.toString()
+                val confirmedPassword = confirmPasswordEditText.text.toString()
 
                 // get login manager to try adding the user
-                LoginManager.tryAddUser(desiredUsername, desiredPassword, {
+                LoginManager.tryAddUser(desiredUsername, desiredPassword, confirmedPassword, {
                     accountCreationResult ->
                     when(accountCreationResult) {
                         AccountCreationResult.SUCCESS -> {
                             // go back to start screen
                             parentFragmentManager.popBackStack()
 
-                            Log.d("Account Creation", "Account successfully created")
+                            Log.d("Create Account", "Account successfully created")
                             showBasicBanner(view, "Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
                         }
                         AccountCreationResult.INVALID_USERNAME -> {
-                            val reason = "Invalid username"
-                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
-                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
-                            Log.d("Create Account", "Failed to create account ($reason)")
+                            Log.d("Create Account", "Failed to create account (${getString(R.string.username_invalid_error)})")
                         }
                         AccountCreationResult.INVALID_PASSWORD -> {
-                            val reason = "Password does not meet criteria"
-                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = reason
-                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = ""
-                            Log.d("Create Account", "Failed to create account ($reason)")
+                            Log.d("Create Account", "Failed to create account (${getString(R.string.password_invalid_error)})")
                         }
                         AccountCreationResult.USERNAME_TAKEN -> {
-                            val reason = "Username is taken"
-                            view.findViewById<TextView>(R.id.create_account_username_error_message).text = reason
-                            view.findViewById<TextView>(R.id.create_account_password_error_message).text = ""
-                            Log.d("Create Account", "Failed to create account ($reason)")
+                            usernameErrorText.text = getString(R.string.username_taken_error)
+                            Log.d("Create Account", "Failed to create account (${getString(R.string.username_taken_error)})")
+                        }
+                        AccountCreationResult.PASSWORD_MISMATCH -> {
+                            Log.d("Create Account", "Failed to create account (${getString(R.string.confirm_password_mismatch_error)})")
                         }
                     }
                 }, {
@@ -91,6 +96,41 @@ class CreateAccountFragment : Fragment() {
         backButton.setOnClickListener {
             Log.d("Create Account", "Back Button Clicked")
             parentFragmentManager.popBackStack()
+        }
+
+        usernameEditText.addTextChangedListener { text ->
+            // if username is invalid after text change, display error message
+            if(LoginManager.isValidUsername(text.toString())) {
+                usernameErrorText.text = ""
+            } else {
+                usernameErrorText.text = getString(R.string.username_invalid_error)
+            }
+        }
+
+        passwordEditText.addTextChangedListener { text ->
+            // if password is invalid after text change, display error message
+            if(LoginManager.isValidPassword(text.toString())) {
+                passwordErrorText.text = ""
+            } else {
+                passwordErrorText.text = getString(R.string.password_invalid_error)
+            }
+
+            // update confirmed password error text if the confirmed password isn't empty
+            val confirmPasswordString = confirmPasswordEditText.text.toString()
+            if(confirmPasswordString.isEmpty() || text.toString() == confirmPasswordString) {
+                confirmPasswordErrorText.text = ""
+            } else {
+                confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
+            }
+        }
+
+        confirmPasswordEditText.addTextChangedListener { text ->
+            // if confirmed password doesn't match password after text change, display error message
+            if(text.toString() == passwordEditText.text.toString()) {
+                confirmPasswordErrorText.text = ""
+            } else {
+                confirmPasswordErrorText.text = getString(R.string.confirm_password_mismatch_error)
+            }
         }
 
         return view
