@@ -30,7 +30,7 @@ internal object LoginManager {
     }
 
     private fun loadUserDataBase(){
-        dataBaseUsers = FirebaseFirestore.getInstance().collection("users")
+        dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
     }
 
     // functionality from https://www.danielhugenroth.com/posts/2021_06_password_hashing_on_android/
@@ -45,14 +45,13 @@ internal object LoginManager {
     }
 
     private fun doesUsernameExist(username: String, onResultCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
-        dataBaseUsers.whereEqualTo("username", username)
-            .get()
-            .addOnSuccessListener { documents ->
-                onResultCallback(!documents.isEmpty)
+        val userDoc = dataBaseUsers.document(username)
+
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                onResultCallback(document.exists())
             }
-            .addOnFailureListener { exception ->
-                onFailureCallback(exception)
-            }
+            .addOnFailureListener(onFailureCallback)
     }
 
     fun tryAddUser(username: String, password: String, confirmPassword: String,
@@ -89,7 +88,7 @@ internal object LoginManager {
                     val userData = UserLoginData(username, hashedPassword, saltValue)
 
                     // make the call to firestore to attempt to record the data
-                    dataBaseUsers.add(userData)
+                    dataBaseUsers.document(username).set(userData)
                         .addOnSuccessListener {
                             successCallback(AccountCreationResult.SUCCESS)
                         }
@@ -119,16 +118,13 @@ internal object LoginManager {
 
     fun registerAuthToken(username: String, context: Context) {
         // get data instance of user matching name
-        dataBaseUsers.whereEqualTo("username", username)
-            .get()
+        val userDoc = dataBaseUsers.document(username)
+        userDoc.get()
             .addOnSuccessListener {
-                documents ->
-                if (!documents.isEmpty) {
-                    val userDocument = documents.documents[0]
-                    val documentID = userDocument.id
-
-                    var authToken = userDocument.getString("authtoken")
-                    val authTokenExpirationTime = userDocument.getLong("authtokenexpiration")
+                document ->
+                if (document.exists()) {
+                    var authToken = document.getString(UserTableNames.AUTH_TOKEN)
+                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
                     val currentTime = System.currentTimeMillis()
 
                     if(authToken == null || authTokenExpirationTime == null || currentTime - authTokenExpirationTime > 0) {
@@ -136,13 +132,13 @@ internal object LoginManager {
                         authToken = generateAuthToken()
 
                         // first try to add time stamp for expiration
-                        dataBaseUsers.document(documentID)
-                            .update("authtokenexpiration", System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION)
+                        userDoc
+                            .update(UserTableNames.AUTH_TOKEN_EXPIRATION, System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION)
                             .addOnSuccessListener {
 
                                 // if successful in adding timestamp, then try to add auth token
-                                dataBaseUsers.document(documentID)
-                                    .update("authtoken", authToken)
+                                userDoc
+                                    .update(UserTableNames.AUTH_TOKEN, authToken)
                                     .addOnSuccessListener {
                                         // if successfully added to database, then store the auth token locally
                                         updateLocalAuthToken(username, authToken, context)
@@ -159,15 +155,15 @@ internal object LoginManager {
     suspend fun unregisterAuthToken(context: Context) {
         val settingsDataStore = SettingsDataStore.getInstance(context)
 
-        settingsDataStore.removeString("authusername")
-        settingsDataStore.removeString("authtoken")
+        settingsDataStore.removeString(UserTableNames.AUTH_USERNAME)
+        settingsDataStore.removeString(UserTableNames.AUTH_TOKEN)
     }
 
     private fun updateLocalAuthToken(username: String, authToken: String, context: Context){
         CoroutineScope(Dispatchers.Main).launch {
             val dataStore = SettingsDataStore.getInstance(context)
-            dataStore.setString("authusername", username)
-            dataStore.setString("authtoken", authToken)
+            dataStore.setString(UserTableNames.AUTH_USERNAME, username)
+            dataStore.setString(UserTableNames.AUTH_TOKEN, authToken)
         }
     }
 
@@ -187,20 +183,14 @@ internal object LoginManager {
         return containsDigit && containsUppercaseLetter
     }
 
-    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit){
-        dataBaseUsers.whereEqualTo("username", username)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    // no user found
-                    successCallback(false)
-                } else {
-                    // non-empty, and unique usernames should only return 1 result
-                    val userDocument = documents.documents[0]
-
+    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
+        val userDoc = dataBaseUsers.document(username)
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
                     // get the stored hashed password and salt to compare the entered password to
-                    val storedHashedPassword = userDocument.getString("password")
-                    val storedSalt = userDocument.getString("salt")
+                    val storedHashedPassword = document.getString(UserTableNames.PASSWORD)
+                    val storedSalt = document.getString(UserTableNames.SALT)
 
                     // null check just in case
                     if(storedSalt == null || storedHashedPassword == null) {
@@ -210,6 +200,9 @@ internal object LoginManager {
 
                     val enteredHashPassword = hashPassword(password, storedSalt)
                     successCallback(enteredHashPassword == storedHashedPassword)
+                } else {
+                    // no user found
+                    successCallback(false)
                 }
             }
             .addOnFailureListener { exception ->
@@ -218,18 +211,12 @@ internal object LoginManager {
     }
 
     fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        dataBaseUsers.whereEqualTo("username", authUsername)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    // no user found
-                    successCallback(false)
-                } else {
-                    // non-empty, and unique usernames should only return 1 result
-                    val userDocument = documents.documents[0]
-
-                    val actualAuthToken = userDocument.getString("authtoken")
-                    val authTokenExpirationTime = userDocument.getLong("authtokenexpiration")
+        val userDoc = dataBaseUsers.document(authUsername)
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val actualAuthToken = document.getString(UserTableNames.AUTH_TOKEN)
+                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
                     val currentTime = System.currentTimeMillis()
 
                     if(actualAuthToken != null && authTokenExpirationTime != null
@@ -238,6 +225,9 @@ internal object LoginManager {
                     } else {
                         successCallback(false)
                     }
+                } else {
+                    // no user found
+                    successCallback(false)
                 }
             }
             .addOnFailureListener { exception ->
@@ -246,8 +236,18 @@ internal object LoginManager {
     }
 }
 
-data class UserLoginData(val username: String, val password: String, val salt: String)
+data class UserLoginData(val displayname: String, val password: String, val salt: String)
 
 enum class AccountCreationResult{
     SUCCESS, INVALID_USERNAME, USERNAME_TAKEN, INVALID_PASSWORD, PASSWORD_MISMATCH
+}
+
+internal object UserTableNames{
+    const val USERS = "users"
+    const val DISPLAY_NAME = "displayname"
+    const val PASSWORD = "password"
+    const val SALT = "salt"
+    const val AUTH_USERNAME = "authusername"
+    const val AUTH_TOKEN = "authtoken"
+    const val AUTH_TOKEN_EXPIRATION = "authtokenexpiration"
 }
