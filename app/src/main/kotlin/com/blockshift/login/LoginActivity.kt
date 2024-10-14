@@ -24,8 +24,8 @@ class LoginActivity : AppCompatActivity() {
             val settingsDataStore = SettingsDataStore.getInstance(context)
 
             // get the nullable stored auth username and token
-            val authUsername = settingsDataStore.getString("authusername")
-            val authToken = settingsDataStore.getString("authtoken")
+            val authUsername = settingsDataStore.getString(UserTableNames.AUTH_USERNAME)
+            val authToken = settingsDataStore.getString(UserTableNames.AUTH_TOKEN)
 
             if(authUsername != null && authToken != null) {
                 // attempt to auto login as there were some stored values

@@ -168,8 +168,14 @@ internal object LoginManager {
         userDoc.get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val actualAuthToken = document.getString(UserTableNames.AUTH_TOKEN)
-                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
+                    val auth = document.get(UserTableNames.AUTHENTICATION) as? Map<String, Any>
+                    if(auth == null) {
+                        successCallback(false)
+                        return@addOnSuccessListener
+                    }
+
+                    val actualAuthToken = auth[UserTableNames.AUTH_TOKEN] as String
+                    val authTokenExpirationTime = auth[UserTableNames.AUTH_TOKEN_EXPIRATION] as Long
                     val currentTime = System.currentTimeMillis()
 
                     if(actualAuthToken != null && authTokenExpirationTime != null
@@ -203,25 +209,26 @@ internal object LoginManager {
                 document ->
                 if (document.exists()) {
                     var authToken = document.getString(UserTableNames.AUTH_TOKEN)
-                    val authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
+                    var authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
                     val currentTime = System.currentTimeMillis()
 
+                    // if auth token doesn't exist or is invalid, make a new one
                     if(authToken == null || authTokenExpirationTime == null || currentTime - authTokenExpirationTime > 0) {
                         // create auth token
                         authToken = generateAuthToken()
+                        authTokenExpirationTime = currentTime + System.currentTimeMillis()
 
-                        // first try to add time stamp for expiration
-                        userDoc
-                            .update(UserTableNames.AUTH_TOKEN_EXPIRATION, System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION)
+                        // object to be stored on firebase
+                        val authMap = mapOf(
+                            UserTableNames.AUTH_TOKEN to authToken,
+                            UserTableNames.AUTH_TOKEN_EXPIRATION to authTokenExpirationTime
+                        )
+
+                        // try adding the authentication to firebase
+                        userDoc.update(UserTableNames.AUTHENTICATION, authMap)
                             .addOnSuccessListener {
-
-                                // if successful in adding timestamp, then try to add auth token
-                                userDoc
-                                    .update(UserTableNames.AUTH_TOKEN, authToken)
-                                    .addOnSuccessListener {
-                                        // if successfully added to database, then store the auth token locally
-                                        updateLocalAuthToken(username, authToken, context)
-                                    }
+                                // if successfully added to database, then store the auth token locally
+                                updateLocalAuthToken(username, authToken, context)
                             }
                     } else {
                         // store auth token locally
@@ -258,6 +265,7 @@ internal object UserTableNames{
     const val DISPLAY_NAME = "displayname"
     const val PASSWORD = "password"
     const val SALT = "salt"
+    const val AUTHENTICATION = "authentication"
     const val AUTH_USERNAME = "authusername"
     const val AUTH_TOKEN = "authtoken"
     const val AUTH_TOKEN_EXPIRATION = "authtokenexpiration"
