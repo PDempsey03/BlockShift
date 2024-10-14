@@ -1,10 +1,12 @@
 package com.blockshift.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blockshift.R
+import com.blockshift.settings.SettingsActivity
 import com.blockshift.settings.SettingsDataStore
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
                     if(success) {
                         // if auto login,temporarily send to create account screen (TODO: launch whatever screen after successful login is)
                         Log.d("Login Activity", "Successfully auto logged in")
-                        loadFragment(CreateAccountFragment())
+                        finishLogin()
                     } else {
                         // unregister auth token since it failed
                         CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
@@ -54,6 +56,11 @@ class LoginActivity : AppCompatActivity() {
                 loadFragment(LoginFragment())
             }
         }
+    }
+
+    fun finishLogin() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
 
     private fun loadFragment(fragment: Fragment){
