@@ -216,7 +216,7 @@ internal object LoginManager {
                     if(authToken == null || authTokenExpirationTime == null || currentTime - authTokenExpirationTime > 0) {
                         // create auth token
                         authToken = generateAuthToken()
-                        authTokenExpirationTime = currentTime + System.currentTimeMillis()
+                        authTokenExpirationTime = currentTime + AUTH_TOKEN_EXPIRATION_DURATION
 
                         // object to be stored on firebase
                         val authMap = mapOf(
