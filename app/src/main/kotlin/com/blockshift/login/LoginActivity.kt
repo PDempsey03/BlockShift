@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blockshift.R
+import com.blockshift.repositories.UserRepository
+import com.blockshift.repositories.UserTableNames
 import com.blockshift.settings.SettingsActivity
 import com.blockshift.settings.SettingsDataStore
 import com.google.firebase.FirebaseApp
@@ -26,10 +28,12 @@ class LoginActivity : AppCompatActivity() {
             val settingsDataStore = SettingsDataStore.getInstance(context)
 
             // get the nullable stored auth username and token
-            val authUsername = settingsDataStore.getString(UserTableNames.AUTH_USERNAME)
-            val authToken = settingsDataStore.getString(UserTableNames.AUTH_TOKEN)
+            /*val authUsername = settingsDataStore.getString(UserTableNames.AUTH_USERNAME)
+            val authToken = settingsDataStore.getString(UserTableNames.AUTH_TOKEN)*/
 
-            if(authUsername != null && authToken != null) {
+            loadFragment(LoginFragment())
+
+            /*if(authUsername != null && authToken != null) {
                 // attempt to auto login as there were some stored values
                 Log.d("Login Activity", "auth token and auth username found, attempting to auto login")
                 LoginManager.tryAutoLogin(authUsername, authToken, {
@@ -54,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
                 // no auth username and password so continue to login screen
                 Log.d("Login Activity", "No auth token or auth username, going to log in page")
                 loadFragment(LoginFragment())
-            }
+            }*/
         }
     }
 

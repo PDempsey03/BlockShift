@@ -15,6 +15,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
+import com.blockshift.repositories.AccountCreationResult
+import com.blockshift.repositories.UserRepository
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,10 +67,9 @@ class CreateAccountFragment : Fragment() {
                 // get username and password from text input fields
                 val desiredUsername = view.findViewById<EditText>(R.id.create_account_username).text.toString()
                 val desiredPassword = passwordEditText.text.toString()
-                val confirmedPassword = confirmPasswordEditText.text.toString()
 
                 // get login manager to try adding the user
-                LoginManager.tryAddUser(desiredUsername, desiredPassword, confirmedPassword, {
+                UserRepository.createUser(desiredUsername, desiredPassword, {
                     accountCreationResult ->
                     when(accountCreationResult) {
                         AccountCreationResult.SUCCESS -> {
@@ -95,10 +96,6 @@ class CreateAccountFragment : Fragment() {
                             Log.d("Create Account", "Failed to create account ($reason)")
                             usernameErrorText.text = reason.uppercase()
                             passwordErrorText.text = ""
-                        }
-                        AccountCreationResult.PASSWORD_MISMATCH -> {
-                            // message will already be there for password mismatch, no need put it there again
-                            Log.d("Create Account", "Failed to create account (${getString(R.string.confirm_password_mismatch_error)})")
                         }
                     }
                 }, {
