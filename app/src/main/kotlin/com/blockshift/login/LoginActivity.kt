@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.room.Room
 import com.blockshift.R
+import com.blockshift.db.AppDatabase
 import com.blockshift.settings.SettingsDataStore
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +19,12 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         FirebaseApp.initializeApp(this)
+
+        val db = Room.databaseBuilder(
+                    applicationContext,
+                    AppDatabase::class.java, "user-info"
+                ).build()
+        val userDao = db.userDao()
 
         val context = this
 
