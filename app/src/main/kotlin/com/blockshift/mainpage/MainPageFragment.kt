@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.blockshift.R
+import com.blockshift.login.UserViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -24,14 +26,23 @@ class HomePageFragment : Fragment() {
     }
     */
 
+    private lateinit var userViewModel: UserViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        userViewModel = activity?.run {
+            ViewModelProvider(this).get(UserViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
 
         val welcomeText = view.findViewById<TextView>(R.id.welcome_text)
+        val displayName = userViewModel.currentUser.value?.displayname
+        val displayText = "Welcome $displayName!"
+        welcomeText.setText(displayText)
 
         return view
     }
