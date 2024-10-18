@@ -21,5 +21,7 @@ import androidx.room.ColumnInfo
 data class HighScore(
     val userID: Int,
     val levelID: Int,
-    @ColumnInfo(name = "score") val score: Int
+    @ColumnInfo(name = "distance") val distance: Int,
+    @ColumnInfo(name = "time") val time: Int,
+    @ColumnInfo(name = "moves") val moves: Int
 )
