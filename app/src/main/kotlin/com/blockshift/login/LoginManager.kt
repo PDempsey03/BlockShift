@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import com.blockshift.repositories.UserAuthenticationData
+import com.blockshift.repositories.UserData
 import com.blockshift.repositories.UserRepository
 import com.blockshift.repositories.UserTableNames
 import com.blockshift.settings.SettingsDataStore
@@ -73,43 +74,52 @@ internal object LoginManager {
         return Base64.encodeToString(salt, Base64.NO_WRAP)
     }
 
-    fun tryLogin(username: String, password: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        UserRepository.getUserLoginData(username, { userLoginData ->
-            // null login data means the user doesn't exist
-            if(userLoginData == null) {
+    fun tryLogin(username: String, password: String, successCallback: (UserData?) -> Unit, failureCallback: (Exception) -> Unit) {
+        UserRepository.getCompleteUserData(username, { completeUserData ->
+            // null data means the user doesn't exist
+            if(completeUserData == null) {
                 Log.d(TAG, "Failed to login, user doesn't exist")
-                successCallback(false)
-                return@getUserLoginData
+                successCallback(null)
+                return@getCompleteUserData
             }
 
             // compared stored hashed password to the entered hashed password using same salt
-            val salt = userLoginData.salt
-            val storedHashedPassword = userLoginData.password
+            val salt = completeUserData.salt
+            val storedHashedPassword = completeUserData.password
             val enteredHashedPassword = hashPassword(password, salt)
             val correctPassword = storedHashedPassword == enteredHashedPassword
 
             Log.d(TAG, "Login has ${if(correctPassword) "correct" else "incorrect"} password")
-            successCallback(correctPassword)
+            successCallback(completeUserData.toUserData())
         }, failureCallback)
     }
 
-    fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        UserRepository.getUserAuthentication(authUsername, { storedAuthData ->
+    fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (UserData?) -> Unit, failureCallback: (Exception) -> Unit) {
+        UserRepository.getCompleteUserData(authUsername, { completeUserData ->
+            if(completeUserData == null) {
+                Log.d(TAG, "no stored data for $authUsername")
+                successCallback(null)
+                return@getCompleteUserData
+            }
+
+            val storedAuthData = completeUserData.authentication
+
             if(storedAuthData == null) {
                 Log.d(TAG, "no stored auth data for $authUsername")
-                successCallback(false)
-                return@getUserAuthentication
+                successCallback(null)
+                return@getCompleteUserData
             }
 
             if(!isAuthDataBeforeExpiration(storedAuthData)){
-                Log.d(TAG, "stored auth data is beyond expiration time $authUsername")
-                successCallback(false)
-                return@getUserAuthentication
+                Log.d(TAG, "stored auth data is beyond expiration time for $authUsername")
+                successCallback(null)
+                return@getCompleteUserData
             }
 
             // success is now whether the local auth token matches the firestore token
-            successCallback(authToken == storedAuthData.authtoken)
-
+            if(authToken == storedAuthData.authtoken) {
+                successCallback(completeUserData.toUserData())
+            }
         },  failureCallback)
     }
 
@@ -120,6 +130,7 @@ internal object LoginManager {
             var storeAuthLocally = true
             if(userAuthData == null || !isAuthDataBeforeExpiration(userAuthData)) {
                 // create new authentication if old auth was null or is no longer valid
+                Log.d(TAG, "User auth data was null or invalid, generating new auth token")
                 currentUserAuthData = generateAuthData()
                 UserRepository.addUserAuthToken(username, currentUserAuthData, { success ->
                     storeAuthLocally = success

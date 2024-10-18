@@ -17,6 +17,9 @@ class SettingsActivity : AppCompatActivity() {
 
         val tabLayout = findViewById<TabLayout>(R.id.settings_tab_layout)
 
+        // always load the account settings by default
+        loadFragment(AccountSettingsFragment())
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val fragment = when(tab?.position ?: 0) {

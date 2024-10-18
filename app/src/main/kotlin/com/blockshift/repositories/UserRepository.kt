@@ -2,15 +2,18 @@ package com.blockshift.repositories
 
 import android.util.Log
 import com.blockshift.login.LoginManager
+import com.blockshift.login.UserViewModel
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.auth.User
 
 object UserRepository {
     private lateinit var dataBaseUsers: CollectionReference
 
     private val TAG: String = javaClass.simpleName
+    private var listeningUsername: String? = null
+    private var listenerRegistration: ListenerRegistration? = null
 
     init{
         loadUserDataBase()
@@ -18,6 +21,45 @@ object UserRepository {
 
     private fun loadUserDataBase(){
         dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
+    }
+
+    fun observeUser(viewModel: UserViewModel) {
+        viewModel.currentUser.observeForever { userData ->
+            userData?.let {
+                // since userDats is not null, check if its the same username
+                if(listeningUsername != it.username) {
+                    // if the username is different, then a new user has been logged in
+                    stopListeningForUser()
+                    startListeningForUser(it.username, viewModel)
+                }
+            } ?: run {
+                // user has logged out, stop listening for them
+                stopListeningForUser()
+            }
+        }
+    }
+
+    private fun startListeningForUser(username: String, viewModel: UserViewModel) {
+        listenerRegistration = dataBaseUsers
+            .whereEqualTo(UserTableNames.USERNAME, username)
+            .limit(1)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w(TAG, "Error in listening to user changes", error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    // Process the user data here
+                    val newUserData = snapshot.documents[0].toObject(CompleteUserData::class.java)?.toUserData()
+                    if(newUserData != null) viewModel.currentUser.value = newUserData
+                }
+            }
+    }
+
+    private fun stopListeningForUser() {
+        listenerRegistration?.remove()
+        listenerRegistration = null
     }
 
     fun createUser(username: String, password: String, onSuccessCallback: (AccountCreationResult) -> Unit, onFailureCallback: (Exception) -> Unit) {
@@ -45,7 +87,7 @@ object UserRepository {
             val hashedPassword = LoginManager.hashPassword(password, saltValue)
 
             // generate login data with the default display name being the username
-            val userLoginData = UserLoginData(username, username, hashedPassword, saltValue)
+            val userLoginData = CompleteUserData(username, username, hashedPassword, saltValue)
 
             dataBaseUsers
                 .add(userLoginData)
@@ -111,7 +153,7 @@ object UserRepository {
     }
 
     fun deleteUser(userData: UserData, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
-        dataBaseUsers.whereEqualTo(UserTableNames.USERNAME, userData.userName)
+        dataBaseUsers.whereEqualTo(UserTableNames.USERNAME, userData.username)
             .limit(1)
             .get()
             .addOnSuccessListener { querySnapshot ->
@@ -148,7 +190,7 @@ object UserRepository {
             .addOnFailureListener(onFailureCallback)
     }
 
-    fun getUserLoginData(username: String, onSuccessCallback: (UserLoginData?) -> Unit, onFailureCallback: (Exception) -> Unit) {
+    fun getCompleteUserData(username: String, onSuccessCallback: (CompleteUserData?) -> Unit, onFailureCallback: (Exception) -> Unit) {
         dataBaseUsers
             .whereEqualTo(UserTableNames.USERNAME, username)
             .limit(1)
@@ -157,7 +199,7 @@ object UserRepository {
                 if (!querySnapshot.isEmpty) {
                     val document = querySnapshot.documents[0]
 
-                    val userLoginData = document.toObject(UserLoginData::class.java)
+                    val userLoginData = document.toObject(CompleteUserData::class.java)
 
                     onSuccessCallback(userLoginData)
                 } else {
@@ -209,22 +251,28 @@ object UserRepository {
 }
 
 /*
+ * Complete user data stores all potential information about a user
+ */
+data class CompleteUserData(
+    val username: String = "",
+    val displayname: String = "",
+    val password: String = "",
+    val salt: String = "",
+    val authentication: UserAuthenticationData? = null
+) {
+    fun toUserData() : UserData {
+        return UserData(username, displayname)
+    }
+}
+
+/*
  * User data stores data used in the running of the app
  * while the user is logged in
  */
 data class UserData(
-    val userName: String = "",
-    val displayName: String = "",
-)
-
-/*
- * User login data stores data for account creation and login
- */
-data class UserLoginData(
     val username: String = "",
     val displayname: String = "",
-    val password: String = "",
-    val salt: String = "")
+)
 
 /*
  * User authentication stores data needed for auto logging a user in on app open
