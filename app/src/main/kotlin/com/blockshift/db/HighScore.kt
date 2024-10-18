@@ -6,8 +6,8 @@ import androidx.room.ColumnInfo
 
 @Entity(tableName = "highScore", foreignKeys = [ForeignKey(
     entity = User::class,
-    parentColumns = arrayOf("userID"),
-    childColumns = arrayOf("userID"),
+    parentColumns = arrayOf("username"),
+    childColumns = arrayOf("username"),
     onDelete = ForeignKey.CASCADE
     ),
     ForeignKey(
@@ -16,10 +16,10 @@ import androidx.room.ColumnInfo
         childColumns = arrayOf("levelID"),
         onDelete = ForeignKey.CASCADE
     )],
-    primaryKeys = ["userID","levelID"]
+    primaryKeys = ["username","levelID"]
 )
 data class HighScore(
-    val userID: Int,
+    val username: String,
     val levelID: Int,
     @ColumnInfo(name = "distance") val distance: Int,
     @ColumnInfo(name = "time") val time: Int,
