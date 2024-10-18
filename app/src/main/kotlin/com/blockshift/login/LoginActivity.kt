@@ -3,11 +3,11 @@ package com.blockshift.login
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blockshift.R
-import com.blockshift.repositories.UserAuthenticationData
-import com.blockshift.repositories.UserRepository
+import com.blockshift.repositories.UserData
 import com.blockshift.repositories.UserTableNames
 import com.blockshift.settings.SettingsActivity
 import com.blockshift.settings.SettingsDataStore
@@ -38,10 +38,10 @@ class LoginActivity : AppCompatActivity() {
                 // attempt to auto login as there were some stored values
                 Log.d(TAG, "auth token and auth username found, attempting to auto login")
                 LoginManager.tryAutoLogin(authUsername, authToken, {
-                    success ->
-                    if(success) {
+                    userData ->
+                    if(userData != null) {
                         Log.d(TAG, "Successfully auto logged in")
-                        finishLogin()
+                        finishLogin(userData)
                     } else {
                         // unregister auth token since it failed
                         LoginManager.unregisterLocalAuthToken(context)
@@ -62,7 +62,11 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun finishLogin() {
+    fun finishLogin(userData: UserData) {
+        // set the user in UserViewModel to the user that logged in
+        val userViewModel: UserViewModel by viewModels()
+        userViewModel.currentUser.value = userData
+
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }

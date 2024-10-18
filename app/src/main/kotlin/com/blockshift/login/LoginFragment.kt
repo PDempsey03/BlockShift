@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
+    private val TAG: String = javaClass.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +37,7 @@ class LoginFragment : Fragment() {
 
         val enterInfoButton = view.findViewById<Button>(R.id.enterLoginButton)
         enterInfoButton.setOnClickListener {
-            Log.d("Login Screen","Enter Login Info Button Clicked")
+            Log.d(TAG,"Enter Login Info Button Clicked")
 
             // start coroutine to attempt to login
             CoroutineScope(Dispatchers.Main).launch {
@@ -46,20 +47,20 @@ class LoginFragment : Fragment() {
                 val rememberMe = rememberMeCheckBox.isChecked
 
                 LoginManager.tryLogin(username, password, {
-                    success ->
-                        if(success) {
-                            Log.d("Login Screen", "Valid Login")
+                    userData ->
+                        if(userData != null) {
+                            Log.d(TAG, "Valid Login")
                             val context = activity?.applicationContext
                             if(rememberMe) {
                                 // add auth token locally and possibly generate new one
                                 if(context != null) LoginManager.registerAuthToken(username, context)
                             } else {
                                 // explicitly remove the auth token from local store if the user unselects
-                                //if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
+                                if(context != null) LoginManager.unregisterLocalAuthToken(context)
                             }
 
                             // load into the main screen
-                            (activity as LoginActivity).finishLogin()
+                            (activity as LoginActivity).finishLogin(userData)
                         } else {
                             Log.e("Login Screen", "Invalid Login")
                             val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}

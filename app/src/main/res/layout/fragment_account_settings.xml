@@ -39,8 +39,7 @@
                 android:padding="5dp"
                 android:background="@drawable/box_border"
                 android:textColor="@color/black"
-                android:textSize="15dp"
-                android:text="Patrick"/>
+                android:textSize="15dp"/>
 
             <Space
                 android:layout_width="match_parent"
@@ -68,8 +67,7 @@
                     android:padding="5dp"
                     android:background="@drawable/box_border"
                     android:textColor="@color/black"
-                    android:textSize="15dp"
-                    android:text="Mory"/>
+                    android:textSize="15dp"/>
 
                 <Button
                     android:id="@+id/account_settings_update_displayname_button"
