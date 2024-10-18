@@ -23,12 +23,6 @@ import kotlinx.coroutines.launch
  */
 class LoginFragment : Fragment() {
 
-    /*
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-    */
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,8 +55,11 @@ class LoginFragment : Fragment() {
                                 if(context != null) LoginManager.registerAuthToken(username, context)
                             } else {
                                 // explicitly remove the auth token from local store if the user unselects
-                                if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
+                                //if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
                             }
+
+                            // load into the main screen
+                            (activity as LoginActivity).finishLogin()
                         } else {
                             Log.e("Login Screen", "Invalid Login")
                             val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}
