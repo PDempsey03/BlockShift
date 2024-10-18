@@ -3,10 +3,10 @@ package com.blockshift.login
 import android.content.Context
 import android.util.Base64
 import android.util.Log
+import com.blockshift.repositories.UserAuthenticationData
 import com.blockshift.repositories.UserRepository
+import com.blockshift.repositories.UserTableNames
 import com.blockshift.settings.SettingsDataStore
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,86 +93,74 @@ internal object LoginManager {
         }, failureCallback)
     }
 
-    /*fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
-        val userDoc = dataBaseUsers.document(authUsername)
-        userDoc.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val auth = document.get(UserTableNames.AUTHENTICATION) as? Map<String, Any>
-                    if(auth == null) {
-                        successCallback(false)
-                        return@addOnSuccessListener
-                    }
-
-                    val actualAuthToken = auth[UserTableNames.AUTH_TOKEN] as String
-                    val authTokenExpirationTime = auth[UserTableNames.AUTH_TOKEN_EXPIRATION] as Long
-                    val currentTime = System.currentTimeMillis()
-
-                    if(actualAuthToken != null && authTokenExpirationTime != null
-                        && authTokenExpirationTime - currentTime > 0 && authToken == actualAuthToken)  {
-                        successCallback(true)
-                    } else {
-                        successCallback(false)
-                    }
-                } else {
-                    // no user found
-                    successCallback(false)
-                }
+    fun tryAutoLogin(authUsername: String, authToken: String, successCallback: (Boolean) -> Unit, failureCallback: (Exception) -> Unit) {
+        UserRepository.getUserAuthentication(authUsername, { storedAuthData ->
+            if(storedAuthData == null) {
+                Log.d(TAG, "no stored auth data for $authUsername")
+                successCallback(false)
+                return@getUserAuthentication
             }
-            .addOnFailureListener { exception ->
-                failureCallback(exception)
-            }
-    }*/
 
-    fun generateAuthToken(): String {
+            if(!isAuthDataBeforeExpiration(storedAuthData)){
+                Log.d(TAG, "stored auth data is beyond expiration time $authUsername")
+                successCallback(false)
+                return@getUserAuthentication
+            }
+
+            // success is now whether the local auth token matches the firestore token
+            successCallback(authToken == storedAuthData.authtoken)
+
+        },  failureCallback)
+    }
+
+    fun registerAuthToken(username: String, context: Context) {
+        // get data instance of user matching name
+        UserRepository.getUserAuthentication(username, { userAuthData ->
+            val currentUserAuthData: UserAuthenticationData
+            var storeAuthLocally = true
+            if(userAuthData == null || !isAuthDataBeforeExpiration(userAuthData)) {
+                // create new authentication if old auth was null or is no longer valid
+                currentUserAuthData = generateAuthData()
+                UserRepository.addUserAuthToken(username, currentUserAuthData, { success ->
+                    storeAuthLocally = success
+                }, { exception ->
+                    Log.e(TAG, "Error connecting to firebase", exception)
+                })
+            } else {
+                currentUserAuthData = userAuthData
+            }
+
+            if(storeAuthLocally) {
+                updateLocalAuthToken(username, currentUserAuthData.authtoken, context)
+            }
+        }, { exception ->
+            Log.e(TAG, "Error accessing firebase", exception)
+        })
+    }
+
+    fun unregisterLocalAuthToken(context: Context) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val dataStore = SettingsDataStore.getInstance(context)
+
+            dataStore.removeString(UserTableNames.AUTH_USERNAME)
+            dataStore.removeString(UserTableNames.AUTH_TOKEN)
+        }
+    }
+
+    private fun generateAuthData(): UserAuthenticationData {
+        return UserAuthenticationData(generateAuthToken(),
+            System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION)
+    }
+
+    private fun generateAuthToken(): String {
         val secureRandom = SecureRandom()
         val auth = ByteArray(AUTH_TOKEN_LENGTH)
         secureRandom.nextBytes(auth)
         return Base64.encodeToString(auth, Base64.NO_WRAP)
     }
 
-    /*fun registerAuthToken(username: String, context: Context) {
-        // get data instance of user matching name
-        val userDoc = dataBaseUsers.document(username)
-        userDoc.get()
-            .addOnSuccessListener {
-                document ->
-                if (document.exists()) {
-                    var authToken = document.getString(UserTableNames.AUTH_TOKEN)
-                    var authTokenExpirationTime = document.getLong(UserTableNames.AUTH_TOKEN_EXPIRATION)
-                    val currentTime = System.currentTimeMillis()
-
-                    // if auth token doesn't exist or is invalid, make a new one
-                    if(authToken == null || authTokenExpirationTime == null || currentTime - authTokenExpirationTime > 0) {
-                        // create auth token
-                        authToken = generateAuthToken()
-                        authTokenExpirationTime = currentTime + AUTH_TOKEN_EXPIRATION_DURATION
-
-                        // object to be stored on firebase
-                        val authMap = mapOf(
-                            UserTableNames.AUTH_TOKEN to authToken,
-                            UserTableNames.AUTH_TOKEN_EXPIRATION to authTokenExpirationTime
-                        )
-
-                        // try adding the authentication to firebase
-                        userDoc.update(UserTableNames.AUTHENTICATION, authMap)
-                            .addOnSuccessListener {
-                                // if successfully added to database, then store the auth token locally
-                                //updateLocalAuthToken(username, authToken, context)
-                            }
-                    } else {
-                        // store auth token locally
-                        //updateLocalAuthToken(username, authToken, context)
-                    }
-                }
-            }
-    }*/
-
-    /*suspend fun unregisterAuthToken(context: Context) {
-        val settingsDataStore = SettingsDataStore.getInstance(context)
-
-        settingsDataStore.removeString(UserTableNames.AUTH_USERNAME)
-        settingsDataStore.removeString(UserTableNames.AUTH_TOKEN)
+    private fun isAuthDataBeforeExpiration(authData: UserAuthenticationData): Boolean {
+        return authData.authtokenexpiration > System.currentTimeMillis()
     }
 
     private fun updateLocalAuthToken(username: String, authToken: String, context: Context){
@@ -181,5 +169,5 @@ internal object LoginManager {
             dataStore.setString(UserTableNames.AUTH_USERNAME, username)
             dataStore.setString(UserTableNames.AUTH_TOKEN, authToken)
         }
-    }*/
+    }
 }

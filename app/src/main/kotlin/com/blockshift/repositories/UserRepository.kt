@@ -119,6 +119,46 @@ object UserRepository {
             }
             .addOnFailureListener(onFailureCallback)
     }
+
+    fun getUserAuthentication(username: String, onSuccessCallback: (UserAuthenticationData?) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseUsers
+            .whereEqualTo(UserTableNames.USERNAME, username)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if(querySnapshot.isEmpty) {
+                    onSuccessCallback(null)
+                    return@addOnSuccessListener
+                }
+
+                val userDoc = querySnapshot.documents[0]
+                val authData = userDoc.get(UserTableNames.AUTHENTICATION)?.let {
+                    userDoc.toObject(UserAuthenticationData::class.java)
+                }
+
+                onSuccessCallback(authData)
+            }
+            .addOnFailureListener(onFailureCallback)
+    }
+
+    fun addUserAuthToken(username: String, authData: UserAuthenticationData, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseUsers
+            .whereEqualTo(UserTableNames.USERNAME, username)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if(querySnapshot.isEmpty) {
+                    Log.d(TAG, "Could not add authentication, user not found")
+                    onSuccessCallback(false)
+                    return@addOnSuccessListener
+                }
+
+                // update the user's auth token
+                val userDoc = querySnapshot.documents[0].reference
+                userDoc.update(UserTableNames.AUTHENTICATION, authData)
+                onSuccessCallback(true)
+            }.addOnFailureListener(onFailureCallback)
+    }
 }
 
 /*
@@ -138,6 +178,14 @@ data class UserLoginData(
     val displayname: String = "",
     val password: String = "",
     val salt: String = "")
+
+/*
+ * User authentication stores data needed for auto logging a user in on app open
+ */
+data class UserAuthenticationData(
+    val authtoken: String = "",
+    val authtokenexpiration: Long = 0
+)
 
 enum class AccountCreationResult{
     SUCCESS, INVALID_USERNAME, USERNAME_TAKEN, INVALID_PASSWORD

@@ -52,7 +52,7 @@ class LoginFragment : Fragment() {
                             val context = activity?.applicationContext
                             if(rememberMe) {
                                 // add auth token locally and possibly generate new one
-                                //if(context != null) LoginManager.registerAuthToken(username, context)
+                                if(context != null) LoginManager.registerAuthToken(username, context)
                             } else {
                                 // explicitly remove the auth token from local store if the user unselects
                                 //if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
