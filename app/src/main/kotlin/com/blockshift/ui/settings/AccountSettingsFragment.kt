@@ -1,4 +1,4 @@
-package com.blockshift.settings
+package com.blockshift.ui.settings
 
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +9,10 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.blockshift.R
-import com.blockshift.login.LoginFragment
-import com.blockshift.login.UserViewModel
+import com.blockshift.ui.login.LoginFragment
+import com.blockshift.model.login.UserViewModel
 import androidx.fragment.app.activityViewModels
-import com.blockshift.repositories.UserData
+import com.blockshift.model.repositories.UserData
 
 /**
  * A simple [Fragment] subclass.

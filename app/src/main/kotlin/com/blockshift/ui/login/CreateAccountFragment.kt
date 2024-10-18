@@ -1,4 +1,4 @@
-package com.blockshift.login
+package com.blockshift.ui.login
 
 import android.graphics.Color
 import android.os.Bundle
@@ -15,8 +15,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
-import com.blockshift.repositories.AccountCreationResult
-import com.blockshift.repositories.UserRepository
+import com.blockshift.model.repositories.AccountCreationResult
+import com.blockshift.model.repositories.UserRepository
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -115,7 +115,8 @@ class CreateAccountFragment : Fragment() {
         usernameEditText.addTextChangedListener { text ->
             val username = text.toString()
             updateUsernameState(view, LoginManager.usernameMeetsLength(username),
-                LoginManager.usernameMeetsOnlyAlphaNumeric(username))
+                LoginManager.usernameMeetsOnlyAlphaNumeric(username)
+            )
 
             if(usernameErrorText.text.isNotEmpty()) usernameErrorText.text = ""
 
@@ -127,7 +128,8 @@ class CreateAccountFragment : Fragment() {
             val password = text.toString()
             updatePasswordState(view, LoginManager.passwordMeetsLength(password),
                 LoginManager.passwordMeetsUppercase(password),
-                LoginManager.passwordMeetsDigit(password))
+                LoginManager.passwordMeetsDigit(password)
+            )
 
             // reset any error message after start typing again
             if(passwordErrorText.text.isNotEmpty()) passwordErrorText.text = ""

@@ -1,4 +1,4 @@
-package com.blockshift.login
+package com.blockshift.ui.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +7,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blockshift.R
-import com.blockshift.repositories.UserData
-import com.blockshift.repositories.UserTableNames
-import com.blockshift.settings.SettingsActivity
-import com.blockshift.settings.SettingsDataStore
+import com.blockshift.model.login.UserViewModel
+import com.blockshift.model.repositories.UserData
+import com.blockshift.model.repositories.UserTableNames
+import com.blockshift.ui.settings.SettingsActivity
+import com.blockshift.model.settings.SettingsDataStore
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +38,8 @@ class LoginActivity : AppCompatActivity() {
             if(authUsername != null && authToken != null) {
                 // attempt to auto login as there were some stored values
                 Log.d(TAG, "auth token and auth username found, attempting to auto login")
-                LoginManager.tryAutoLogin(authUsername, authToken, {
-                    userData ->
-                    if(userData != null) {
+                LoginManager.tryAutoLogin(authUsername, authToken, { userData ->
+                    if (userData != null) {
                         Log.d(TAG, "Successfully auto logged in")
                         finishLogin(userData)
                     } else {
@@ -51,7 +51,8 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }, {
                     // don't unregister auth token since exception was thrown and it may still be valid
-                    exception -> Log.e(TAG, "Error accessing firebase", exception)
+                        exception ->
+                    Log.e(TAG, "Error accessing firebase", exception)
                     loadFragment(LoginFragment())
                 })
             } else {

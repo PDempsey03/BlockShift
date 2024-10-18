@@ -1,16 +1,16 @@
-package com.blockshift.db
+package com.blockshift.model.db
 
-import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Query
-import androidx.room.Update
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import androidx.room.Dao
 
 @Dao
-interface UserDao {
-    @Query("SELECT * FROM user WHERE userID = :userID")
-    fun findByID(userID: Int): User
+interface LevelDao {
+    @Query("SELECT * FROM user WHERE levelID = :levelID")
+    fun findByID(levelID: Int): Level
 
     @Update
     suspend fun update(user: User)

@@ -1,9 +1,9 @@
-package com.blockshift.login
+package com.blockshift.model.login
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.blockshift.repositories.UserData
+import com.blockshift.model.repositories.UserData
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 

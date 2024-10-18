@@ -1,4 +1,4 @@
-package com.blockshift.db
+package com.blockshift.model.db
 
 import androidx.room.Dao
 import androidx.room.Delete

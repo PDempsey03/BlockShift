@@ -1,13 +1,13 @@
-package com.blockshift.login
+package com.blockshift.ui.login
 
 import android.content.Context
 import android.util.Base64
 import android.util.Log
-import com.blockshift.repositories.UserAuthenticationData
-import com.blockshift.repositories.UserData
-import com.blockshift.repositories.UserRepository
-import com.blockshift.repositories.UserTableNames
-import com.blockshift.settings.SettingsDataStore
+import com.blockshift.model.repositories.UserAuthenticationData
+import com.blockshift.model.repositories.UserData
+import com.blockshift.model.repositories.UserRepository
+import com.blockshift.model.repositories.UserTableNames
+import com.blockshift.model.settings.SettingsDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -159,8 +159,10 @@ internal object LoginManager {
     }
 
     private fun generateAuthData(): UserAuthenticationData {
-        return UserAuthenticationData(generateAuthToken(),
-            System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION)
+        return UserAuthenticationData(
+            generateAuthToken(),
+            System.currentTimeMillis() + AUTH_TOKEN_EXPIRATION_DURATION
+        )
     }
 
     private fun generateAuthToken(): String {

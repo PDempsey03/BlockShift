@@ -1,12 +1,11 @@
-package com.blockshift.repositories
+package com.blockshift.model.repositories
 
 import android.util.Log
-import com.blockshift.login.LoginManager
-import com.blockshift.login.UserViewModel
+import com.blockshift.ui.login.LoginManager
+import com.blockshift.model.login.UserViewModel
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.auth.User
 
 object UserRepository {
     private lateinit var dataBaseUsers: CollectionReference

@@ -1,17 +1,16 @@
-package com.blockshift.settings
+package com.blockshift.ui.settings
 
 import android.os.Bundle
-import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blockshift.R
-import com.blockshift.login.CreateAccountFragment
-import com.blockshift.login.LoginFragment
-import com.blockshift.login.UserViewModel
+import com.blockshift.ui.login.CreateAccountFragment
+import com.blockshift.ui.login.LoginFragment
+import com.blockshift.model.login.UserViewModel
 import com.google.android.material.tabs.TabLayout
-import com.blockshift.mainpage.HomePageFragment
-import com.blockshift.repositories.UserData
+import com.blockshift.ui.mainpage.HomePageFragment
+import com.blockshift.model.repositories.UserData
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.blockshift.db
+package com.blockshift.model.db
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
