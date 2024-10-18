@@ -3,7 +3,9 @@ package com.blockshift.repositories
 import android.util.Log
 import com.blockshift.login.LoginManager
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 
 object UserRepository {
     private lateinit var dataBaseUsers: CollectionReference
@@ -55,12 +57,57 @@ object UserRepository {
         }, onFailureCallback)
     }
 
-    fun updateUserPassword(user: UserData) {
+    fun updateUserPassword(username: String, newPassword: String, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        if(!LoginManager.isValidPassword(newPassword)) {
+            Log.d(TAG, "Failed to update password, password was invalid")
+            return
+        }
 
+        dataBaseUsers
+            .whereEqualTo(UserTableNames.USERNAME, username)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if(querySnapshot.isEmpty) {
+                    onSuccessCallback(false)
+                    Log.d(TAG, "Could not update user password, username doesn't exist")
+                    return@addOnSuccessListener
+                }
+
+                val userDoc = querySnapshot.documents[0].reference
+                val newSalt = LoginManager.generateSaltString()
+                val newHashedPassword = LoginManager.hashPassword(newPassword, newSalt)
+
+                // run a transaction as we don't want a case of just one value being stored but the other not
+                FirebaseFirestore.getInstance().runTransaction { transaction ->
+                    // Update the password and salt fields
+                    transaction.update(userDoc, UserTableNames.PASSWORD, newHashedPassword)
+                    transaction.update(userDoc, UserTableNames.SALT, newSalt)
+                }
+                    .addOnSuccessListener { onSuccessCallback(true) }
+                    .addOnFailureListener(onFailureCallback)
+            }
+            .addOnFailureListener(onFailureCallback)
     }
 
-    fun updateUserDisplayName() {
+    fun updateUserDisplayName(username: String, newDisplayName: String, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseUsers
+            .whereEqualTo(UserTableNames.USERNAME, username)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if(querySnapshot.isEmpty) {
+                    onSuccessCallback(false)
+                    Log.d(TAG, "Could not update display name, username doesn't exist")
+                    return@addOnSuccessListener
+                }
 
+                val userDoc = querySnapshot.documents[0].reference
+                userDoc.update(UserTableNames.DISPLAY_NAME, newDisplayName)
+                    .addOnSuccessListener { onSuccessCallback(true) }
+                    .addOnFailureListener(onFailureCallback)
+
+            }.addOnFailureListener(onFailureCallback)
     }
 
     fun deleteUser(userData: UserData, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
