@@ -22,29 +22,18 @@ object UserRepository {
         dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
     }
 
-    fun observeUser(viewModel: UserViewModel) {
-        viewModel.currentUser.observeForever { userData ->
-            userData?.let {
-                // since userDats is not null, check if its the same username
-                if(listeningUsername != it.username) {
-                    // if the username is different, then a new user has been logged in
-                    stopListeningForUser()
-                    startListeningForUser(it.username, viewModel)
-                }
-            } ?: run {
-                // user has logged out, stop listening for them
-                stopListeningForUser()
-            }
-        }
-    }
+    fun startListeningForUser(viewModel: UserViewModel) {
+        val userData = viewModel.currentUser.value ?: return
 
-    private fun startListeningForUser(username: String, viewModel: UserViewModel) {
+        val username = userData.username
+        Log.d(TAG, "Registering to user $username")
         listenerRegistration = dataBaseUsers
             .whereEqualTo(UserTableNames.USERNAME, username)
             .limit(1)
             .addSnapshotListener { snapshot, error ->
+                Log.d(TAG, "UPDATE TO USER $username")
                 if (error != null) {
-                    Log.w(TAG, "Error in listening to user changes", error)
+                    Log.e(TAG, "Error in listening to user changes", error)
                     return@addSnapshotListener
                 }
 
@@ -56,7 +45,7 @@ object UserRepository {
             }
     }
 
-    private fun stopListeningForUser() {
+    fun stopListeningForUser() {
         listenerRegistration?.remove()
         listenerRegistration = null
     }
