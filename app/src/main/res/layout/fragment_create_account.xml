@@ -3,84 +3,125 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.login.CreateAccountFragment">
 
-    <!-- Username input field -->
-    <EditText
-        android:id="@+id/create_account_username"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/username_hint"
-        android:inputType="text"
-        android:padding="15dp"
-        android:backgroundTint="@color/black" />
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
 
-    <TextView
-        android:id="@+id/create_account_username_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:paddingStart="5dp" />
+        <!-- Username Field -->
+        <EditText
+            android:id="@+id/create_account_username"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/username_hint"
+            android:inputType="text"
+            android:padding="15dp"
+            android:backgroundTint="@color/black" />
+
+        <ImageView
+            android:id="@+id/create_account_username_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/baseline_error_24"
+            app:tint="#B90000"
+            android:visibility="visible"
+            android:contentDescription="@string/username_invalid_error"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/create_account_username_error_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#FF0000"
-        android:paddingBottom="15dp"
-        android:paddingStart="5dp" />
+        android:textStyle="bold"
+        android:paddingBottom="5dp"
+        android:paddingStart="5dp"
+        android:visibility="gone"/>
 
-    <!-- Password input field -->
-    <EditText
-        android:id="@+id/create_account_password"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/password_hint"
-        android:inputType="textPassword"
-        android:padding="15dp"
-        android:backgroundTint="@color/black" />
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
 
-    <TextView
-        android:id="@+id/create_account_password_description"
+        <!-- Password Field -->
+        <EditText
+            android:id="@+id/create_account_password"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/password_hint"
+            android:inputType="textPassword"
+            android:padding="15dp"
+            android:backgroundTint="@color/black" />
+
+        <ImageView
+            android:id="@+id/create_account_password_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/baseline_error_24"
+            app:tint="#B90000"
+            android:visibility="visible"
+            android:contentDescription="Invalid Password"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:paddingStart="5dp" />
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
 
-    <TextView
-        android:id="@+id/create_account_password_error_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FF0000"
-        android:paddingBottom="15dp"
-        android:paddingStart="5dp" />
+        <!-- Confirm Password Field -->
+        <EditText
+            android:id="@+id/create_account_confirm_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/confirm_password_hint"
+            android:layout_weight="1"
+            android:inputType="textPassword"
+            android:padding="15dp"
+            android:backgroundTint="@color/black" />
 
-    <EditText
-        android:id="@+id/create_account_confirm_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/confirm_password_hint"
-        android:inputType="textPassword"
-        android:padding="15dp"
-        android:backgroundTint="@color/black" />
+        <ImageView
+            android:id="@+id/create_account_confirm_password_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/baseline_error_24"
+            app:tint="#B90000"
+            android:visibility="visible"
+            android:contentDescription="@string/confirm_password_mismatch_error"
+            android:clickable="true"
+            android:focusable="true" />
 
-    <TextView
-        android:id="@+id/create_account_confirm_password_error_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FF0000"
-        android:paddingBottom="15dp"
-        android:text=""
-        android:paddingStart="5dp" />
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        tools:context=".ui.login.CreateAccountFragment">
+        android:gravity="center_horizontal">
 
         <!-- Back Button -->
         <Button
@@ -105,7 +146,5 @@
             android:enabled="false"/>
 
     </LinearLayout>
-
-
 
 </LinearLayout>
