@@ -104,7 +104,7 @@ internal object LoginManager {
             val correctPassword = storedHashedPassword == enteredHashedPassword
 
             Log.d(TAG, "Login has ${if(correctPassword) "correct" else "incorrect"} password")
-            successCallback(completeUserData.toUserData())
+            successCallback(if(correctPassword) completeUserData.toUserData() else null)
         }, failureCallback)
     }
 
