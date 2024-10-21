@@ -1,23 +1,4 @@
-pluginManagement {
-    repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-rootProject.name = "BlockShift"
-include ':app'
+// A list of which subprojects to load as part of the same larger project.
+// You can remove Strings from the list and reload the Gradle project
+// if you want to temporarily disable a subproject.
+include 'core', 'android:app'
