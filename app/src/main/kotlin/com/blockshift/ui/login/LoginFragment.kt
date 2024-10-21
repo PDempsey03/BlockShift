@@ -1,4 +1,4 @@
-package com.blockshift.login
+package com.blockshift.ui.login
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -22,12 +22,7 @@ import kotlinx.coroutines.launch
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-
-    /*
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-    */
+    private val TAG: String = javaClass.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +37,7 @@ class LoginFragment : Fragment() {
 
         val enterInfoButton = view.findViewById<Button>(R.id.enterLoginButton)
         enterInfoButton.setOnClickListener {
-            Log.d("Login Screen","Enter Login Info Button Clicked")
+            Log.d(TAG,"Enter Login Info Button Clicked")
 
             // start coroutine to attempt to login
             CoroutineScope(Dispatchers.Main).launch {
@@ -51,30 +46,37 @@ class LoginFragment : Fragment() {
                 val password = passwordText.getText().toString()
                 val rememberMe = rememberMeCheckBox.isChecked
 
-                LoginManager.tryLogin(username, password, {
-                    success ->
-                        if(success) {
-                            Log.d("Login Screen", "Valid Login")
-                            val context = activity?.applicationContext
-                            if(rememberMe) {
-                                // add auth token locally and possibly generate new one
-                                if(context != null) LoginManager.registerAuthToken(username, context)
-                            } else {
-                                // explicitly remove the auth token from local store if the user unselects
-                                if(context != null) CoroutineScope(Dispatchers.Main).launch { LoginManager.unregisterAuthToken(context) }
-                            }
+                LoginManager.tryLogin(username, password, { userData ->
+                    if (userData != null) {
+                        Log.d(TAG, "Valid Login")
+                        val context = activity?.applicationContext
+                        if (rememberMe) {
+                            // add auth token locally and possibly generate new one
+                            if (context != null) LoginManager.registerAuthToken(username, context)
                         } else {
-                            Log.e("Login Screen", "Invalid Login")
-                            val eMessage = Snackbar.make(view,"Invalid Username or Password!", Snackbar.LENGTH_SHORT).setAction("OK") {}
-                            eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                            eMessage.show()
+                            // explicitly remove the auth token from local store if the user unselects
+                            if (context != null) LoginManager.unregisterLocalAuthToken(context)
                         }
-                }, {
-                    exception ->
-                        Log.e("Login Screen", "Error in connecting to the firebase database", exception)
-                        val eMessage = Snackbar.make(view,"Login Currently Unavailable", Snackbar.LENGTH_LONG).setAction("OK") {}
+
+                        // load into the main screen
+                        (activity as LoginActivity).finishLogin(userData)
+                    } else {
+                        Log.e("Login Screen", "Invalid Login")
+                        val eMessage = Snackbar.make(
+                            view,
+                            "Invalid Username or Password!",
+                            Snackbar.LENGTH_SHORT
+                        ).setAction("OK") {}
                         eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
                         eMessage.show()
+                    }
+                }, { exception ->
+                    Log.e("Login Screen", "Error in connecting to the firebase database", exception)
+                    val eMessage =
+                        Snackbar.make(view, "Login Currently Unavailable", Snackbar.LENGTH_LONG)
+                            .setAction("OK") {}
+                    eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                    eMessage.show()
                 })
             }
         }

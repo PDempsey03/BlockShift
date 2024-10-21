@@ -16,4 +16,19 @@
     <string name="username_taken_error">Username Taken</string>
     <string name="create_account">Create Account</string>
     <string name="welcome_back">Welcome Back</string>
+    <string name="welcome_message">Welcome!</string>
+    <string name="continue_message">Continue</string>
+    <string name="level_select_text">Level Select</string>
+    <string name="level_number1">Level 1</string>
+    <string name="level_number2">Level 2</string>
+    <string name="level_number3">Level 3</string>
+    <string name="level_number4">Level 4</string>
+    <string name="level_number5">Level 5</string>
+    <string name="level_number6">Level 6</string>
+    <string name="level_number7">Level 7</string>
+    <string name="level_number8">Level 8</string>
+    <string name="level_number9">Level 9</string>
+    <string name="level_number10">Level 10</string>
+    <string name="level_number11">Level 11</string>
+    <string name="level_number12">Level 12</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.blockshift.settings
+package com.blockshift.model.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore

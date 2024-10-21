@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".login.CreateAccountFragment">
+    tools:context=".ui.login.CreateAccountFragment">
 
     <!-- Username input field -->
     <EditText
@@ -80,7 +80,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        tools:context=".login.CreateAccountFragment">
+        tools:context=".ui.login.CreateAccountFragment">
 
         <!-- Back Button -->
         <Button
