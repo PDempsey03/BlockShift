@@ -77,8 +77,7 @@ class CreateAccountFragment : Fragment() {
                             // go back to start screen
                             parentFragmentManager.popBackStack()
 
-                            Log.d(TAG, "Account successfully created")
-                            view.showBasicBanner("Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
+                            view.showBasicBanner(getString(R.string.account_creation_success), "OK", Snackbar.LENGTH_SHORT)
                         }
                         AccountCreationResult.INVALID_USERNAME ->
                             failureReason = getString(R.string.username_invalid_error)
@@ -93,12 +92,11 @@ class CreateAccountFragment : Fragment() {
                         }
                     }
                     if(failureReason != null) {
-                        Log.d(TAG, "Failed to create account ($failureReason)")
-                        view.showBasicBanner("Failed to create account - $failureReason", "OK", Snackbar.LENGTH_LONG)
+                        view.showBasicBanner(getString(R.string.account_creation_failure) + "($failureReason)", "OK", Snackbar.LENGTH_LONG)
                     }
                 }, {  exception ->
                     Log.e(TAG, "Exception was thrown during account creation", exception)
-                    view.showBasicBanner("Error Connecting to Server", "OK", Snackbar.LENGTH_LONG)
+                    view.showBasicBanner(getString(R.string.server_connection_error_message), "OK", Snackbar.LENGTH_LONG)
                 })
             }
         }
@@ -139,25 +137,28 @@ class CreateAccountFragment : Fragment() {
 
         usernameAlert.setOnClickListener {
             buildAlertMessage(
-                "Username Criteria",
-                "- Between ${LoginManager.MIN_USERNAME_LENGTH} - ${LoginManager.MAX_USERNAME_LENGTH} characters\n" +
-                        "- Contain only alpha-numeric characters"
+                getString(R.string.username_criteria_title),
+                        getString(R.string.username_criteria_one, LoginManager.MIN_USERNAME_LENGTH, LoginManager.MAX_USERNAME_LENGTH)
+                        + "\n"
+                        + getString(R.string.username_criteria_two)
             )
         }
 
         passwordAlert.setOnClickListener {
             buildAlertMessage(
-                "Password Criteria",
-                "- Between ${LoginManager.MIN_PASSWORD_LENGTH} - ${LoginManager.MAX_PASSWORD_LENGTH} characters\n" +
-                        "- Contain at least 1 capital letter\n" +
-                        "- Contain at least 1 digit"
+                getString(R.string.password_criteria_title),
+                getString(R.string.password_criteria_one)
+                + "\n"
+                + getString(R.string.password_criteria_two)
+                + "\n"
+                + getString(R.string.password_criteria_three)
             )
         }
 
         confirmPasswordAlert.setOnClickListener {
             buildAlertMessage(
-                "Confirm Password Criteria",
-                "- Passwords must match"
+                getString(R.string.confirm_password_criteria_title),
+                getString(R.string.confirm_password_criteria_one)
             )
         }
 
