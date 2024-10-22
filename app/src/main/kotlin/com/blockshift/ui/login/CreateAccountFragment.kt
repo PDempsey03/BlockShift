@@ -77,7 +77,7 @@ class CreateAccountFragment : Fragment() {
                             // go back to start screen
                             parentFragmentManager.popBackStack()
 
-                            view.showBasicBanner(getString(R.string.account_creation_success), "OK", Snackbar.LENGTH_SHORT)
+                            view.showBasicBanner(getString(R.string.account_creation_success), getString(R.string.ok), Snackbar.LENGTH_SHORT)
                         }
                         AccountCreationResult.INVALID_USERNAME ->
                             failureReason = getString(R.string.username_invalid_error)
@@ -92,11 +92,11 @@ class CreateAccountFragment : Fragment() {
                         }
                     }
                     if(failureReason != null) {
-                        view.showBasicBanner(getString(R.string.account_creation_failure) + "($failureReason)", "OK", Snackbar.LENGTH_LONG)
+                        view.showBasicBanner(getString(R.string.account_creation_failure) + "($failureReason)", getString(R.string.ok), Snackbar.LENGTH_LONG)
                     }
                 }, {  exception ->
                     Log.e(TAG, "Exception was thrown during account creation", exception)
-                    view.showBasicBanner(getString(R.string.server_connection_error_message), "OK", Snackbar.LENGTH_LONG)
+                    view.showBasicBanner(getString(R.string.server_connection_error_message), getString(R.string.ok), Snackbar.LENGTH_LONG)
                 })
             }
         }
@@ -138,8 +138,8 @@ class CreateAccountFragment : Fragment() {
         usernameAlert.setOnClickListener {
             buildAlertMessage(
                 getString(R.string.username_criteria_title),
-                        getString(R.string.username_criteria_one, LoginManager.MIN_USERNAME_LENGTH, LoginManager.MAX_USERNAME_LENGTH)
-                        + "\n"
+                        "- " +getString(R.string.username_criteria_one, LoginManager.MIN_USERNAME_LENGTH, LoginManager.MAX_USERNAME_LENGTH)
+                        + "\n- "
                         + getString(R.string.username_criteria_two)
             )
         }
@@ -147,10 +147,10 @@ class CreateAccountFragment : Fragment() {
         passwordAlert.setOnClickListener {
             buildAlertMessage(
                 getString(R.string.password_criteria_title),
-                getString(R.string.password_criteria_one)
-                + "\n"
+                "- " + getString(R.string.password_criteria_one)
+                + "\n- "
                 + getString(R.string.password_criteria_two)
-                + "\n"
+                + "\n- "
                 + getString(R.string.password_criteria_three)
             )
         }
@@ -158,7 +158,7 @@ class CreateAccountFragment : Fragment() {
         confirmPasswordAlert.setOnClickListener {
             buildAlertMessage(
                 getString(R.string.confirm_password_criteria_title),
-                getString(R.string.confirm_password_criteria_one)
+                "- " + getString(R.string.confirm_password_criteria_one)
             )
         }
 
@@ -188,7 +188,7 @@ class CreateAccountFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(title )
             .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()

@@ -1,7 +1,14 @@
 <resources>
+    <!-- Universal -->
     <string name="app_name">BlockShift</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="welcome_message">Welcome!</string>
+    <string name="ok">OK</string>
+    <string name="back_text">Back</string>
+    <string name="server_connection_error_message">Error Connecting to Server</string>
+
+    <!-- Account -->
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="username_hint">Enter Username</string>
@@ -9,7 +16,6 @@
     <string name="confirm_password_hint">Confirm Password</string>
     <string name="enter_login_info">Login</string>
     <string name="new_user">New User</string>
-    <string name="back_text">Back</string>
     <string name="username_invalid_error">Invalid Username</string>
     <string name="password_invalid_error">Invalid Password</string>
     <string name="username_password_invalid_error">Invalid Username or Password</string>
@@ -19,17 +25,22 @@
     <string name="account_creation_success">Successfully Created Account</string>
     <string name="account_creation_failure">Failed to Create Account</string>
     <string name="username_criteria_title">Username Criteria</string>
-    <string name="username_criteria_one">- Contain %d - %d characters</string>
-    <string name="username_criteria_two">- Contain only alpha-numeric characters</string>
+    <string name="username_criteria_one">Contain %d - %d characters</string>
+    <string name="username_criteria_two">Contain only alpha-numeric characters</string>
     <string name="password_criteria_title">Password Criteria</string>
-    <string name="password_criteria_one">- Contain %d - %d characters</string>
-    <string name="password_criteria_two">- Contain at least one letter</string>
-    <string name="password_criteria_three">- Contain at least one digit</string>
+    <string name="password_criteria_one">Contain %d - %d characters</string>
+    <string name="password_criteria_two">Contain at least one letter</string>
+    <string name="password_criteria_three">Contain at least one digit</string>
     <string name="confirm_password_criteria_title">Confirm Password Criteria</string>
-    <string name="confirm_password_criteria_one">- Password Must Match </string>
-    <string name="server_connection_error_message">Error Connecting to Server</string>
-    <string name="welcome_back">Welcome Back</string>
-    <string name="welcome_message">Welcome!</string>
+    <string name="confirm_password_criteria_one">Password Must Match </string>
+    <string name="display_name_criteria_title">Display Name Criteria</string>
+    <string name="display_name_criteria_one">Contain %d - %d characters</string>
+    <string name="display_name_criteria_two">Contain only alpha-numeric characters, or spaces</string>
+    <string name="display_name_update_success">Display Name Successfully Updated</string>
+    <string name="display_name_update_failure">Display Name Could Not Be Updated</string>
+    <string name="account_deletion_failure">Account Could Not Be Deleted</string>
+
+    <!-- Main Page -->
     <string name="continue_message">Continue</string>
     <string name="level_select_text">Level Select</string>
     <string name="level_number1">Level 1</string>

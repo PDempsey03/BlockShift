@@ -66,10 +66,12 @@ class AccountSettingsFragment : Fragment() {
         val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_Display_Name_Error)
         displayNameErrorImage.setOnClickListener {
             AlertDialog.Builder(requireContext())
-                .setTitle("Display Name Criteria")
-                .setMessage("- Must be ${LoginManager.MIN_DISPLAY_NAME_LENGTH} - ${LoginManager.MAX_DISPLAY_NAME_LENGTH} characters long." +
-                        "\n- Contain only alpha-numeric characters, or spaces.")
-                .setPositiveButton("OK") { dialog, _ ->
+                .setTitle(getString(R.string.display_name_criteria_title))
+                .setMessage(
+                    "- " + getString(R.string.display_name_criteria_one)
+                    + "\n- " + getString(R.string.display_name_criteria_two)
+                )
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .create()
@@ -84,12 +86,12 @@ class AccountSettingsFragment : Fragment() {
                 val newDisplayName = displayNameEditText.text.toString()
                 val username = userData.username
                 UserRepository.updateUserDisplayName(username, newDisplayName, { success ->
-                    view.showBasicBanner(if(success) "Display Name successfully updated"
-                        else "Display Name could not be updated",
-                        "OK", Snackbar.LENGTH_SHORT)
+                    view.showBasicBanner(if(success) getString(R.string.display_name_update_success)
+                        else getString(R.string.display_name_update_failure),
+                        getString(R.string.ok), Snackbar.LENGTH_SHORT)
                 }, { exception ->
                     Log.e(TAG, "Could not update display name, error connecting to server", exception)
-                    view.showBasicBanner("Error connecting to server, could not update display name", "OK", Snackbar.LENGTH_SHORT)
+                    view.showBasicBanner(getString(R.string.server_connection_error_message), getString(R.string.ok), Snackbar.LENGTH_SHORT)
                 })
             }
         }
@@ -173,10 +175,10 @@ class AccountSettingsFragment : Fragment() {
                     val intent = Intent(requireActivity(), LoginActivity::class.java)
                     startActivity(intent)
                 } else {
-                    view.showBasicBanner("Account could not be deleted", "OK", Snackbar.LENGTH_SHORT)
+                    view.showBasicBanner(getString(R.string.account_deletion_failure), getString(R.string.ok), Snackbar.LENGTH_SHORT)
                 }
             }, { exception ->
-                view.showBasicBanner("Error connecting to server", "OK", Snackbar.LENGTH_SHORT)
+                view.showBasicBanner(getString(R.string.server_connection_error_message), getString(R.string.ok), Snackbar.LENGTH_SHORT)
                 Log.e(TAG, "Error deleting account", exception)
             })
 
