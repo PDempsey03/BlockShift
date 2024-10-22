@@ -15,6 +15,7 @@ import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
 import com.blockshift.model.repositories.AccountCreationResult
 import com.blockshift.model.repositories.UserRepository
+import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +78,7 @@ class CreateAccountFragment : Fragment() {
                             parentFragmentManager.popBackStack()
 
                             Log.d(TAG, "Account successfully created")
-                            showBasicBanner(view, "Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
+                            view.showBasicBanner("Account Successfully Created", "OK", Snackbar.LENGTH_SHORT)
                         }
                         AccountCreationResult.INVALID_USERNAME ->
                             failureReason = getString(R.string.username_invalid_error)
@@ -93,11 +94,11 @@ class CreateAccountFragment : Fragment() {
                     }
                     if(failureReason != null) {
                         Log.d(TAG, "Failed to create account ($failureReason)")
-                        showBasicBanner(view, "Failed to create account - $failureReason", "OK", Snackbar.LENGTH_LONG)
+                        view.showBasicBanner("Failed to create account - $failureReason", "OK", Snackbar.LENGTH_LONG)
                     }
                 }, {  exception ->
                     Log.e(TAG, "Exception was thrown during account creation", exception)
-                    showBasicBanner(view, "Error Connecting to Server", "OK", Snackbar.LENGTH_LONG)
+                    view.showBasicBanner("Error Connecting to Server", "OK", Snackbar.LENGTH_LONG)
                 })
             }
         }
@@ -174,12 +175,6 @@ class CreateAccountFragment : Fragment() {
 
         // after all else is done, update whether create account button should be enabled
         updateCreateButtonActive(view)
-    }
-
-    private fun showBasicBanner(view: View, text: String, actionText: String, length: Int) {
-        val banner = Snackbar.make(view, text, length).setAction(actionText){}
-        banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-        banner.show()
     }
 
     private fun updateCreateButtonActive(view: View) {

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import com.blockshift.R
+import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,28 +63,18 @@ class LoginFragment : Fragment() {
                         (activity as LoginActivity).finishLogin(userData)
                     } else {
                         Log.e("Login Screen", "Invalid Login")
-                        val eMessage = Snackbar.make(
-                            view,
-                            "Invalid Username or Password!",
-                            Snackbar.LENGTH_SHORT
-                        ).setAction("OK") {}
-                        eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                        eMessage.show()
+                        view.showBasicBanner("Invalid Username or Password!", "OK", Snackbar.LENGTH_SHORT)
                     }
                 }, { exception ->
                     Log.e("Login Screen", "Error in connecting to the firebase database", exception)
-                    val eMessage =
-                        Snackbar.make(view, "Login Currently Unavailable", Snackbar.LENGTH_LONG)
-                            .setAction("OK") {}
-                    eMessage.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                    eMessage.show()
+                    view.showBasicBanner("Login Currently Unavailable", "OK", Snackbar.LENGTH_LONG)
                 })
             }
         }
 
         val newUserButton = view.findViewById<Button>(R.id.newUserButton)
         newUserButton.setOnClickListener {
-            Log.d("Login Screen","New User Button Clicked")
+            Log.d(TAG,"New User Button Clicked")
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CreateAccountFragment()) // fragment_container is the container for fragments
                 .addToBackStack(null)  // This ensures you can go back
@@ -99,7 +90,6 @@ class LoginFragment : Fragment() {
          *
          * @return A new instance of fragment LoginFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() =
             LoginFragment().apply {
