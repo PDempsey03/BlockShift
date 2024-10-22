@@ -12,6 +12,7 @@ import com.google.android.material.tabs.TabLayout
 import com.blockshift.ui.mainpage.HomePageFragment
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
+import com.blockshift.model.repositories.UserTableNames
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,8 +22,8 @@ class SettingsActivity : AppCompatActivity() {
 
         val tabLayout = findViewById<TabLayout>(R.id.settings_tab_layout)
 
-        val currentUsername:String = intent.getStringExtra("username").toString()
-        val currentDisplayName:String = intent.getStringExtra("displayname").toString()
+        val currentUsername:String = intent.getStringExtra(UserTableNames.USERNAME).toString()
+        val currentDisplayName:String = intent.getStringExtra(UserTableNames.DISPLAY_NAME).toString()
         val userViewModel: UserViewModel by viewModels()
         userViewModel.currentUser.value = UserData(currentUsername,currentDisplayName)
         UserRepository.startListeningForUser(userViewModel)
