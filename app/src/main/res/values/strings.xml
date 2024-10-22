@@ -12,6 +12,7 @@
     <string name="back_text">Back</string>
     <string name="username_invalid_error">Invalid Username</string>
     <string name="password_invalid_error">Invalid Password</string>
+    <string name="username_password_invalid_error">Invalid Username or Password</string>
     <string name="confirm_password_mismatch_error">Passwords Must Match</string>
     <string name="username_taken_error">Username Taken</string>
     <string name="create_account">Create Account</string>

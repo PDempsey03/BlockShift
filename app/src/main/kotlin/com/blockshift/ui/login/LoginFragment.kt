@@ -63,11 +63,11 @@ class LoginFragment : Fragment() {
                         (activity as LoginActivity).finishLogin(userData)
                     } else {
                         Log.e("Login Screen", "Invalid Login")
-                        view.showBasicBanner("Invalid Username or Password!", "OK", Snackbar.LENGTH_SHORT)
+                        view.showBasicBanner(getString(R.string.username_password_invalid_error), "OK", Snackbar.LENGTH_SHORT)
                     }
                 }, { exception ->
                     Log.e("Login Screen", "Error in connecting to the firebase database", exception)
-                    view.showBasicBanner("Login Currently Unavailable", "OK", Snackbar.LENGTH_LONG)
+                    view.showBasicBanner(getString(R.string.server_connection_error_message), "OK", Snackbar.LENGTH_LONG)
                 })
             }
         }
