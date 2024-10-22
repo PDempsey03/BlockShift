@@ -1,11 +1,13 @@
 package com.blockshift.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,7 +20,9 @@ import com.blockshift.model.login.UserViewModel
 import androidx.fragment.app.activityViewModels
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
+import com.blockshift.ui.login.LoginActivity
 import com.blockshift.ui.login.LoginManager
+import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -80,15 +84,25 @@ class AccountSettingsFragment : Fragment() {
                 val newDisplayName = displayNameEditText.text.toString()
                 val username = userData.username
                 UserRepository.updateUserDisplayName(username, newDisplayName, { success ->
-                    showBasicBanner(view,
-                        if(success) "Display Name successfully updated"
+                    view.showBasicBanner(if(success) "Display Name successfully updated"
                         else "Display Name could not be updated",
                         "OK", Snackbar.LENGTH_SHORT)
                 }, { exception ->
                     Log.e(TAG, "Could not update display name, error connecting to server", exception)
-                    showBasicBanner(view, "Error connecting to server, could not update display name", "OK", Snackbar.LENGTH_SHORT)
+                    view.showBasicBanner("Error connecting to server, could not update display name", "OK", Snackbar.LENGTH_SHORT)
                 })
             }
+        }
+
+        val changePasswordButton = view.findViewById<Button>(R.id.account_settings_change_password_button)
+        // TODO: Add in password changing functionality
+
+        val logoutButton = view.findViewById<Button>(R.id.account_settings_logout_button)
+        // TODO: add in logout functionality
+
+        val deleteAccountButton = view.findViewById<Button>(R.id.account_settings_Delete_Account_button)
+        deleteAccountButton.setOnClickListener {
+            showConfirmDeleteDialog(view)
         }
 
         return view
@@ -115,10 +129,52 @@ class AccountSettingsFragment : Fragment() {
         displayNameErrorImage.visibility = if(displayNameValid) View.GONE else View.VISIBLE
     }
 
-    private fun showBasicBanner(view: View, text: String, actionText: String, length: Int) {
-        val banner = Snackbar.make(view, text, length).setAction(actionText){}
-        banner.animationMode = Snackbar.ANIMATION_MODE_SLIDE
-        banner.show()
+    private fun showConfirmDeleteDialog(view: View) {
+        // inflate the account deletion dialogue box to new view
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialogue_confirm_delete_account, null)
+
+        // put the dialogue alert in the view
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setView(dialogView)
+
+        // Create the dialog instance
+        val alertDialog = dialogBuilder.create()
+
+        // get references to the clickable elements
+        val checkBox = dialogView.findViewById<CheckBox>(R.id.delete_account_checkbox)
+        val confirmButton = dialogView.findViewById<Button>(R.id.delete_account_confirm_button)
+
+        // only enable confirm button when the box is checked
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            confirmButton.isEnabled = isChecked
+        }
+
+        confirmButton.setOnClickListener {
+            val userData = userViewModel.currentUser.value
+
+            // handle case where user data is null
+            if(userData == null) {
+                Log.e(TAG, "Error deleting account, UserData is null")
+                return@setOnClickListener
+            }
+
+            UserRepository.deleteUser(userData, { success ->
+                if(success) {
+                    // go back to login screen
+                    val intent = Intent(requireActivity(), LoginActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    view.showBasicBanner("Account could not be deleted", "OK", Snackbar.LENGTH_SHORT)
+                }
+            }, { exception ->
+                view.showBasicBanner("Error connecting to server", "OK", Snackbar.LENGTH_SHORT)
+                Log.e(TAG, "Error deleting account", exception)
+            })
+
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
     }
 
     companion object {
