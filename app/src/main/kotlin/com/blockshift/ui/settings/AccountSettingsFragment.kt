@@ -98,7 +98,16 @@ class AccountSettingsFragment : Fragment() {
         // TODO: Add in password changing functionality
 
         val logoutButton = view.findViewById<Button>(R.id.account_settings_logout_button)
-        // TODO: add in logout functionality
+
+        logoutButton.setOnClickListener {
+
+            // remove and potential remember me information
+            LoginManager.unregisterLocalAuthToken(requireContext())
+
+            // return to the login screen
+            val intent = Intent(requireActivity(), LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         val deleteAccountButton = view.findViewById<Button>(R.id.account_settings_Delete_Account_button)
         deleteAccountButton.setOnClickListener {
