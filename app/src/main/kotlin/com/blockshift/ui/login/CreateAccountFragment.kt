@@ -15,6 +15,7 @@ import androidx.core.widget.addTextChangedListener
 import com.blockshift.R
 import com.blockshift.model.repositories.AccountCreationResult
 import com.blockshift.model.repositories.UserRepository
+import com.blockshift.utils.buildAlertMessage
 import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -182,17 +183,6 @@ class CreateAccountFragment : Fragment() {
         val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
 
         createAccountButton.isEnabled = validPassword && validPassword && passwordsMatch
-    }
-
-    private fun buildAlertMessage(title: String, message: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(title )
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
     }
 
     companion object {
