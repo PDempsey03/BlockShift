@@ -63,7 +63,7 @@ configure(subprojects - project(':android')) {
 
 subprojects {
   version = '$projectVersion'
-  ext.appName = 'BlockShift'
+  ext.appName = 'gdxBlkShKt'
   repositories {
     mavenCentral()
     maven { url 'https://s01.oss.sonatype.org' }
@@ -75,4 +75,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'BlockShift' + '-parent'
+eclipse.project.name = 'gdxBlkShKt' + '-parent'
