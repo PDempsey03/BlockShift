@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.blockshift.R
@@ -22,6 +23,7 @@ import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.ui.login.LoginActivity
 import com.blockshift.ui.login.LoginManager
+import com.blockshift.utils.buildAlertMessage
 import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 
@@ -35,6 +37,8 @@ class AccountSettingsFragment : Fragment() {
     private var currentDisplayName = ""
     private var displayNameMatch = true
     private var displayNameValid = true
+    private var validNewPassword = false
+    private var confirmNewPasswordMatches = false
     private val userViewModel: UserViewModel by activityViewModels()
     private val TAG: String = javaClass.simpleName
 
@@ -97,10 +101,78 @@ class AccountSettingsFragment : Fragment() {
         }
 
         val changePasswordButton = view.findViewById<Button>(R.id.account_settings_change_password_button)
-        // TODO: Add in password changing functionality
+        val changePasswordCardView = view.findViewById<CardView>(R.id.change_password_card_view)
+        changePasswordButton.setOnClickListener {
+            // update the layout so the button is gone, and the change password layout is visible
+            updatePasswordChangeView(true, changePasswordCardView, changePasswordButton)
+        }
+
+        val oldPasswordEditText = view.findViewById<EditText>(R.id.account_settings_old_password)
+        val newPasswordEditText = view.findViewById<EditText>(R.id.account_settings_new_password)
+        val confirmNewPasswordEditText = view.findViewById<EditText>(R.id.account_settings_confirm_new_password)
+
+        newPasswordEditText.addTextChangedListener { text ->
+            val newPasswordString = text.toString()
+            val confirmNewPasswordString = confirmNewPasswordEditText.text.toString()
+
+            // update error icon to display if either are invalid
+            updatePasswordsState(view, newPasswordString, confirmNewPasswordString)
+        }
+
+        confirmNewPasswordEditText.addTextChangedListener { text ->
+            val confirmNewPasswordString = text.toString()
+            val newPasswordString = newPasswordEditText.text.toString()
+
+            updatePasswordsState(view, newPasswordString, confirmNewPasswordString)
+        }
+
+        val newPasswordAlert = view.findViewById<ImageView>(R.id.account_settings_new_password_alert)
+        newPasswordAlert.setOnClickListener {
+            buildAlertMessage(
+                getString(R.string.password_criteria_title),
+                "- " + getString(R.string.password_criteria_one, LoginManager.MIN_PASSWORD_LENGTH, LoginManager.MAX_PASSWORD_LENGTH)
+                        + "\n- "
+                        + getString(R.string.password_criteria_two)
+                        + "\n- "
+                        + getString(R.string.password_criteria_three)
+            )
+        }
+
+        val confirmNewPasswordAlert = view.findViewById<ImageView>(R.id.account_settings_confirm_new_password_alert)
+        confirmNewPasswordAlert.setOnClickListener {
+            buildAlertMessage(
+                getString(R.string.confirm_password_criteria_title),
+                "- " + getString(R.string.confirm_password_criteria_one)
+            )
+        }
+
+        val cancelPasswordChangeButton = view.findViewById<Button>(R.id.account_settings_cancel_change_password)
+        cancelPasswordChangeButton.setOnClickListener {
+            // reverse changes of the original update password button
+            updatePasswordChangeView(false, changePasswordCardView, changePasswordButton)
+            clearPasswordChangeText(oldPasswordEditText, newPasswordEditText, confirmNewPasswordEditText)
+        }
+
+        val confirmPasswordChangeButton = view.findViewById<Button>(R.id.account_settings_confirm_change_password_button)
+        confirmPasswordChangeButton.setOnClickListener {
+            val userData = userViewModel.currentUser.value ?: return@setOnClickListener
+
+            UserRepository.updateUserPassword(userData.username, oldPasswordEditText.text.toString(), newPasswordEditText.text.toString(),
+                {success ->
+                if(success) {
+                    view.showBasicBanner(getString(R.string.password_update_success), getString(R.string.ok), Snackbar.LENGTH_LONG)
+                    updatePasswordChangeView(false, changePasswordCardView, changePasswordButton)
+                    clearPasswordChangeText(oldPasswordEditText, newPasswordEditText, confirmNewPasswordEditText)
+                } else {
+                    view.showBasicBanner(getString(R.string.password_update_fail), getString(R.string.ok), Snackbar.LENGTH_LONG)
+                }
+            }, {exception ->
+                Log.e(TAG, "Error updating user password", exception)
+                view.showBasicBanner(getString(R.string.server_connection_error_message), getString(R.string.ok), Snackbar.LENGTH_SHORT)
+            })
+        }
 
         val logoutButton = view.findViewById<Button>(R.id.account_settings_logout_button)
-
         logoutButton.setOnClickListener {
 
             // remove and potential remember me information
@@ -138,6 +210,36 @@ class AccountSettingsFragment : Fragment() {
         val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_display_name_error)
         buttonDisplayNameButton.isEnabled = !displayNameMatch && displayNameValid
         displayNameErrorImage.visibility = if(displayNameValid) View.GONE else View.VISIBLE
+    }
+
+    private fun updatePasswordsState(view: View, password: String, confirmPassword: String) {
+        // update whether the password is valid
+        validNewPassword = LoginManager.isValidPassword(password)
+        confirmNewPasswordMatches = password == confirmPassword
+
+        // update visibility of the alerts
+        view.findViewById<ImageView>(R.id.account_settings_new_password_alert).visibility = if(validNewPassword) View.GONE else View.VISIBLE
+        view.findViewById<ImageView>(R.id.account_settings_confirm_new_password_alert).visibility = if(confirmNewPasswordMatches) View.GONE else View.VISIBLE
+
+        // after all else is done, update whether the change password confirm button should be enabled
+        updatePasswordUpdateButton(view)
+    }
+
+    private fun updatePasswordUpdateButton(view: View) {
+        val updatePasswordButton = view.findViewById<Button>(R.id.account_settings_confirm_change_password_button)
+
+        updatePasswordButton.isEnabled = validNewPassword && confirmNewPasswordMatches
+    }
+
+    private fun updatePasswordChangeView(showPasswordChangeView: Boolean, changePasswordCardView: CardView, changePasswordButton: Button) {
+        changePasswordCardView.visibility = if(showPasswordChangeView) View.VISIBLE else View.GONE
+        changePasswordButton.visibility = if(showPasswordChangeView) View.GONE else View.VISIBLE
+    }
+
+    private fun clearPasswordChangeText(oldPasswordEditText: EditText, newPasswordEditText: EditText, confirmNewPasswordEditText: EditText) {
+        oldPasswordEditText.setText("")
+        newPasswordEditText.setText("")
+        confirmNewPasswordEditText.setText("")
     }
 
     private fun showConfirmDeleteDialog(view: View) {
