@@ -111,19 +111,31 @@ class AccountSettingsFragment : Fragment() {
         val newPasswordEditText = view.findViewById<EditText>(R.id.account_settings_new_password)
         val confirmNewPasswordEditText = view.findViewById<EditText>(R.id.account_settings_confirm_new_password)
 
+        oldPasswordEditText.addTextChangedListener { text ->
+            val newPasswordString = newPasswordEditText.text.toString()
+            val confirmNewPasswordString = confirmNewPasswordEditText.text.toString()
+            val oldPasswordString = text.toString()
+
+            // update error icons
+            updatePasswordsState(view, oldPasswordString, newPasswordString, confirmNewPasswordString)
+        }
+
         newPasswordEditText.addTextChangedListener { text ->
             val newPasswordString = text.toString()
             val confirmNewPasswordString = confirmNewPasswordEditText.text.toString()
+            val oldPasswordString = oldPasswordEditText.text.toString()
 
-            // update error icon to display if either are invalid
-            updatePasswordsState(view, newPasswordString, confirmNewPasswordString)
+            // update error icons
+            updatePasswordsState(view, oldPasswordString, newPasswordString, confirmNewPasswordString)
         }
 
         confirmNewPasswordEditText.addTextChangedListener { text ->
-            val confirmNewPasswordString = text.toString()
             val newPasswordString = newPasswordEditText.text.toString()
+            val confirmNewPasswordString = text.toString()
+            val oldPasswordString = oldPasswordEditText.text.toString()
 
-            updatePasswordsState(view, newPasswordString, confirmNewPasswordString)
+            // update error icons
+            updatePasswordsState(view, oldPasswordString, newPasswordString, confirmNewPasswordString)
         }
 
         val newPasswordAlert = view.findViewById<ImageView>(R.id.account_settings_new_password_alert)
@@ -135,6 +147,8 @@ class AccountSettingsFragment : Fragment() {
                         + getString(R.string.password_criteria_two)
                         + "\n- "
                         + getString(R.string.password_criteria_three)
+                        + "\n- "
+                        + getString(R.string.password_criteria_four)
             )
         }
 
@@ -212,10 +226,10 @@ class AccountSettingsFragment : Fragment() {
         displayNameErrorImage.visibility = if(displayNameValid) View.GONE else View.VISIBLE
     }
 
-    private fun updatePasswordsState(view: View, password: String, confirmPassword: String) {
+    private fun updatePasswordsState(view: View, oldPassword: String, newPassword: String, confirmNewPassword: String) {
         // update whether the password is valid
-        validNewPassword = LoginManager.isValidPassword(password)
-        confirmNewPasswordMatches = password == confirmPassword
+        validNewPassword = LoginManager.isValidPassword(newPassword) && oldPassword != newPassword
+        confirmNewPasswordMatches = newPassword == confirmNewPassword
 
         // update visibility of the alerts
         view.findViewById<ImageView>(R.id.account_settings_new_password_alert).visibility = if(validNewPassword) View.GONE else View.VISIBLE
