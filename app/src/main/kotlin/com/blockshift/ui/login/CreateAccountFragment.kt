@@ -148,7 +148,7 @@ class CreateAccountFragment : Fragment() {
         passwordAlert.setOnClickListener {
             buildAlertMessage(
                 getString(R.string.password_criteria_title),
-                "- " + getString(R.string.password_criteria_one)
+                "- " + getString(R.string.password_criteria_one, LoginManager.MIN_PASSWORD_LENGTH, LoginManager.MAX_PASSWORD_LENGTH)
                 + "\n- "
                 + getString(R.string.password_criteria_two)
                 + "\n- "
@@ -182,7 +182,7 @@ class CreateAccountFragment : Fragment() {
     private fun updateCreateButtonActive(view: View) {
         val createAccountButton = view.findViewById<Button>(R.id.create_account_button)
 
-        createAccountButton.isEnabled = validPassword && validPassword && passwordsMatch
+        createAccountButton.isEnabled = validPassword && passwordsMatch
     }
 
     companion object {
