@@ -74,7 +74,7 @@
                     android:imeOptions="actionDone"/>
 
                 <ImageView
-                    android:id="@+id/account_settings_Display_Name_Error"
+                    android:id="@+id/account_settings_display_name_error"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -106,6 +106,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Change Password"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/account_settings_logout_button_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change 1"/>
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/account_settings_logout_button"

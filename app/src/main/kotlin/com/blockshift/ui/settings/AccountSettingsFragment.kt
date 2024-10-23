@@ -63,12 +63,12 @@ class AccountSettingsFragment : Fragment() {
             updateValidDisplayName(view)
         }
 
-        val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_Display_Name_Error)
+        val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_display_name_error)
         displayNameErrorImage.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.display_name_criteria_title))
                 .setMessage(
-                    "- " + getString(R.string.display_name_criteria_one)
+                    "- " + getString(R.string.display_name_criteria_one, LoginManager.MIN_DISPLAY_NAME_LENGTH, LoginManager.MAX_DISPLAY_NAME_LENGTH)
                     + "\n- " + getString(R.string.display_name_criteria_two)
                 )
                 .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
@@ -135,7 +135,7 @@ class AccountSettingsFragment : Fragment() {
 
     private fun updateValidDisplayName(view: View) {
         val buttonDisplayNameButton = view.findViewById<Button>(R.id.account_settings_update_displayname_button)
-        val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_Display_Name_Error)
+        val displayNameErrorImage = view.findViewById<ImageView>(R.id.account_settings_display_name_error)
         buttonDisplayNameButton.isEnabled = !displayNameMatch && displayNameValid
         displayNameErrorImage.visibility = if(displayNameValid) View.GONE else View.VISIBLE
     }
