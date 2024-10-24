@@ -69,8 +69,8 @@ class LoginActivity : AppCompatActivity() {
         userViewModel.currentUser.value = userData
 
         val intent = Intent(this, SettingsActivity::class.java)
-        intent.putExtra("username",userData.username)
-        intent.putExtra("displayname",userData.displayname)
+        intent.putExtra(UserTableNames.USERNAME,userData.username)
+        intent.putExtra(UserTableNames.DISPLAY_NAME,userData.displayname)
         startActivity(intent)
     }
 

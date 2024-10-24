@@ -21,6 +21,8 @@ internal object LoginManager {
     const val MAX_PASSWORD_LENGTH = 32
     const val MIN_USERNAME_LENGTH = 4
     const val MAX_USERNAME_LENGTH = 16
+    const val MIN_DISPLAY_NAME_LENGTH = 4
+    const val MAX_DISPLAY_NAME_LENGTH = 20
     private const val HASH_FUNCTION = "PBKDF2WithHmacSha1"
     private const val HASH_LENGTH = 256 // bits
     private const val HASH_ITERATION_COUNT = 2048
@@ -30,11 +32,23 @@ internal object LoginManager {
     private val hashFactory: SecretKeyFactory = SecretKeyFactory.getInstance(HASH_FUNCTION)
     private val TAG: String = javaClass.simpleName
 
-    fun usernameMeetsLength(username: String): Boolean {
+    private fun displayNameMeetsLength(displayName: String): Boolean {
+        return displayName.length in MIN_DISPLAY_NAME_LENGTH .. MAX_DISPLAY_NAME_LENGTH
+    }
+
+    private fun displayNameMeetsAlphaNumericOrSpaces(displayName: String): Boolean {
+        return displayName.all{it.isLetterOrDigit() || it == ' '}
+    }
+
+    fun isValidDisplayName(displayName: String): Boolean {
+        return displayNameMeetsLength(displayName) && displayNameMeetsAlphaNumericOrSpaces(displayName)
+    }
+
+    private fun usernameMeetsLength(username: String): Boolean {
         return username.length in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH
     }
 
-    fun usernameMeetsOnlyAlphaNumeric(username: String): Boolean {
+    private fun usernameMeetsOnlyAlphaNumeric(username: String): Boolean {
         return username.all{it.isLetterOrDigit()}
     }
 
@@ -42,15 +56,15 @@ internal object LoginManager {
         return usernameMeetsLength(username) && usernameMeetsOnlyAlphaNumeric(username)
     }
 
-    fun passwordMeetsLength(password: String): Boolean {
+    private fun passwordMeetsLength(password: String): Boolean {
         return password.length in MIN_PASSWORD_LENGTH .. MAX_PASSWORD_LENGTH
     }
 
-    fun passwordMeetsDigit(password: String): Boolean{
+    private fun passwordMeetsDigit(password: String): Boolean{
         return password.any { it.isDigit() }
     }
 
-    fun passwordMeetsUppercase(password: String): Boolean {
+    private fun passwordMeetsUppercase(password: String): Boolean {
         return password.any{ it.isUpperCase() }
     }
 
@@ -90,7 +104,7 @@ internal object LoginManager {
             val correctPassword = storedHashedPassword == enteredHashedPassword
 
             Log.d(TAG, "Login has ${if(correctPassword) "correct" else "incorrect"} password")
-            successCallback(completeUserData.toUserData())
+            successCallback(if(correctPassword) completeUserData.toUserData() else null)
         }, failureCallback)
     }
 

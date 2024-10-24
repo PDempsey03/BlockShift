@@ -22,29 +22,18 @@ object UserRepository {
         dataBaseUsers = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
     }
 
-    fun observeUser(viewModel: UserViewModel) {
-        viewModel.currentUser.observeForever { userData ->
-            userData?.let {
-                // since userDats is not null, check if its the same username
-                if(listeningUsername != it.username) {
-                    // if the username is different, then a new user has been logged in
-                    stopListeningForUser()
-                    startListeningForUser(it.username, viewModel)
-                }
-            } ?: run {
-                // user has logged out, stop listening for them
-                stopListeningForUser()
-            }
-        }
-    }
+    fun startListeningForUser(viewModel: UserViewModel) {
+        val userData = viewModel.currentUser.value ?: return
 
-    private fun startListeningForUser(username: String, viewModel: UserViewModel) {
+        val username = userData.username
+        Log.d(TAG, "Registering to user $username")
         listenerRegistration = dataBaseUsers
             .whereEqualTo(UserTableNames.USERNAME, username)
             .limit(1)
             .addSnapshotListener { snapshot, error ->
+                Log.d(TAG, "UPDATE TO USER $username")
                 if (error != null) {
-                    Log.w(TAG, "Error in listening to user changes", error)
+                    Log.e(TAG, "Error in listening to user changes", error)
                     return@addSnapshotListener
                 }
 
@@ -56,7 +45,7 @@ object UserRepository {
             }
     }
 
-    private fun stopListeningForUser() {
+    fun stopListeningForUser() {
         listenerRegistration?.remove()
         listenerRegistration = null
     }
@@ -98,12 +87,7 @@ object UserRepository {
         }, onFailureCallback)
     }
 
-    fun updateUserPassword(username: String, newPassword: String, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
-        if(!LoginManager.isValidPassword(newPassword)) {
-            Log.d(TAG, "Failed to update password, password was invalid")
-            return
-        }
-
+    fun updateUserPassword(username: String, oldPassword: String, newPassword: String, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
         dataBaseUsers
             .whereEqualTo(UserTableNames.USERNAME, username)
             .limit(1)
@@ -115,15 +99,34 @@ object UserRepository {
                     return@addOnSuccessListener
                 }
 
-                val userDoc = querySnapshot.documents[0].reference
+                val userDoc = querySnapshot.documents[0]
+                val userDocRef = userDoc.reference
+
+                // make sure the login data is not null
+                val userLoginData = userDoc.toObject(CompleteUserData::class.java)
+                if(userLoginData == null) {
+                    onSuccessCallback(false)
+                    return@addOnSuccessListener
+                }
+
+                // make sure the old password matches
+                val oldSalt = userLoginData.salt
+                val oldHashedPassword = LoginManager.hashPassword(oldPassword, oldSalt)
+                if(oldHashedPassword != userLoginData.password) {
+                    Log.d(TAG, "Old password did not match when updating password")
+                    onSuccessCallback(false)
+                    return@addOnSuccessListener
+                }
+
+                // get new password information
                 val newSalt = LoginManager.generateSaltString()
                 val newHashedPassword = LoginManager.hashPassword(newPassword, newSalt)
 
                 // run a transaction as we don't want a case of just one value being stored but the other not
                 FirebaseFirestore.getInstance().runTransaction { transaction ->
                     // Update the password and salt fields
-                    transaction.update(userDoc, UserTableNames.PASSWORD, newHashedPassword)
-                    transaction.update(userDoc, UserTableNames.SALT, newSalt)
+                    transaction.update(userDocRef, UserTableNames.PASSWORD, newHashedPassword)
+                    transaction.update(userDocRef, UserTableNames.SALT, newSalt)
                 }
                     .addOnSuccessListener { onSuccessCallback(true) }
                     .addOnFailureListener(onFailureCallback)
