@@ -12,6 +12,7 @@ abstract class Tile (var idx: Int, val width: Float, val tileTexture: Texture) {
     var isMoving: Boolean = false
     var wasMoved: Boolean = false
     abstract val isHoldable: Boolean
+    val id: Int = 0
 
     init {
         update(idx)

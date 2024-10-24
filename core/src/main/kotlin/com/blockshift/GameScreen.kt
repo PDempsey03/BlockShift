@@ -38,6 +38,7 @@ class GameScreen : Screen {
     private var player: Player
 //    private var block: Block
     private var bigB: BigBlock
+    private var bigB2: BigBlock
     private var bigBlocks: Set<BigBlock>
 
     init {
@@ -51,8 +52,19 @@ class GameScreen : Screen {
 
         // set up game objects
         player = Player(1, blockWidth, playerTexture)
-        bigB = BigBlock(setOf(Block(4, blockWidth, blockTexture), Block(5, blockWidth, blockTexture), Block(10, blockWidth, blockTexture)))
-        bigBlocks = setOf(bigB)
+        bigB = BigBlock(1, setOf(
+            Block(3, blockWidth, blockTexture),
+            Block(4, blockWidth, blockTexture),
+            Block(5, blockWidth, blockTexture),
+            ))
+        bigB2 = BigBlock(2, setOf(
+            Block(7, blockWidth, blockTexture),
+            Block(8, blockWidth, blockTexture),
+
+            ))
+
+        bigBlocks = setOf(bigB, bigB2)
+
         level = Level(player, bigBlocks)
 
         batch = SpriteBatch()
@@ -77,13 +89,13 @@ class GameScreen : Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             level.slide(LEFT)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.slide(RIGHT)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             level.slide(UP)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             level.slide(DOWN)
         }
 

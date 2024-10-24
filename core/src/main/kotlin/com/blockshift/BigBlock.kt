@@ -5,31 +5,35 @@ import com.blockshift.GameScreen.Companion.blocksPerCol
 import com.blockshift.GameScreen.Companion.blocksPerRow
 
 // BigBlock is a collection of one or more Blocks
-class BigBlock(val blocks: Set<Block>) {
+class BigBlock(val id: Int, val blocks: Set<Block>) {
     companion object {
         enum class DIR {LEFT, RIGHT, UP, DOWN}
-    }
 
-    // return offset corresponding to a move by one tile
-    fun offset(dir: DIR): Int {
-        return when (dir) {
-            DIR.LEFT -> -1
-            DIR.RIGHT -> 1
-            DIR.UP -> -blocksPerRow
-            DIR.DOWN -> blocksPerRow
+        // return offset corresponding to a move by one tile
+        fun offset(dir: DIR): Int {
+            return when (dir) {
+                DIR.LEFT -> -1
+                DIR.RIGHT -> 1
+                DIR.UP -> -blocksPerRow
+                DIR.DOWN -> blocksPerRow
+            }
         }
     }
 
     // return true if each Block element will stay in bounds after moving one tile toward dir
-    fun canMove(dir: DIR): Boolean {
+    fun canMove(dir: DIR, level: Level): Boolean {
         for (block in blocks) {
+            if (level.willCauseCollision(id, block.idx + offset(dir))) {
+                return false
+            }
+
             // compute indices of row and col which block lies on
             val colOffset = block.idx % blocksPerRow
             val rowOffset = block.idx - (block.idx % blocksPerRow)
             val colInBounds = List(blocksPerCol) { it * blocksPerRow + colOffset }
             val rowInBounds = List(blocksPerRow) { it + rowOffset }
 
-            // bounds forms a cross
+            // bounds form a cross
             val bounds = setOf(colInBounds, rowInBounds).flatten()
 
             // if moving block one tile will not stay in bounds then BigBlock cannot move
@@ -42,7 +46,7 @@ class BigBlock(val blocks: Set<Block>) {
 
     // move a BigBlock until collision occurs
     fun slide(dir: DIR, level: Level) {
-        while (!level.hasCollision() && canMove(dir)) {
+        while (canMove(dir, level)) {
             this.move(dir)
         }
     }
