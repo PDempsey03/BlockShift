@@ -36,7 +36,7 @@
     <string name="username_criteria_two">Contain only alpha-numeric characters</string>
     <string name="password_criteria_title">Password Criteria</string>
     <string name="password_criteria_one">Contain %d - %d characters</string>
-    <string name="password_criteria_two">Contain at least one letter</string>
+    <string name="password_criteria_two">Contain at least one capital letter</string>
     <string name="password_criteria_three">Contain at least one digit</string>
     <string name="password_criteria_four">Cannot be the same as old password</string>
     <string name="confirm_password_criteria_title">Confirm Password Criteria</string>
