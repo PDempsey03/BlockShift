@@ -13,6 +13,7 @@ import com.blockshift.ui.mainpage.HomePageFragment
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
+import com.blockshift.ui.mainpage.HighScorePageFragment
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +37,7 @@ class SettingsActivity : AppCompatActivity() {
                 val fragment = when(tab?.position ?: 0) {
                     0 -> AccountSettingsFragment()
                     1 -> HomePageFragment()
-                    2 -> LoginFragment()
-                    3 -> CreateAccountFragment()
+                    2 -> HighScorePageFragment()
                     else -> null
                 }
                 if(fragment != null) {

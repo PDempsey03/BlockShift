@@ -18,16 +18,16 @@
             android:text="Account Settings"/>
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/settings_other1_tab"
+            android:id="@+id/settings_level_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Other1"/>
+            android:text="Level Select"/>
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/settings_other2_tab"
+            android:id="@+id/settings_high_scores"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="other2"/>
+            android:text="High Scores"/>
 
     </com.google.android.material.tabs.TabLayout>
 
