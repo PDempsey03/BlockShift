@@ -83,10 +83,11 @@ object HighScoreRepository {
             .addOnFailureListener(onFailureCallback)
     }
 
-    fun getHighScoresInRange(highScoreType: String, numRecords: Long, lastPreviousDocumentSnapshot: DocumentSnapshot?,
+    fun getHighScoresInRange(highScoreType: String, levelID: String, numRecords: Long, lastPreviousDocumentSnapshot: DocumentSnapshot?,
                              onSuccessCallback: (List<HighScoreData>?, DocumentSnapshot?) -> Unit,
                              onFailureCallback: (Exception) -> Unit) {
         var temp = dataBaseHighScores
+            .whereEqualTo(HighScoreTableNames.LEVEL_ID, levelID)
             .orderBy(highScoreType)
 
         if(lastPreviousDocumentSnapshot != null) {

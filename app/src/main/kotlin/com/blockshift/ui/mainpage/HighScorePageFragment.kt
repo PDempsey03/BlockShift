@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
@@ -27,9 +28,10 @@ class HighScorePageFragment : Fragment() {
 
     private val TAG: String = javaClass.simpleName
 
-    private val lastDocumentReferences: Stack<DocumentSnapshot?> = Stack<DocumentSnapshot?>()
-    private val documentsPerPage: Long = 3
+    private val lastDocumentSnapshots: Stack<DocumentSnapshot?> = Stack<DocumentSnapshot?>()
+    private val documentsPerPage: Long = 10
     private var currentStartingRank: Long = 1
+    private var selectedLevel = "1"
     private var selectedHighScoreType = HighScoreTableNames.TIME
 
     override fun onCreateView(
@@ -43,15 +45,12 @@ class HighScorePageFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.high_scores_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // make the last document null to start at the beginning
-        lastDocumentReferences.push(null)
-
-        // setup the adapter on page load
-        loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
+        // initialize the starting high score view
+        resetHighScorePage(recyclerView)
 
         val previousButton = view.findViewById<Button>(R.id.high_scores_previous_page_button)
         previousButton.setOnClickListener {
-            if(lastDocumentReferences.size > 2) {
+            if(lastDocumentSnapshots.size > 2) {
                 loadNewHighScorePage(selectedHighScoreType, recyclerView, false)
             }
         }
@@ -62,23 +61,60 @@ class HighScorePageFragment : Fragment() {
         }
 
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
-        val levelSelectData = listOf(1, 2, 3, 4, 5, 6, 8, 9, 10)
+        val levelSelectData = listOf(1, 2, 3, 4, 5, 6, 8, 9, 10) // TODO: change to searching files
         val levelSelectAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, levelSelectData)
         levelSelectSpinner.adapter = levelSelectAdapter
+        levelSelectSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val newLevel = levelSelectData[position].toString() // TODO: will need to change this as above TODO changes
+
+                if(newLevel != selectedLevel) {
+                    selectedLevel = newLevel
+                    resetHighScorePage(recyclerView)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        val highScoreTypeSpinner = view.findViewById<Spinner>(R.id.high_scores_high_score_type_drop_down)
+        val highScoreTypeData = listOf(HighScoreTableNames.TIME, HighScoreTableNames.MOVES, HighScoreTableNames.DISTANCE)
+        val highScoreTypeAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, highScoreTypeData)
+        highScoreTypeSpinner.adapter = highScoreTypeAdapter
+        highScoreTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                // update the selected high score type
+                val newHighScoreType = highScoreTypeData[position]
+
+                if(newHighScoreType != selectedHighScoreType) {
+                    selectedHighScoreType = newHighScoreType
+                    resetHighScorePage(recyclerView)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
 
         return view
+    }
+
+    private fun resetHighScorePage(recyclerView: RecyclerView) {
+        lastDocumentSnapshots.clear()
+        lastDocumentSnapshots.push(null)
+        currentStartingRank = 1
+        loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
     }
 
     private fun loadNewHighScorePage(highScoreType: String, recyclerView: RecyclerView, nextPage: Boolean) {
         // if we are going to a previous page, we need to update the most recent document to the old one
         if(!nextPage) {
-            lastDocumentReferences.pop()
-            lastDocumentReferences.pop()
+            lastDocumentSnapshots.pop()
+            lastDocumentSnapshots.pop()
             currentStartingRank -= (2 * documentsPerPage)
         }
 
-        HighScoreRepository.getHighScoresInRange(highScoreType, documentsPerPage, lastDocumentReferences.peek(),
-            { highScoreList, lastDocumentReference ->
+        HighScoreRepository.getHighScoresInRange(highScoreType, selectedLevel, documentsPerPage, lastDocumentSnapshots.peek(),
+            { highScoreList, lastDocumentSnapshot ->
             // only update if there is anything new in the list
             if(highScoreList != null) {
                 // update the high score adapter to display the current rankings
@@ -86,10 +122,14 @@ class HighScorePageFragment : Fragment() {
                 recyclerView.adapter = HighScoreAdapter(highScoreList, highScoreType, currentStartingRank)
 
                 // always push the most recent document snapshot to the stack
-                lastDocumentReferences.push(lastDocumentReference)
+                lastDocumentSnapshots.push(lastDocumentSnapshot)
 
                 currentStartingRank += documentsPerPage
             } else {
+                if(lastDocumentSnapshots.size <= 1) {
+                    // if there were no documents and no previous documents then no data exists
+                    recyclerView.adapter = null
+                }
                 Log.d(TAG, "list of high scores was null")
             }
         }, { exception ->
