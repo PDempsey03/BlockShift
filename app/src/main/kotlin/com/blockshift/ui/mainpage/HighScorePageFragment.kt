@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockshift.R
@@ -26,7 +28,7 @@ class HighScorePageFragment : Fragment() {
     private val TAG: String = javaClass.simpleName
 
     private val lastDocumentReferences: Stack<DocumentSnapshot?> = Stack<DocumentSnapshot?>()
-    private val documentsPerPage: Long = 10
+    private val documentsPerPage: Long = 3
     private var currentStartingRank: Long = 1
     private var selectedHighScoreType = HighScoreTableNames.TIME
 
@@ -58,6 +60,11 @@ class HighScorePageFragment : Fragment() {
         nextButton.setOnClickListener {
             loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
         }
+
+        val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
+        val levelSelectData = listOf(1, 2, 3, 4, 5, 6, 8, 9, 10)
+        val levelSelectAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, levelSelectData)
+        levelSelectSpinner.adapter = levelSelectAdapter
 
         return view
     }
