@@ -52,6 +52,12 @@
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
     <string name="logout_text">Logout</string>
 
+    <!-- High Scores -->
+    <string name="high_score_rank">Rank</string>
+    <string name="high_score_time">Time</string>
+    <string name="high_score_moves">Moves</string>
+    <string name="high_score_distance">Distance</string>
+
     <!-- Main Page -->
     <string name="continue_message">Continue</string>
     <string name="level_select_text">Level Select</string>

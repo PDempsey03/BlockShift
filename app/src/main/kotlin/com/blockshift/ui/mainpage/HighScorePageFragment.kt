@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockshift.R
@@ -44,6 +45,9 @@ class HighScorePageFragment : Fragment() {
         // setup recycler view
         val recyclerView: RecyclerView = view.findViewById(R.id.high_scores_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val highScoreTypeTextView = view.findViewById<TextView>(R.id.high_score_score_type)
+        updateHighScoreTypeColumnName(highScoreTypeTextView)
 
         // initialize the starting high score view
         resetHighScorePage(recyclerView)
@@ -82,12 +86,11 @@ class HighScorePageFragment : Fragment() {
         val highScoreTypeAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, highScoreTypeData)
         highScoreTypeSpinner.adapter = highScoreTypeAdapter
         highScoreTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                // update the selected high score type
+            override fun onItemSelected(parent: AdapterView<*>, innerView: View?, position: Int, id: Long) {
                 val newHighScoreType = highScoreTypeData[position]
-
                 if(newHighScoreType != selectedHighScoreType) {
                     selectedHighScoreType = newHighScoreType
+                    updateHighScoreTypeColumnName(highScoreTypeTextView)
                     resetHighScorePage(recyclerView)
                 }
             }
@@ -96,6 +99,15 @@ class HighScorePageFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun updateHighScoreTypeColumnName(highScoreTypeTextView: TextView) {
+        highScoreTypeTextView.text = when(selectedHighScoreType) {
+            HighScoreTableNames.TIME -> getString(R.string.high_score_time)
+            HighScoreTableNames.DISTANCE -> getString(R.string.high_score_distance)
+            HighScoreTableNames.MOVES -> getString(R.string.high_score_moves)
+            else -> "N/A"
+        }
     }
 
     private fun resetHighScorePage(recyclerView: RecyclerView) {
