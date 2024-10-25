@@ -1,7 +1,6 @@
 package com.blockshift.model.repositories
 
 import android.util.Log
-import com.google.common.collect.ImmutableList
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -83,7 +82,7 @@ object HighScoreRepository {
             .addOnFailureListener(onFailureCallback)
     }
 
-    fun getHighScoresInRange(highScoreType: String, startingValue: Int, endingValue: Int, onSuccessCallback: (MutableList<HighScoreData>?) -> Unit, onFailureCallback: (Exception) -> Unit) {
+    fun getHighScoresInRange(highScoreType: String, startingValue: Int, endingValue: Int, onSuccessCallback: (List<Pair<Int, HighScoreData>>?) -> Unit, onFailureCallback: (Exception) -> Unit) {
         dataBaseHighScores
             .orderBy(highScoreType)
             .startAt(startingValue)
@@ -94,9 +93,12 @@ object HighScoreRepository {
                     // if empty just return null so receiver knows to handle no elements
                     onSuccessCallback(null)
                 } else {
-                    // need to process the high scores somehow maybe into data
+                    // process the data into list
                     val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
-                    onSuccessCallback(highScoreDataList)
+                    val highScoreMap = highScoreDataList.mapIndexed {index, highScoreData ->
+                        (startingValue + index) to highScoreData
+                    }
+                    onSuccessCallback(highScoreMap)
                 }
             }
             .addOnFailureListener(onFailureCallback)
