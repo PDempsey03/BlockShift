@@ -2,6 +2,7 @@ package com.blockshift.model.repositories
 
 import android.util.Log
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 object HighScoreRepository {
@@ -14,7 +15,7 @@ object HighScoreRepository {
     }
 
     private fun loadUserDataBase(){
-        dataBaseHighScores = FirebaseFirestore.getInstance().collection(UserTableNames.USERS)
+        dataBaseHighScores = FirebaseFirestore.getInstance().collection(HighScoreTableNames.HIGH_SCORES)
     }
 
     fun updateHighScore(newHighScoreData: HighScoreData, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
@@ -82,38 +83,58 @@ object HighScoreRepository {
             .addOnFailureListener(onFailureCallback)
     }
 
-    fun getHighScoresInRange(highScoreType: String, startingValue: Int, endingValue: Int, onSuccessCallback: (List<Pair<Int, HighScoreData>>?) -> Unit, onFailureCallback: (Exception) -> Unit) {
-        dataBaseHighScores
+    fun getHighScoresInRange(highScoreType: String, numRecords: Long, lastPreviousDocumentSnapshot: DocumentSnapshot?,
+                             onSuccessCallback: (List<HighScoreData>?, DocumentSnapshot?) -> Unit,
+                             onFailureCallback: (Exception) -> Unit) {
+        var temp = dataBaseHighScores
             .orderBy(highScoreType)
-            .startAt(startingValue)
-            .endAt(endingValue)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                if(querySnapshot.isEmpty) {
-                    // if empty just return null so receiver knows to handle no elements
-                    onSuccessCallback(null)
-                } else {
-                    // process the data into list
-                    val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
-                    val highScoreMap = highScoreDataList.mapIndexed {index, highScoreData ->
-                        (startingValue + index) to highScoreData
+
+        if(lastPreviousDocumentSnapshot != null) {
+            temp
+                .startAfter(lastPreviousDocumentSnapshot)
+                .limit(numRecords)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    if(querySnapshot.isEmpty) {
+                        // if empty just return null so receiver knows to handle no elements
+                        onSuccessCallback(null, null)
+                    } else {
+                        // process the data into list
+                        val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
+                        onSuccessCallback(highScoreDataList, querySnapshot.documents[querySnapshot.size() - 1])
                     }
-                    onSuccessCallback(highScoreMap)
                 }
-            }
-            .addOnFailureListener(onFailureCallback)
+                .addOnFailureListener(onFailureCallback)
+        } else {
+            temp
+                .limit(numRecords)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    if(querySnapshot.isEmpty) {
+                        // if empty just return null so receiver knows to handle no elements
+                        onSuccessCallback(null, null)
+                    } else {
+                        // process the data into list
+                        val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
+                        onSuccessCallback(highScoreDataList, querySnapshot.documents[querySnapshot.size() - 1])
+                    }
+                }
+                .addOnFailureListener(onFailureCallback)
+        }
+
     }
 }
 
 data class HighScoreData(
     val username: String = "",
     val levelID: String = "",
-    val distance: Int = Int.MAX_VALUE,
-    val moves: Int = Int.MAX_VALUE,
+    val distance: Long = Long.MAX_VALUE,
+    val moves: Long = Long.MAX_VALUE,
     val time: Long = Long.MAX_VALUE
 )
 
 internal object HighScoreTableNames{
+    const val HIGH_SCORES = "highscores"
     const val LEVEL_ID = "levelid"
     const val DISTANCE = "distance"
     const val TIME = "time"
