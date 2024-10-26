@@ -126,6 +126,13 @@ class HighScorePageFragment : Fragment() {
     }
 
     private fun loadNewPage(recyclerView: RecyclerView, nextPage: Boolean) {
+        // handle case of empty list
+        if(highScoreDataList.isEmpty()) {
+            recyclerView.adapter = HighScoreAdapter(listOf(), selectedHighScoreType, nextStartingRank)
+            // TODO: Do something here to show that no data is available
+            return
+        }
+
         // calculate new indices for page
         val startingIndex = nextStartingRank - 1 - (if(nextPage) 0 else 2 * highScoresPerPage)
         val maxAllowedIndex = highScoreDataList.size
@@ -149,7 +156,7 @@ class HighScorePageFragment : Fragment() {
                 highScoreDataList = highScoreList
                 loadNewPage(recyclerView, true)
         }, { exception ->
-            // TODO: display some kind of message saying there was an error
+            highScoreDataList = listOf()
             Log.e(TAG, "Failed to load high scores", exception)
         })
     }
