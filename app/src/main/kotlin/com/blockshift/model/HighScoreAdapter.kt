@@ -9,7 +9,7 @@ import com.blockshift.R
 import com.blockshift.model.repositories.HighScoreData
 import com.blockshift.model.repositories.HighScoreTableNames
 
-class HighScoreAdapter(private val highScores: List<HighScoreData>, private val highScoreType: String, private val startingRank: Long) : RecyclerView.Adapter<HighScoreAdapter.HighScoreViewHolder>() {
+class HighScoreAdapter(private val highScores: List<HighScoreData>, private val highScoreType: String, private val startingRank: Int) : RecyclerView.Adapter<HighScoreAdapter.HighScoreViewHolder>() {
 
     class HighScoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val rankTextView: TextView = itemView.findViewById(R.id.high_score_row_item_rank)

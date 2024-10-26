@@ -83,46 +83,17 @@ object HighScoreRepository {
             .addOnFailureListener(onFailureCallback)
     }
 
-    fun getHighScoresInRange(highScoreType: String, levelID: String, numRecords: Long, lastPreviousDocumentSnapshot: DocumentSnapshot?,
-                             onSuccessCallback: (List<HighScoreData>?, DocumentSnapshot?) -> Unit,
-                             onFailureCallback: (Exception) -> Unit) {
-        var temp = dataBaseHighScores
+    fun getHighScoresInRange(highScoreType: String, levelID: String, documentsToGet: Long,
+                             onSuccessCallback: (List<HighScoreData>) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseHighScores
             .whereEqualTo(HighScoreTableNames.LEVEL_ID, levelID)
             .orderBy(highScoreType)
-
-        if(lastPreviousDocumentSnapshot != null) {
-            temp
-                .startAfter(lastPreviousDocumentSnapshot)
-                .limit(numRecords)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    if(querySnapshot.isEmpty) {
-                        // if empty just return null so receiver knows to handle no elements
-                        onSuccessCallback(null, null)
-                    } else {
-                        // process the data into list
-                        val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
-                        onSuccessCallback(highScoreDataList, querySnapshot.documents[querySnapshot.size() - 1])
-                    }
-                }
-                .addOnFailureListener(onFailureCallback)
-        } else {
-            temp
-                .limit(numRecords)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    if(querySnapshot.isEmpty) {
-                        // if empty just return null so receiver knows to handle no elements
-                        onSuccessCallback(null, null)
-                    } else {
-                        // process the data into list
-                        val highScoreDataList = querySnapshot.toObjects(HighScoreData::class.java)
-                        onSuccessCallback(highScoreDataList, querySnapshot.documents[querySnapshot.size() - 1])
-                    }
-                }
-                .addOnFailureListener(onFailureCallback)
-        }
-
+            .limit(documentsToGet)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                onSuccessCallback(querySnapshot.toObjects(HighScoreData::class.java))
+            }
+            .addOnFailureListener(onFailureCallback)
     }
 }
 

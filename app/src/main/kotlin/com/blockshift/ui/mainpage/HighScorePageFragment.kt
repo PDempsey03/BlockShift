@@ -15,10 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockshift.R
 import com.blockshift.model.HighScoreAdapter
+import com.blockshift.model.repositories.HighScoreData
 import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
-import com.google.firebase.firestore.DocumentSnapshot
-import java.util.Stack
 import kotlin.math.min
 
 /**
@@ -30,9 +29,9 @@ class HighScorePageFragment : Fragment() {
 
     private val TAG: String = javaClass.simpleName
 
-    private val lastDocumentSnapshots: Stack<DocumentSnapshot?> = Stack<DocumentSnapshot?>()
-    private val documentsPerPage: Long = 3
-    private var currentStartingRank: Long = 1
+    private lateinit var highScoreDataList: List<HighScoreData>
+    private val highScoresPerPage = 3
+    private var nextStartingRank = 1
     private val maxDisplayRank: Long = 5
     private var selectedLevel = "1"
     private var selectedHighScoreType = HighScoreTableNames.TIME
@@ -52,32 +51,30 @@ class HighScorePageFragment : Fragment() {
         updateHighScoreTypeColumnName(highScoreTypeTextView)
 
         // initialize the starting high score view
-        resetHighScorePage(recyclerView)
+        loadNewHighScoreData(recyclerView)
 
         val previousButton = view.findViewById<ImageButton>(R.id.high_scores_previous_page_button)
         previousButton.setOnClickListener {
-            if(lastDocumentSnapshots.size > 2) {
-                loadNewHighScorePage(selectedHighScoreType, recyclerView, false)
-            }
+            loadNewPage(recyclerView, false)
         }
 
         val nextButton = view.findViewById<ImageButton>(R.id.high_scores_next_page_button)
         nextButton.setOnClickListener {
-            if(currentStartingRank <= maxDisplayRank) {
-                loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
-            }
+            loadNewPage(recyclerView, true)
         }
 
         val firstPageButton = view.findViewById<ImageButton>(R.id.high_scores_first_page_button)
         firstPageButton.setOnClickListener {
-            if(lastDocumentSnapshots.size > 2) {
-                resetHighScorePage(recyclerView)
-            }
+            nextStartingRank = 1
+            loadNewPage(recyclerView, true)
         }
 
         val lastPageButton = view.findViewById<ImageButton>(R.id.high_scores_last_page_button)
         lastPageButton.setOnClickListener {
-
+            val dataSize = highScoreDataList.size
+            val elementsOnLastPage = dataSize % highScoresPerPage
+            nextStartingRank = dataSize + 1 - if(elementsOnLastPage == 0) highScoresPerPage else elementsOnLastPage
+            loadNewPage(recyclerView, true)
         }
 
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
@@ -90,7 +87,8 @@ class HighScorePageFragment : Fragment() {
 
                 if(newLevel != selectedLevel) {
                     selectedLevel = newLevel
-                    resetHighScorePage(recyclerView)
+                    nextStartingRank = 1
+                    loadNewHighScoreData(recyclerView)
                 }
             }
 
@@ -106,8 +104,9 @@ class HighScorePageFragment : Fragment() {
                 val newHighScoreType = highScoreTypeData[position]
                 if(newHighScoreType != selectedHighScoreType) {
                     selectedHighScoreType = newHighScoreType
+                    nextStartingRank = 1
                     updateHighScoreTypeColumnName(highScoreTypeTextView)
-                    resetHighScorePage(recyclerView)
+                    loadNewHighScoreData(recyclerView)
                 }
             }
 
@@ -126,43 +125,31 @@ class HighScorePageFragment : Fragment() {
         }
     }
 
-    private fun resetHighScorePage(recyclerView: RecyclerView) {
-        lastDocumentSnapshots.clear()
-        lastDocumentSnapshots.push(null)
-        currentStartingRank = 1
-        loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
+    private fun loadNewPage(recyclerView: RecyclerView, nextPage: Boolean) {
+        // calculate new indices for page
+        val startingIndex = nextStartingRank - 1 - (if(nextPage) 0 else 2 * highScoresPerPage)
+        val maxAllowedIndex = highScoreDataList.size
+        val endingIndex = min(startingIndex + highScoresPerPage, maxAllowedIndex)
+
+        // only load new page if the requested indices are valid
+        if(startingIndex in 0..<maxAllowedIndex) {
+            if(!nextPage) nextStartingRank = startingIndex + 1
+
+            // get the data elements to show on page and update the adapter to show them
+            val subList = highScoreDataList.subList(startingIndex, endingIndex)
+            recyclerView.adapter = HighScoreAdapter(subList, selectedHighScoreType, nextStartingRank)
+
+            nextStartingRank += highScoresPerPage
+        }
     }
 
-    private fun loadNewHighScorePage(highScoreType: String, recyclerView: RecyclerView, nextPage: Boolean) {
-        // if we are going to a previous page, we need to update the most recent document to the old one
-        if(!nextPage) {
-            lastDocumentSnapshots.pop()
-            lastDocumentSnapshots.pop()
-            currentStartingRank -= (2 * documentsPerPage)
-        }
-
-        val recordsToGet = min(documentsPerPage, maxDisplayRank - currentStartingRank + 1)
-
-        HighScoreRepository.getHighScoresInRange(highScoreType, selectedLevel, recordsToGet, lastDocumentSnapshots.peek(),
-            { highScoreList, lastDocumentSnapshot ->
-            // only update if there is anything new in the list
-            if(highScoreList != null) {
-                // update the high score adapter to display the current rankings
-                Log.d(TAG, "High scores should be displaying")
-                recyclerView.adapter = HighScoreAdapter(highScoreList, highScoreType, currentStartingRank)
-
-                // always push the most recent document snapshot to the stack
-                lastDocumentSnapshots.push(lastDocumentSnapshot)
-
-                currentStartingRank += documentsPerPage
-            } else {
-                if(lastDocumentSnapshots.size <= 1) {
-                    // if there were no documents and no previous documents then no data exists
-                    recyclerView.adapter = null
-                }
-                Log.d(TAG, "list of high scores was null")
-            }
+    private fun loadNewHighScoreData(recyclerView: RecyclerView) {
+        HighScoreRepository.getHighScoresInRange(selectedHighScoreType, selectedLevel, maxDisplayRank,
+            { highScoreList ->
+                highScoreDataList = highScoreList
+                loadNewPage(recyclerView, true)
         }, { exception ->
+            // TODO: display some kind of message saying there was an error
             Log.e(TAG, "Failed to load high scores", exception)
         })
     }
