@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +19,7 @@ import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
 import com.google.firebase.firestore.DocumentSnapshot
 import java.util.Stack
+import kotlin.math.min
 
 /**
  * A simple [Fragment] subclass.
@@ -30,8 +31,9 @@ class HighScorePageFragment : Fragment() {
     private val TAG: String = javaClass.simpleName
 
     private val lastDocumentSnapshots: Stack<DocumentSnapshot?> = Stack<DocumentSnapshot?>()
-    private val documentsPerPage: Long = 10
+    private val documentsPerPage: Long = 3
     private var currentStartingRank: Long = 1
+    private val maxDisplayRank: Long = 5
     private var selectedLevel = "1"
     private var selectedHighScoreType = HighScoreTableNames.TIME
 
@@ -52,16 +54,30 @@ class HighScorePageFragment : Fragment() {
         // initialize the starting high score view
         resetHighScorePage(recyclerView)
 
-        val previousButton = view.findViewById<Button>(R.id.high_scores_previous_page_button)
+        val previousButton = view.findViewById<ImageButton>(R.id.high_scores_previous_page_button)
         previousButton.setOnClickListener {
             if(lastDocumentSnapshots.size > 2) {
                 loadNewHighScorePage(selectedHighScoreType, recyclerView, false)
             }
         }
 
-        val nextButton = view.findViewById<Button>(R.id.high_scores_next_page_button)
+        val nextButton = view.findViewById<ImageButton>(R.id.high_scores_next_page_button)
         nextButton.setOnClickListener {
-            loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
+            if(currentStartingRank <= maxDisplayRank) {
+                loadNewHighScorePage(selectedHighScoreType, recyclerView, true)
+            }
+        }
+
+        val firstPageButton = view.findViewById<ImageButton>(R.id.high_scores_first_page_button)
+        firstPageButton.setOnClickListener {
+            if(lastDocumentSnapshots.size > 2) {
+                resetHighScorePage(recyclerView)
+            }
+        }
+
+        val lastPageButton = view.findViewById<ImageButton>(R.id.high_scores_last_page_button)
+        lastPageButton.setOnClickListener {
+
         }
 
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
@@ -125,7 +141,9 @@ class HighScorePageFragment : Fragment() {
             currentStartingRank -= (2 * documentsPerPage)
         }
 
-        HighScoreRepository.getHighScoresInRange(highScoreType, selectedLevel, documentsPerPage, lastDocumentSnapshots.peek(),
+        val recordsToGet = min(documentsPerPage, maxDisplayRank - currentStartingRank + 1)
+
+        HighScoreRepository.getHighScoresInRange(highScoreType, selectedLevel, recordsToGet, lastDocumentSnapshots.peek(),
             { highScoreList, lastDocumentSnapshot ->
             // only update if there is anything new in the list
             if(highScoreList != null) {
