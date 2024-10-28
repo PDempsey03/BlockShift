@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +31,9 @@ class HighScorePageFragment : Fragment() {
     private val TAG: String = javaClass.simpleName
 
     private lateinit var highScoreDataList: List<HighScoreData>
-    private val highScoresPerPage = 3
+    private val highScoresPerPage = 10
     private var nextStartingRank = 1
-    private val maxDisplayRank: Long = 5
+    private val maxDisplayRank: Long = 1000
     private var selectedLevel = "1"
     private var selectedHighScoreType = HighScoreTableNames.TIME
 
@@ -47,26 +48,30 @@ class HighScorePageFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.high_scores_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        val noDataTextView = view.findViewById<TextView>(R.id.high_score_no_data_text)
+
+        val columnTitlesLayout = view.findViewById<LinearLayout>(R.id.high_score_column_titles)
+
         val highScoreTypeTextView = view.findViewById<TextView>(R.id.high_score_score_type)
         updateHighScoreTypeColumnName(highScoreTypeTextView)
 
         // initialize the starting high score view
-        loadNewHighScoreData(recyclerView)
+        loadNewHighScoreData(recyclerView, noDataTextView, columnTitlesLayout)
 
         val previousButton = view.findViewById<ImageButton>(R.id.high_scores_previous_page_button)
         previousButton.setOnClickListener {
-            loadNewPage(recyclerView, false)
+            loadNewPage(recyclerView, noDataTextView, columnTitlesLayout,false)
         }
 
         val nextButton = view.findViewById<ImageButton>(R.id.high_scores_next_page_button)
         nextButton.setOnClickListener {
-            loadNewPage(recyclerView, true)
+            loadNewPage(recyclerView, noDataTextView, columnTitlesLayout,true)
         }
 
         val firstPageButton = view.findViewById<ImageButton>(R.id.high_scores_first_page_button)
         firstPageButton.setOnClickListener {
             nextStartingRank = 1
-            loadNewPage(recyclerView, true)
+            loadNewPage(recyclerView, noDataTextView, columnTitlesLayout,true)
         }
 
         val lastPageButton = view.findViewById<ImageButton>(R.id.high_scores_last_page_button)
@@ -74,7 +79,7 @@ class HighScorePageFragment : Fragment() {
             val dataSize = highScoreDataList.size
             val elementsOnLastPage = dataSize % highScoresPerPage
             nextStartingRank = dataSize + 1 - if(elementsOnLastPage == 0) highScoresPerPage else elementsOnLastPage
-            loadNewPage(recyclerView, true)
+            loadNewPage(recyclerView, noDataTextView, columnTitlesLayout,true)
         }
 
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
@@ -88,7 +93,7 @@ class HighScorePageFragment : Fragment() {
                 if(newLevel != selectedLevel) {
                     selectedLevel = newLevel
                     nextStartingRank = 1
-                    loadNewHighScoreData(recyclerView)
+                    loadNewHighScoreData(recyclerView, noDataTextView, columnTitlesLayout)
                 }
             }
 
@@ -106,7 +111,7 @@ class HighScorePageFragment : Fragment() {
                     selectedHighScoreType = newHighScoreType
                     nextStartingRank = 1
                     updateHighScoreTypeColumnName(highScoreTypeTextView)
-                    loadNewHighScoreData(recyclerView)
+                    loadNewHighScoreData(recyclerView, noDataTextView, columnTitlesLayout)
                 }
             }
 
@@ -125,13 +130,23 @@ class HighScorePageFragment : Fragment() {
         }
     }
 
-    private fun loadNewPage(recyclerView: RecyclerView, nextPage: Boolean) {
+    private fun loadNewPage(recyclerView: RecyclerView, noDataTextView: TextView, columnTitlesLayout: LinearLayout, nextPage: Boolean) {
         // handle case of empty list
         if(highScoreDataList.isEmpty()) {
-            recyclerView.adapter = HighScoreAdapter(listOf(), selectedHighScoreType, nextStartingRank)
-            // TODO: Do something here to show that no data is available
+            if(noDataTextView.visibility != View.VISIBLE) {
+                recyclerView.adapter = HighScoreAdapter(listOf(), selectedHighScoreType, nextStartingRank)
+
+                recyclerView.visibility = View.GONE
+                noDataTextView.visibility = View.VISIBLE
+                columnTitlesLayout.visibility = View.GONE
+            }
             return
         }
+
+        // always handle visibility just in case
+        recyclerView.visibility = View.VISIBLE
+        noDataTextView.visibility = View.GONE
+        columnTitlesLayout.visibility = View.VISIBLE
 
         // calculate new indices for page
         val startingIndex = nextStartingRank - 1 - (if(nextPage) 0 else 2 * highScoresPerPage)
@@ -150,11 +165,11 @@ class HighScorePageFragment : Fragment() {
         }
     }
 
-    private fun loadNewHighScoreData(recyclerView: RecyclerView) {
+    private fun loadNewHighScoreData(recyclerView: RecyclerView, noDataTextView: TextView, columnTitlesLayout: LinearLayout) {
         HighScoreRepository.getHighScoresInRange(selectedHighScoreType, selectedLevel, maxDisplayRank,
             { highScoreList ->
                 highScoreDataList = highScoreList
-                loadNewPage(recyclerView, true)
+                loadNewPage(recyclerView, noDataTextView, columnTitlesLayout, true)
         }, { exception ->
             highScoreDataList = listOf()
             Log.e(TAG, "Failed to load high scores", exception)

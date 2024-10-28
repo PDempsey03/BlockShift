@@ -101,12 +101,22 @@
             app:cardElevation="5dp"
             app:cardBackgroundColor="#E1E1E1">
 
+            <TextView
+                android:id="@+id/high_score_no_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:paddingVertical="16dp"
+                android:text="No Available Data"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/high_score_column_titles"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
