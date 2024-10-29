@@ -51,6 +51,7 @@
     <string name="delete_account_text">Delete Account</string>
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
     <string name="logout_text">Logout</string>
+    <string name="play_guest">Play as Guest</string>
 
     <!-- Main Page -->
     <string name="continue_message">Continue</string>
