@@ -28,7 +28,7 @@ internal object LoginManager {
     private const val HASH_ITERATION_COUNT = 2048
     private const val SALT_LENGTH = 16 // bytes
     private const val AUTH_TOKEN_LENGTH = 32 // bytes
-    private const val AUTH_TOKEN_EXPIRATION_DURATION = 100000  // ms TODO: make longer time like days or weeks (100 seconds right now)
+    private const val AUTH_TOKEN_EXPIRATION_DURATION: Long = 2419000000L // 4 weeks
     private val hashFactory: SecretKeyFactory = SecretKeyFactory.getInstance(HASH_FUNCTION)
     private val TAG: String = javaClass.simpleName
 
