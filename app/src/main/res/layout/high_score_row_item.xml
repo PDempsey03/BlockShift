@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingVertical="10dp">
+    android:paddingVertical="5dp">
 
     <TextView
         android:id="@+id/high_score_row_item_rank"
@@ -11,17 +11,29 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="1"
-        android:textAlignment="center"
         android:textSize="16dp" />
 
-    <TextView
-        android:id="@+id/high_score_row_item_username"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:textAlignment="center"
-        android:text="Username"
-        android:textSize="16dp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/high_score_row_item_display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="DisplayName"/>
+
+        <TextView
+            android:id="@+id/high_score_row_item_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:text="\@Username"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/high_score_row_item_score"

@@ -106,6 +106,11 @@ data class HighScoreData(
     val time: Long = Long.MAX_VALUE
 )
 
+data class HighScoreDisplayData(
+    val highScoreData: HighScoreData,
+    val userData: UserData
+)
+
 internal object HighScoreTableNames{
     const val HIGH_SCORES = "highscores"
     const val LEVEL_ID = "levelid"

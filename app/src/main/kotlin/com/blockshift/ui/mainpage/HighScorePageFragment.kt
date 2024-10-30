@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockshift.R
 import com.blockshift.model.HighScoreAdapter
-import com.blockshift.model.repositories.HighScoreData
+import com.blockshift.model.repositories.HighScoreDisplayData
 import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
+import com.blockshift.model.repositories.UserData
+import com.blockshift.model.repositories.UserRepository
 import kotlin.math.min
 
 /**
@@ -30,7 +32,7 @@ class HighScorePageFragment : Fragment() {
 
     private val TAG: String = javaClass.simpleName
 
-    private lateinit var highScoreDataList: List<HighScoreData>
+    private lateinit var highScoreDataList: List<HighScoreDisplayData>
     private val highScoresPerPage = 10
     private var nextStartingRank = 1
     private val maxDisplayRank: Long = 1000
@@ -173,12 +175,23 @@ class HighScorePageFragment : Fragment() {
     private fun loadNewHighScoreData(recyclerView: RecyclerView, noDataTextView: TextView, columnTitlesLayout: LinearLayout) {
         HighScoreRepository.getHighScoresInRange(selectedHighScoreType, selectedLevel, maxDisplayRank,
             { highScoreList ->
-                highScoreDataList = highScoreList
-                nextStartingRank = 1
-                loadNewPage(recyclerView, noDataTextView, columnTitlesLayout, true)
+
+                val usernames = highScoreList.map { it.username }
+
+                // once retrieved the high scores, query the user database to find matching users
+                UserRepository.getUsers(usernames, { userDataList ->
+                    highScoreDataList = highScoreList.map { highScoreData ->
+                        HighScoreDisplayData(highScoreData, userDataList.find { userData ->
+                        userData.username == highScoreData.username } ?: UserData("???", "???")) }
+                    nextStartingRank = 1
+                    loadNewPage(recyclerView, noDataTextView, columnTitlesLayout, true)
+                }, { exception ->
+                    highScoreDataList = listOf()
+                    Log.e(TAG, "Failed to load high scores (User Section)", exception)
+                })
         }, { exception ->
             highScoreDataList = listOf()
-            Log.e(TAG, "Failed to load high scores", exception)
+            Log.e(TAG, "Failed to load high scores (High Score Section)", exception)
         })
     }
 
