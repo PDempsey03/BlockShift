@@ -82,6 +82,11 @@ class HighScorePageFragment : Fragment() {
             loadNewPage(recyclerView, noDataTextView, columnTitlesLayout,true)
         }
 
+        val refreshButton = view.findViewById<ImageButton>(R.id.high_score_refresh_button)
+        refreshButton.setOnClickListener {
+            loadNewHighScoreData(recyclerView, noDataTextView, columnTitlesLayout)
+        }
+
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
         val levelSelectData = listOf(1, 2, 3, 4, 5, 6, 8, 9, 10) // TODO: change to searching files
         val levelSelectAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, levelSelectData)
@@ -169,6 +174,7 @@ class HighScorePageFragment : Fragment() {
         HighScoreRepository.getHighScoresInRange(selectedHighScoreType, selectedLevel, maxDisplayRank,
             { highScoreList ->
                 highScoreDataList = highScoreList
+                nextStartingRank = 1
                 loadNewPage(recyclerView, noDataTextView, columnTitlesLayout, true)
         }, { exception ->
             highScoreDataList = listOf()

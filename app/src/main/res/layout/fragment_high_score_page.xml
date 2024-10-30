@@ -177,10 +177,12 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_navigate_before_24" />
 
-            <Space
+            <ImageButton
+                android:id="@+id/high_score_refresh_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:src="@drawable/baseline_refresh_24"/>
 
             <ImageButton
                 android:id="@+id/high_scores_next_page_button"
