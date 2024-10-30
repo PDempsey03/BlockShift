@@ -23,6 +23,10 @@ object UserRepository {
     }
 
     fun startListeningForUser(viewModel: UserViewModel) {
+        // remove any previous potential user listeners
+        listenerRegistration?.remove()
+        listenerRegistration = null
+
         val userData = viewModel.currentUser.value ?: return
 
         val username = userData.username
@@ -43,11 +47,6 @@ object UserRepository {
                     if(newUserData != null) viewModel.currentUser.value = newUserData
                 }
             }
-    }
-
-    fun stopListeningForUser() {
-        listenerRegistration?.remove()
-        listenerRegistration = null
     }
 
     fun createUser(username: String, password: String, onSuccessCallback: (AccountCreationResult) -> Unit, onFailureCallback: (Exception) -> Unit) {
