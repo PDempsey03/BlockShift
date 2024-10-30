@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 
 object HighScoreRepository {
     private lateinit var dataBaseHighScores: CollectionReference
@@ -21,7 +22,7 @@ object HighScoreRepository {
     fun updateHighScore(newHighScoreData: HighScoreData, onSuccessCallback: (Boolean) -> Unit, onFailureCallback: (Exception) -> Unit) {
         dataBaseHighScores
             .whereEqualTo(UserTableNames.USERNAME, newHighScoreData.username)
-            .whereEqualTo(HighScoreTableNames.LEVEL_ID, newHighScoreData.levelID)
+            .whereEqualTo(HighScoreTableNames.LEVEL_ID, newHighScoreData.levelid)
             .limit(1)
             .get()
             .addOnSuccessListener { querySnapshot ->
@@ -89,7 +90,7 @@ object HighScoreRepository {
             .whereEqualTo(HighScoreTableNames.LEVEL_ID, levelID)
             .orderBy(highScoreType)
             .limit(documentsToGet)
-            .get()
+            .get(Source.SERVER)
             .addOnSuccessListener { querySnapshot ->
                 onSuccessCallback(querySnapshot.toObjects(HighScoreData::class.java))
             }
@@ -99,7 +100,7 @@ object HighScoreRepository {
 
 data class HighScoreData(
     val username: String = "",
-    val levelID: String = "",
+    val levelid: String = "",
     val distance: Long = Long.MAX_VALUE,
     val moves: Long = Long.MAX_VALUE,
     val time: Long = Long.MAX_VALUE
