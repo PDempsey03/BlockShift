@@ -6,6 +6,7 @@ import com.blockshift.model.login.UserViewModel
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.toObject
 
 object UserRepository {
     private lateinit var dataBaseUsers: CollectionReference
@@ -23,6 +24,10 @@ object UserRepository {
     }
 
     fun startListeningForUser(viewModel: UserViewModel) {
+        // remove any previous potential user listeners
+        listenerRegistration?.remove()
+        listenerRegistration = null
+
         val userData = viewModel.currentUser.value ?: return
 
         val username = userData.username
@@ -43,11 +48,6 @@ object UserRepository {
                     if(newUserData != null) viewModel.currentUser.value = newUserData
                 }
             }
-    }
-
-    fun stopListeningForUser() {
-        listenerRegistration?.remove()
-        listenerRegistration = null
     }
 
     fun createUser(username: String, password: String, onSuccessCallback: (AccountCreationResult) -> Unit, onFailureCallback: (Exception) -> Unit) {
@@ -249,6 +249,18 @@ object UserRepository {
                 userDoc.update(UserTableNames.AUTHENTICATION, authData)
                 onSuccessCallback(true)
             }.addOnFailureListener(onFailureCallback)
+    }
+
+    fun getUsers(usernames: List<String>, onSuccessCallback: (List<UserData>) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseUsers
+            .whereIn(UserTableNames.USERNAME, usernames)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                onSuccessCallback(querySnapshot.documents.map {
+                    it.toObject(CompleteUserData::class.java)?.toUserData() ?: UserData("???", "???")
+                })
+            }
+            .addOnFailureListener(onFailureCallback)
     }
 }
 
