@@ -9,79 +9,66 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.blockshift.BigBlock.Companion.DIR.*
+import com.blockshift.Block.Companion.DIR.*
 
 class GameScreen : Screen {
+    // world parameters
+    companion object {
+        const val TILES_PER_ROW = 5
+        const val TILES_PER_COL = 5
+        const val TILE_WIDTH = 16f
+        const val SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW).toFloat()
+        const val SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL).toFloat()
+    }
+
     // screen
-    private var camera: Camera
-    private var viewport: Viewport
+    private var camera: Camera = OrthographicCamera()
+    private var viewport: Viewport = StretchViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera)
 
     // graphics
-    private var batch: SpriteBatch
-    private var background: Texture
-    private var playerTexture: Texture
-    private var blockTexture: Texture
+    private var batch: SpriteBatch = SpriteBatch()
+
+    // load textures
+    private var background: Texture = Texture("flat_brown.png")
+    private var playerTexture: Texture = Texture("player.png")
+    private var blockTexture: Texture = Texture("Block.png")
 
     // timing
 
-    // world paramters
-    companion object {
-        val blocksPerRow = 6
-        val blocksPerCol = 8
-        val blockWidth = 16f
-        val screenWidth = (blockWidth * blocksPerRow).toFloat()
-        val screenHeight = (blockWidth * blocksPerCol).toFloat()
-    }
-
     // game objects
-    private var level: Level
-    private var player: Player
-//    private var block: Block
-    private var bigB: BigBlock
-    private var bigB2: BigBlock
-    private var bigBlocks: Set<BigBlock>
-
-    init {
-        camera = OrthographicCamera()
-        viewport = StretchViewport(screenWidth, screenHeight, camera)
-
-        // load textures
-        background = Texture("flat_brown.png")
-        playerTexture = Texture("player.png")
-        blockTexture = Texture("block.png")
-
-        // set up game objects
-        player = Player(1, blockWidth, playerTexture)
-        bigB = BigBlock(1, setOf(
-            Block(3, blockWidth, blockTexture),
-            Block(4, blockWidth, blockTexture),
-            Block(5, blockWidth, blockTexture),
-            ))
-        bigB2 = BigBlock(2, setOf(
-            Block(7, blockWidth, blockTexture),
-            Block(8, blockWidth, blockTexture),
-
-            ))
-
-        bigBlocks = setOf(bigB, bigB2)
-
-        level = Level(player, bigBlocks)
-
-        batch = SpriteBatch()
-    }
+    private var player: Block = Block(0, setOf(Tile(11, TILE_WIDTH, false, playerTexture)))
+    private var b1: Block = Block(1, setOf
+        (
+        Tile(6, TILE_WIDTH, false, blockTexture),
+        Tile(7, TILE_WIDTH, false, blockTexture),
+        Tile(15, TILE_WIDTH, false, blockTexture),
+        Tile(16, TILE_WIDTH, false, blockTexture),
+        Tile(17, TILE_WIDTH, false, blockTexture),
+        Tile(12, TILE_WIDTH, false, blockTexture),
+        ))
+    private var blocks: Set<Block> = setOf(player, b1)
+    private var level: Level = Level(blocks)
 
     override fun render(delta: Float) {
         batch.begin()
 
+        resetMoveFlags()
         detectInput()
 
         // static bg
         renderBg(delta)
 
-        // blocks
+        // tiles
         level.draw(batch)
 
         batch.end()
+    }
+
+    private fun resetMoveFlags() {
+        for (block in blocks) {
+            block.ignoredIds = mutableSetOf(block.id)
+            block.hasMoved = false
+        }
     }
 
     private fun detectInput() {
@@ -100,11 +87,11 @@ class GameScreen : Screen {
         }
 
         // touch input
-
+//        TODO("holdable")
     }
 
     private fun renderBg(delta: Float) {
-        batch.draw(background, 0f, 0f, screenWidth, screenHeight)
+        batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
     }
 
     override fun resize(width: Int, height: Int) {

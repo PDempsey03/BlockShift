@@ -2,29 +2,31 @@ package com.blockshift
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.blockshift.GameScreen.Companion.blocksPerCol
-import com.blockshift.GameScreen.Companion.blocksPerRow
+import com.blockshift.GameScreen.Companion.TILES_PER_COL
+import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
 // Tile is a movable 1x1 square object
-abstract class Tile (var idx: Int, val width: Float, val tileTexture: Texture) {
+// idx is a value between 0 and TILES_PER_COL * TILES_PER_ROW - 1
+// where 0 is the top-left and the max index is the bottom-right:
+// 0 1 2
+// 3 . .
+// . . n
+class Tile (var idx: Int, val width: Float, val isHoldable: Boolean, val tileTexture: Texture) {
     var x: Float = 0f
     var y: Float = 0f
-    var isMoving: Boolean = false
-    var wasMoved: Boolean = false
-    abstract val isHoldable: Boolean
-    val id: Int = 0
+    var id: Int = 0
 
     init {
         update(idx)
     }
 
-    open fun update(idx: Int) {
+    fun update(idx: Int) {
         this.idx = idx
-        y = (blocksPerCol - 1 - (idx / blocksPerRow)) * width
-        x = (idx % blocksPerRow) * width
+        y = (TILES_PER_COL - 1 - (idx / TILES_PER_ROW)) * width
+        x = (idx % TILES_PER_ROW) * width
     }
 
-    open fun draw(batch: Batch) {
+    fun draw(batch: Batch) {
         batch.draw(tileTexture, x, y, width, width)
     }
 }

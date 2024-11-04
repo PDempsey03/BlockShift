@@ -1,42 +1,68 @@
 package com.blockshift
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.blockshift.Block.Companion.DIR
+import com.blockshift.Block.Companion.DIR.*
+import com.blockshift.GameScreen.Companion.TILES_PER_COL
+import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
-class Level(val player: Player, val bigBlocks: Set<BigBlock>) {
-    var tileMap: Map<Int, Collection<Tile>> = mapOf(player.id to listOf(player))
+class Level(val blocks: Set<Block>) {
+    // map of id to Tiles with that id
+    val blockMap = blocks.map{ it -> Pair(it.id, it)}.toMap()
 
-    init {
-        val blockMap =  bigBlocks
-            .map { it -> it.id to it.blocks }
-        tileMap = tileMap.plus(blockMap)
-    }
+    // compute indices of screen boundary for collision checking
+    val leftBoundary = ((0 .. TILES_PER_COL).map{ it -> it * TILES_PER_ROW}).toSet()
+    val rightBoundary = ((1 .. TILES_PER_COL).map{ it -> it * TILES_PER_ROW - 1}).toSet()
+    val topBoundary: Set<Int> = (0 .. TILES_PER_ROW - 1).toSet()
+    val bottomBoundary = ((TILES_PER_ROW * TILES_PER_COL) - TILES_PER_ROW .. TILES_PER_ROW * TILES_PER_COL).toSet()
 
-    fun slide(dir: BigBlock.Companion.DIR) {
-        player.slide(dir, this)
-        for (bigBlock in bigBlocks) {
-            bigBlock.slide(dir, this)
+    // call slide on each Block while a Block has actions remaining
+    fun slide(dir: DIR) {
+        while (!haveAllMoved()) {
+            for (block in blocks) {
+                block.move(dir, this)
+            }
         }
     }
 
-    // check for overlapping tiles
-    fun willCauseCollision(id: Int, i: Int): Boolean {
-        for (tileGroup in tileMap) {
-            if (id != tileGroup.key) {
-                val tiles = tileGroup.value
-                for (tile in tiles) {
-                    if (tile.idx == i) {
-                        return true
-                    }
+    // check whether every Block took its turn
+    fun haveAllMoved(): Boolean {
+        for (block in blocks) {
+            if (!block.hasMoved) {
+                return false
+            }
+        }
+        return true
+    }
+
+    // check whether indices overlap any Block in the level
+    // returns id of Block which causes collision, -1 otherwise
+    fun willCauseCollision(indices: Set<Int>, ignoredIds: Set<Int>): Int {
+        for (otherBlock in blocks) {
+            if (!ignoredIds.contains(otherBlock.id)) {
+                val otherIndices = otherBlock.tiles.map { it -> it.idx }.toSet()
+                if (!indices.intersect(otherIndices).isEmpty()) {
+                    return otherBlock.id
                 }
             }
         }
-        return false
+        return -1
+    }
+
+    // return true if no index lies on a boundary
+    // when dir is in the direction of the boundary
+    fun inBounds(indices: Set<Int>, dir: DIR): Boolean {
+        return when (dir) {
+            LEFT -> leftBoundary.intersect(indices).isEmpty()
+            RIGHT -> rightBoundary.intersect(indices).isEmpty()
+            UP -> topBoundary.intersect(indices).isEmpty()
+            DOWN -> bottomBoundary.intersect(indices).isEmpty()
+        }
     }
 
     fun draw(batch: Batch) {
-        player.draw(batch)
-        for (bigBlock in bigBlocks) {
-            bigBlock.draw(batch)
+        for (block in blocks) {
+            block.draw(batch)
         }
     }
 }
