@@ -1,16 +1,21 @@
 package com.blockshift.ui.mainpage
 
+import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.blockshift.R
+import com.blockshift.model.db.HighScore
 import com.blockshift.model.db.OfflineHighScoreViewModel
 import com.blockshift.model.login.UserViewModel
+import com.blockshift.ui.settings.SettingsActivity
 
 /**
  * A simple [Fragment] subclass.
@@ -39,12 +44,10 @@ class HomePageFragment : Fragment() {
             ViewModelProvider(this).get(UserViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
 
-        offHighScoreViewModel = activity?.run {
-            ViewModelProvider(this).get(OfflineHighScoreViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
-
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
+
+        offHighScoreViewModel = (activity as SettingsActivity).getOfflineViewModel()
 
         val welcomeText = view.findViewById<TextView>(R.id.welcome_text)
         val username = userViewModel.currentUser.value?.username
@@ -52,29 +55,41 @@ class HomePageFragment : Fragment() {
         val displayText = "Welcome $displayName!"
         welcomeText.setText(displayText)
 
-        if(username == "lcl") {
-            val scores = offHighScoreViewModel.readByUsername
-        }
 
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
-        continueButton.setOnClickListener {
-            val nextLevel = getUserLevelProgress(username?:"lcl")
-            //Load the level based on the users level progress
-        }
 
+        if(username == "lcl") {
+            /*
+            for(i in 1..12) {
+                offHighScoreViewModel.addHighScore(HighScore("lcl",i,0,0,0))
+            }
+
+             */
+
+            offHighScoreViewModel.readByUsername.observe(viewLifecycleOwner, Observer {
+                scores ->
+                val nextLevel = getUserLevelProgress(scores)
+                continueButton.setOnClickListener {
+                    //
+                    Log.d(javaClass.simpleName,"Starting level $nextLevel")
+                }
+            })
+        }
 
 
         return view
     }
 
-    private fun getUserLevelProgress(username:String): Int {
-        //Check if we are using local storage
-        if(username == "lcl") {
-
-        } else {
-
+    private fun getUserLevelProgress(scores:List<HighScore>): Int {
+        for(i in 0..minOf(11,scores.size-1)) {
+            val scoreAt = scores[i]
+            if(scoreAt.distance == 0 && scoreAt.time == 0 && scoreAt.moves == 0) {
+                return i+1
+            }
         }
+
+        //Have the first level be the default if all levels are complete
         return 1
     }
 

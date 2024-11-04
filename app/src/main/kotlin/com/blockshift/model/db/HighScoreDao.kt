@@ -1,6 +1,7 @@
 package com.blockshift.model.db
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HighScoreDao {
-    @Query("SELECT * FROM user WHERE username = :username")
+    @Query("SELECT * FROM highScore WHERE username = :username")
     fun getHighScores(username: String): LiveData<List<HighScore>>
 
     @Update
@@ -20,6 +21,6 @@ interface HighScoreDao {
     @Delete
     suspend fun delete(highScore: HighScore)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(highScore: HighScore)
 }
