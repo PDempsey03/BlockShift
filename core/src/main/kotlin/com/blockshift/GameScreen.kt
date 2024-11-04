@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.blockshift.Block.Companion.DIR.*
@@ -14,8 +15,8 @@ import com.blockshift.Block.Companion.DIR.*
 class GameScreen : Screen {
     // world parameters
     companion object {
-        const val TILES_PER_ROW = 5
-        const val TILES_PER_COL = 5
+        const val TILES_PER_ROW = 4
+        const val TILES_PER_COL = 9
         const val TILE_WIDTH = 16f
         const val SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW).toFloat()
         const val SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL).toFloat()
@@ -33,27 +34,31 @@ class GameScreen : Screen {
     private var playerTexture: Texture = Texture("player.png")
     private var blockTexture: Texture = Texture("block.png")
 
-    // timing
+    // tilt
+    private val tiltDelay: Float = 0.8f
+    private var delay: Float = 0f
+    private val threshold: Float = 0f
 
     // game objects
-    private var player: Block = Block(0, setOf(Tile(11, TILE_WIDTH, playerTexture)), false)
+    private var player: Block = Block(0, setOf(Tile(0, TILE_WIDTH, playerTexture)), false)
     private var b1: Block = Block(1, setOf
         (
         Tile(6, TILE_WIDTH, blockTexture),
         Tile(7, TILE_WIDTH, blockTexture),
+        Tile(11, TILE_WIDTH, blockTexture),
+        Tile(13, TILE_WIDTH, blockTexture),
+        Tile(14, TILE_WIDTH, blockTexture),
         Tile(15, TILE_WIDTH, blockTexture),
-        Tile(16, TILE_WIDTH, blockTexture),
-        Tile(17, TILE_WIDTH, blockTexture),
-        Tile(12, TILE_WIDTH, blockTexture),
         ))
     private var blocks: Set<Block> = setOf(player, b1)
     private var level: Level = Level(blocks)
 
     override fun render(delta: Float) {
         batch.begin()
+        delay -= delta
 
         resetFlags()
-        detectInput()
+        detectInput(delta)
 
         // static bg
         renderBg(delta)
@@ -67,16 +72,22 @@ class GameScreen : Screen {
     private fun resetFlags() {
         for (block in blocks) {
             block.ignoredIds = mutableSetOf(block.id)
+            block.hasActions = true
             block.hasMoved = false
             block.isTouched = false
         }
     }
 
-    private fun detectInput() {
+    private fun detectInput(delta: Float) {
         // touch input
         if (Gdx.input.isTouched) {
             val idx = getIdx(Gdx.input.getX(), Gdx.input.getY())
             setTouched(idx)
+        }
+
+        // tilt input
+        if (delay < 0) {
+            tilt(delta)
         }
 
         // keyboard input
@@ -94,13 +105,32 @@ class GameScreen : Screen {
         }
     }
 
+    private fun tilt(delta: Float) {
+        val degX = Gdx.input.gyroscopeX * delta * MathUtils.radiansToDegrees
+        val degY = Gdx.input.gyroscopeY * delta * MathUtils.radiansToDegrees
+
+        if (degX > threshold) {
+            delay = tiltDelay
+            level.slide(DOWN)
+        } else if (degX < -threshold) {
+            delay = tiltDelay
+            level.slide(UP)
+        } else if (degY > threshold) {
+            delay = tiltDelay
+            level.slide(RIGHT)
+        } else if (degY < -threshold) {
+            delay = tiltDelay
+            level.slide(LEFT)
+        }
+    }
+
     private fun setTouched(idx: Int) {
         for (block in blocks) {
             if (block.isHoldable) {
                 for (tile in block.tiles) {
                     if (tile.idx == idx) {
                         block.isTouched = true
-                        block.hasMoved = true
+                        block.hasActions = false
                     }
                 }
             }
@@ -119,8 +149,6 @@ class GameScreen : Screen {
 
         return idx
     }
-
-
 
     private fun renderBg(delta: Float) {
         batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)

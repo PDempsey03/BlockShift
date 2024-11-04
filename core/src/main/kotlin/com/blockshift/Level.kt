@@ -18,7 +18,7 @@ class Level(val blocks: Set<Block>) {
 
     // call slide on each Block while a Block has actions remaining
     fun slide(dir: DIR) {
-        while (!haveAllMoved()) {
+        while (actionsRemaining()) {
             for (block in blocks) {
                 block.move(dir, this)
             }
@@ -26,13 +26,13 @@ class Level(val blocks: Set<Block>) {
     }
 
     // check whether every Block took its turn
-    fun haveAllMoved(): Boolean {
+    fun actionsRemaining(): Boolean {
         for (block in blocks) {
-            if (!block.hasMoved) {
-                return false
+            if (block.hasActions) {
+                return true
             }
         }
-        return true
+        return false
     }
 
     // check whether indices overlap any Block in the level
