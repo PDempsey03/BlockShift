@@ -1,5 +1,6 @@
 package com.blockshift.ui.mainpage
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.blockshift.android.AndroidLauncher
 import com.blockshift.model.db.HighScore
 import com.blockshift.model.db.OfflineHighScoreViewModel
 import com.blockshift.model.login.UserViewModel
@@ -57,6 +59,11 @@ class HomePageFragment : Fragment() {
 
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
+
+        // temp code to make sure we can load the game
+        continueButton.setOnClickListener {
+            startActivity(Intent(requireContext(), AndroidLauncher::class.java))
+        }
 
         if(username == "lcl") {
             /*
