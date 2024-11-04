@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/settings_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/white">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/settings_account_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account Settings"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/settings_level_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level Select"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/settings_high_scores"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="High Scores"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <FrameLayout
+        android:id="@+id/settings_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

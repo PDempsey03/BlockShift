@@ -4,9 +4,14 @@ buildscript {
     mavenCentral()
     google()
   }
+  dependencies {
+    classpath 'com.google.gms:google-services:4.3.15'
+  }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'
 
 android {
   namespace "com.gdxblkshkt"
@@ -32,7 +37,7 @@ android {
   }
   defaultConfig {
     applicationId 'com.gdxblkshkt'
-    minSdkVersion 19
+    minSdkVersion 21
     targetSdkVersion 34
     versionCode 1
     versionName "1.0"
@@ -51,7 +56,7 @@ android {
   }
 
   kotlin.compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-  
+
 }
 
 repositories {
@@ -62,8 +67,22 @@ repositories {
 configurations { natives }
 
 dependencies {
+  implementation 'androidx.activity:activity-ktx:1.7.2'
+  implementation 'androidx.fragment:fragment-ktx:1.6.1'
+  implementation 'com.google.android.material:material:1.12.0'
+  implementation 'com.google.firebase:firebase-common-ktx:21.0.0'
+  implementation 'com.google.firebase:firebase-firestore-ktx:25.1.1'
+  implementation platform('com.google.firebase:firebase-bom:32.2.0')
+
+  def room_version = "2.6.1"
+  implementation "androidx.room:room-ktx:$room_version"
+  implementation "androidx.room:room-runtime:$room_version"
+  kapt "androidx.room:room-compiler:$room_version"
+  implementation 'androidx.compose.ui:ui-graphics-android:1.7.5'
+  implementation 'androidx.compose.material3:material3-android:1.3.1'
   coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
   implementation "androidx.core:core:1.13.1"
+  implementation "androidx.datastore:datastore-preferences:1.0.0"
   implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
   implementation project(':core')
 

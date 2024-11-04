@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "257241027892",
+    "project_id": "blockshift-1061d",
+    "storage_bucket": "blockshift-1061d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257241027892:android:31a4e219621202f4ae0161",
+        "android_client_info": {
+          "package_name": "com.blockshift"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiyILI_SZpmkuKLT0gsZ45Wk5jLtlac5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257241027892:android:c4dce4b90db1ed64ae0161",
+        "android_client_info": {
+          "package_name": "com.gdxblkshkt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiyILI_SZpmkuKLT0gsZ45Wk5jLtlac5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
