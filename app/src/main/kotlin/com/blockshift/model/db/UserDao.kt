@@ -9,8 +9,8 @@ import androidx.room.OnConflictStrategy
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user WHERE userID = :userID")
-    fun findByID(userID: Int): User
+    @Query("SELECT * FROM user WHERE username = :username")
+    fun findByID(username: String): User?
 
     @Update
     suspend fun update(user: User)
@@ -18,6 +18,6 @@ interface UserDao {
     @Delete
     suspend fun delete(user: User)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(user: User)
 }

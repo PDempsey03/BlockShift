@@ -1,10 +1,18 @@
 package com.blockshift.ui.settings
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.blockshift.R
+import com.blockshift.model.db.HighScore
+import com.blockshift.model.db.OfflineHighScoreRepository
+import com.blockshift.model.db.OfflineHighScoreViewModel
+import com.blockshift.model.db.OfflineUserViewModel
+import com.blockshift.model.db.User
 import com.blockshift.ui.login.CreateAccountFragment
 import com.blockshift.ui.login.LoginFragment
 import com.blockshift.model.login.UserViewModel
@@ -16,6 +24,10 @@ import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.mainpage.HighScorePageFragment
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var offlineHighScoreModel: OfflineHighScoreViewModel
+    private lateinit var offlineUserModel: OfflineUserViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,6 +40,18 @@ class SettingsActivity : AppCompatActivity() {
         val userViewModel: UserViewModel by viewModels()
         userViewModel.currentUser.value = UserData(currentUsername,currentDisplayName)
         UserRepository.startListeningForUser(userViewModel)
+
+
+
+        offlineHighScoreModel = ViewModelProvider(this).get(OfflineHighScoreViewModel::class.java)
+        offlineUserModel = ViewModelProvider(this).get(OfflineUserViewModel::class.java)
+        offlineHighScoreModel.readByUsername.observe(this, Observer {
+            scores ->
+            if(scores.isEmpty()) {
+                offlineDBInit(offlineHighScoreModel,offlineUserModel)
+            }
+        })
+
 
         // always load the account settings by default
         loadFragment(AccountSettingsFragment())
@@ -53,6 +77,17 @@ class SettingsActivity : AppCompatActivity() {
                 // Handle tab reselected
             }
         })
+    }
+
+    fun getOfflineViewModel(): OfflineHighScoreViewModel {
+        return offlineHighScoreModel
+    }
+
+    private fun offlineDBInit(highScoreVM:OfflineHighScoreViewModel,userVM:OfflineUserViewModel) {
+        userVM.addUser(User("lcl","Guest"))
+        for(i in 1..12) {
+            highScoreVM.addHighScore(HighScore("lcl",i,0,0,0))
+        }
     }
 
     private fun loadFragment(fragment: Fragment) {

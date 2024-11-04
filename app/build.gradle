@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id 'com.google.gms.google-services'
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -74,10 +75,11 @@ dependencies {
     def room_version = "2.6.1"
 
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    //annotationProcessor "androidx.room:room-compiler:$room_version"
 
     // To use Kotlin Symbol Processing (KSP)
-    //ksp "androidx.room:room-compiler:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
     implementation 'com.google.android.material:material:1.9.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    implementation "androidx.room:room-ktx:2.6.1"
 }

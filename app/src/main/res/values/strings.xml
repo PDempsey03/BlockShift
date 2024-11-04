@@ -52,6 +52,7 @@
     <string name="delete_account_text">Delete Account</string>
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
     <string name="logout_text">Logout</string>
+    <string name="play_guest">Play as Guest</string>
 
     <!-- High Scores -->
     <string name="high_score_rank">Rank</string>

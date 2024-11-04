@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.login.LoginFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/mainVertLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -108,6 +107,17 @@
                 android:layout_height="wrap_content"
                 android:padding="15dp"
                 android:text="@string/new_user" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="29dp" />
+
+            <Button
+                android:id="@+id/guestButton"
+                android:layout_width="204dp"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:text="@string/play_guest" />
 
         </LinearLayout>
 

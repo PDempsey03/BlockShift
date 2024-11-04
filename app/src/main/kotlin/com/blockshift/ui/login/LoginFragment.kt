@@ -9,12 +9,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.lifecycle.lifecycleScope
 import com.blockshift.R
+import com.blockshift.model.db.AppDatabase
+import com.blockshift.model.db.HighScore
+import com.blockshift.model.db.HighScoreDao
+import com.blockshift.model.db.User
+import com.blockshift.model.db.UserDao
 import com.blockshift.utils.showBasicBanner
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.blockshift.model.repositories.UserData
+import kotlinx.coroutines.GlobalScope
 
 
 /**
@@ -79,6 +87,14 @@ class LoginFragment : Fragment() {
                 .replace(R.id.fragment_container, CreateAccountFragment()) // fragment_container is the container for fragments
                 .addToBackStack(null)  // This ensures you can go back
                 .commit()
+        }
+
+        val playGuestButton = view.findViewById<Button>(R.id.guestButton)
+        playGuestButton.setOnClickListener {
+            Log.d(TAG,"Play as Guest Button Clicked")
+            val userData = UserData("lcl","Guest")
+
+            (activity as LoginActivity).finishLogin(userData)
         }
         return view
     }
