@@ -36,15 +36,15 @@ class GameScreen : Screen {
     // timing
 
     // game objects
-    private var player: Block = Block(0, setOf(Tile(11, TILE_WIDTH, false, playerTexture)))
+    private var player: Block = Block(0, setOf(Tile(11, TILE_WIDTH, playerTexture)), false)
     private var b1: Block = Block(1, setOf
         (
-        Tile(6, TILE_WIDTH, false, blockTexture),
-        Tile(7, TILE_WIDTH, false, blockTexture),
-        Tile(15, TILE_WIDTH, false, blockTexture),
-        Tile(16, TILE_WIDTH, false, blockTexture),
-        Tile(17, TILE_WIDTH, false, blockTexture),
-        Tile(12, TILE_WIDTH, false, blockTexture),
+        Tile(6, TILE_WIDTH, blockTexture),
+        Tile(7, TILE_WIDTH, blockTexture),
+        Tile(15, TILE_WIDTH, blockTexture),
+        Tile(16, TILE_WIDTH, blockTexture),
+        Tile(17, TILE_WIDTH, blockTexture),
+        Tile(12, TILE_WIDTH, blockTexture),
         ))
     private var blocks: Set<Block> = setOf(player, b1)
     private var level: Level = Level(blocks)
@@ -52,7 +52,7 @@ class GameScreen : Screen {
     override fun render(delta: Float) {
         batch.begin()
 
-        resetMoveFlags()
+        resetFlags()
         detectInput()
 
         // static bg
@@ -64,14 +64,21 @@ class GameScreen : Screen {
         batch.end()
     }
 
-    private fun resetMoveFlags() {
+    private fun resetFlags() {
         for (block in blocks) {
             block.ignoredIds = mutableSetOf(block.id)
             block.hasMoved = false
+            block.isTouched = false
         }
     }
 
     private fun detectInput() {
+        // touch input
+        if (Gdx.input.isTouched) {
+            val idx = getIdx(Gdx.input.getX(), Gdx.input.getY())
+            setTouched(idx)
+        }
+
         // keyboard input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             level.slide(LEFT)
@@ -85,10 +92,35 @@ class GameScreen : Screen {
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             level.slide(DOWN)
         }
-
-        // touch input
-//        TODO("holdable")
     }
+
+    private fun setTouched(idx: Int) {
+        for (block in blocks) {
+            if (block.isHoldable) {
+                for (tile in block.tiles) {
+                    if (tile.idx == idx) {
+                        block.isTouched = true
+                        block.hasMoved = true
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getIdx(x: Int, y: Int): Int {
+        // compute width based on resolution
+        val tileHeight = Gdx.graphics.height / TILES_PER_COL
+        val tileWidth = Gdx.graphics.width / TILES_PER_ROW
+
+        val col = x / tileWidth
+        val row = y / tileHeight
+
+        val idx = col + (row * TILES_PER_ROW)
+
+        return idx
+    }
+
+
 
     private fun renderBg(delta: Float) {
         batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)

@@ -11,7 +11,7 @@ import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 // 0 1 2
 // 3 . .
 // . . n
-class Tile (var idx: Int, val width: Float, val isHoldable: Boolean, val tileTexture: Texture) {
+class Tile (var idx: Int, val width: Float, val tileTexture: Texture) {
     var x: Float = 0f
     var y: Float = 0f
     var id: Int = 0

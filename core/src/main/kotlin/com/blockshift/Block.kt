@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
 // Block is a collection of one or more Tiles
-class Block(val id: Int, val tiles: Set<Tile>, var hasMoved: Boolean = false) {
+class Block(val id: Int, val tiles: Set<Tile>, val isHoldable: Boolean = true, var hasMoved: Boolean = false, var isTouched: Boolean = false) {
     // collision checks will treat ids in ignoredIds as part of the Block
     var ignoredIds = mutableSetOf(id)
 
@@ -55,7 +55,8 @@ class Block(val id: Int, val tiles: Set<Tile>, var hasMoved: Boolean = false) {
         // Block on Block collision
         val id = level.willCauseCollision(transformedIndices, ignoredIds)
         if (id > -1) {
-            if (level.blockMap[id]!!.hasMoved) {
+            val obstacle = level.blockMap[id]
+            if (obstacle!!.hasMoved && !obstacle.isTouched) {
                 ignoredIds.add(id)
                 return false
             } else {
@@ -71,7 +72,7 @@ class Block(val id: Int, val tiles: Set<Tile>, var hasMoved: Boolean = false) {
 
     // move a Block by one tile if no collisions detected
     fun move(dir: DIR, level: Level) {
-        if (canMove(dir, level)) {
+        if (!isTouched && canMove(dir, level)) {
             this.update(offset(dir))
         }
     }
