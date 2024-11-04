@@ -31,7 +31,7 @@ class GameScreen : Screen {
     // load textures
     private var background: Texture = Texture("flat_brown.png")
     private var playerTexture: Texture = Texture("player.png")
-    private var blockTexture: Texture = Texture("Block.png")
+    private var blockTexture: Texture = Texture("block.png")
 
     // timing
 
