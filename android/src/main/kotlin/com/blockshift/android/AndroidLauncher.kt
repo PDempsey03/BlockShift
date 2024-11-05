@@ -13,7 +13,7 @@ class AndroidLauncher : AndroidApplication() {
         super.onCreate(savedInstanceState)
         Log.d("ANDROID LAUNCHER", "THIS IS BEING CALLED NOW")
         initialize(Main(), AndroidApplicationConfiguration().apply {
-            useGyroscope = true
+            useAccelerometer = true
             useImmersiveMode = true // Recommended, but not required.
         })
     }

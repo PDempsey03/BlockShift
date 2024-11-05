@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.blockshift.Block.Companion.DIR.*
+import kotlin.math.sqrt
 
 class GameScreen : Screen {
     // world parameters
@@ -35,9 +36,11 @@ class GameScreen : Screen {
     private var blockTexture: Texture = Texture("block.png")
 
     // tilt
-    private val tiltDelay: Float = 0.8f
+    private var basePitch: Float = 0f;
+    private var baseRoll: Float = 0f;
+    private val tiltDelay: Float = 1f
     private var delay: Float = 0f
-    private val threshold: Float = 0f
+    private val threshold: Float = 10f
 
     // game objects
     private var player: Block = Block(0, setOf(Tile(0, TILE_WIDTH, playerTexture)), false)
@@ -55,7 +58,8 @@ class GameScreen : Screen {
 
     override fun render(delta: Float) {
         batch.begin()
-        delay -= delta
+
+        updateDelay(delta)
 
         resetFlags()
         detectInput(delta)
@@ -78,6 +82,17 @@ class GameScreen : Screen {
         }
     }
 
+    private fun updateDelay(delta: Float) {
+        if(delay > 0) {
+            delay -= delta
+            if(delay <= 0) {
+                Gdx.app.log("GAME SCREEN", "Allowing tilt input again")
+                // once the delay is <= 0, moving will be allowed again so set the current orientation
+                updateBaseOrientation()
+            }
+        }
+    }
+
     private fun detectInput(delta: Float) {
         // touch input
         if (Gdx.input.isTouched) {
@@ -86,8 +101,8 @@ class GameScreen : Screen {
         }
 
         // tilt input
-        if (delay < 0) {
-            tilt(delta)
+        if (delay <= 0) {
+            checkTilt(delta)
         }
 
         // keyboard input
@@ -105,23 +120,44 @@ class GameScreen : Screen {
         }
     }
 
-    private fun tilt(delta: Float) {
-        val degX = Gdx.input.gyroscopeX * delta * MathUtils.radiansToDegrees
-        val degY = Gdx.input.gyroscopeY * delta * MathUtils.radiansToDegrees
+    private fun checkTilt(delta: Float) {
+        val accelX = Gdx.input.accelerometerX
+        val accelY = Gdx.input.accelerometerY
+        val accelZ = Gdx.input.accelerometerZ
 
-        if (degX > threshold) {
-            delay = tiltDelay
-            level.slide(DOWN)
-        } else if (degX < -threshold) {
-            delay = tiltDelay
-            level.slide(UP)
-        } else if (degY > threshold) {
-            delay = tiltDelay
-            level.slide(RIGHT)
-        } else if (degY < -threshold) {
-            delay = tiltDelay
-            level.slide(LEFT)
+        // calculate pitch and roll of the phone
+        val currentPitch = MathUtils.atan2(accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        val currentRoll = MathUtils.atan2(accelY, sqrt(accelX * accelX + accelZ * accelZ)) * MathUtils.radiansToDegrees
+
+        val relativePitch = basePitch - currentPitch
+        val relativeRoll = baseRoll - currentRoll
+
+        if (relativePitch > threshold) {
+            tilt(RIGHT)
+        } else if (relativePitch < -threshold) {
+            tilt(LEFT)
+        } else if (relativeRoll > threshold) {
+            tilt(UP)
+        } else if (relativeRoll < -threshold) {
+            tilt(DOWN)
         }
+    }
+
+    private fun tilt(direction: Block.Companion.DIR) {
+        Gdx.app.log("GAME SCREEN", "MOVING ${direction.name}")
+        delay = tiltDelay
+        level.slide(direction)
+    }
+
+    private fun updateBaseOrientation() {
+        val accelX = Gdx.input.accelerometerX
+        val accelY = Gdx.input.accelerometerY
+        val accelZ = Gdx.input.accelerometerZ
+
+        basePitch = MathUtils.atan2(accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        baseRoll = MathUtils.atan2(accelY, sqrt(accelX * accelX + accelZ * accelZ)) * MathUtils.radiansToDegrees
+
+        Gdx.app.log("GAME SCREEN", "basePitch = $basePitch and baseRoll = $baseRoll")
     }
 
     private fun setTouched(idx: Int) {
@@ -164,7 +200,7 @@ class GameScreen : Screen {
     }
 
     override fun resume() {
-
+        updateBaseOrientation()
     }
 
     override fun show() {
