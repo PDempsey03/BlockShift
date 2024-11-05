@@ -38,7 +38,7 @@ class GameScreen : Screen {
     // tilt
     private var basePitch: Float = 0f;
     private var baseRoll: Float = 0f;
-    private val tiltDelay: Float = 1f
+    private val tiltDelay: Float = .5f
     private var delay: Float = 0f
     private val threshold: Float = 10f
 
@@ -126,16 +126,16 @@ class GameScreen : Screen {
         val accelZ = Gdx.input.accelerometerZ
 
         // calculate pitch and roll of the phone
-        val currentPitch = MathUtils.atan2(accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
-        val currentRoll = MathUtils.atan2(accelY, sqrt(accelX * accelX + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        val currentPitch = MathUtils.atan2(-accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        val currentRoll = MathUtils.atan2(accelY, accelZ) * MathUtils.radiansToDegrees
 
         val relativePitch = basePitch - currentPitch
         val relativeRoll = baseRoll - currentRoll
 
         if (relativePitch > threshold) {
-            tilt(RIGHT)
-        } else if (relativePitch < -threshold) {
             tilt(LEFT)
+        } else if (relativePitch < -threshold) {
+            tilt(RIGHT)
         } else if (relativeRoll > threshold) {
             tilt(UP)
         } else if (relativeRoll < -threshold) {
@@ -149,13 +149,14 @@ class GameScreen : Screen {
         level.slide(direction)
     }
 
+    // source: https://wiki.dfrobot.com/How_to_Use_a_Three-Axis_Accelerometer_for_Tilt_Sensing
     private fun updateBaseOrientation() {
         val accelX = Gdx.input.accelerometerX
         val accelY = Gdx.input.accelerometerY
         val accelZ = Gdx.input.accelerometerZ
 
-        basePitch = MathUtils.atan2(accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
-        baseRoll = MathUtils.atan2(accelY, sqrt(accelX * accelX + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        basePitch = MathUtils.atan2(-accelX, sqrt(accelY * accelY + accelZ * accelZ)) * MathUtils.radiansToDegrees
+        baseRoll = MathUtils.atan2(accelY, accelZ) * MathUtils.radiansToDegrees
 
         Gdx.app.log("GAME SCREEN", "basePitch = $basePitch and baseRoll = $baseRoll")
     }
