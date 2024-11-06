@@ -34,6 +34,7 @@ hs_err_pid*
 /android/out/
 local.properties
 com_crashlytics_export_strings.xml
+google-services.json
 
 ## Robovm:
 /ios/robovm-build/
