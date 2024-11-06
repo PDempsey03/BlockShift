@@ -47,6 +47,9 @@ class GameScreen : Screen {
     private var level: Level = loadLevel(3)
 
     private fun loadLevel(levelID: Int): Level {
+        // update before loading any level
+        updateBaseOrientation()
+
         val file = Gdx.files.internal("BlockShiftTiledProject/Levels/Level$levelID.tmx")
         val xmlReader = XmlReader()
         val rootElement = xmlReader.parse(file)

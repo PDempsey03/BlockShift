@@ -11,7 +11,6 @@ import com.blockshift.Main
 class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("ANDROID LAUNCHER", "THIS IS BEING CALLED NOW")
         initialize(Main(), AndroidApplicationConfiguration().apply {
             useAccelerometer = true
             useImmersiveMode = true // Recommended, but not required.
