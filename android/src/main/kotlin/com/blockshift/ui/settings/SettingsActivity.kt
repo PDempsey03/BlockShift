@@ -17,7 +17,7 @@ import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.mainpage.HighScorePageFragment
-import com.gdxblkshkt.R
+import com.blockshift.R
 
 class SettingsActivity : AppCompatActivity() {
 

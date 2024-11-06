@@ -15,7 +15,7 @@ import com.blockshift.model.repositories.AccountCreationResult
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.utils.buildAlertMessage
 import com.blockshift.utils.showBasicBanner
-import com.gdxblkshkt.R
+import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

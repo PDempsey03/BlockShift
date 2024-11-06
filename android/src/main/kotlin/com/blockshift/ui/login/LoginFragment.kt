@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.blockshift.model.repositories.UserData
-import com.gdxblkshkt.R
+import com.blockshift.R
 
 
 /**

@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.blockshift.model.repositories.HighScoreDisplayData
 import com.blockshift.model.repositories.HighScoreTableNames
-import com.gdxblkshkt.R
+import com.blockshift.R
 
 class HighScoreAdapter(private val highScores: List<HighScoreDisplayData>, private val highScoreType: String, private val startingRank: Int) : RecyclerView.Adapter<HighScoreAdapter.HighScoreViewHolder>() {
 

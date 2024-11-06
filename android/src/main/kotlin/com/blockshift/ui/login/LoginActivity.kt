@@ -11,7 +11,7 @@ import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.settings.SettingsActivity
 import com.blockshift.model.settings.SettingsDataStore
-import com.gdxblkshkt.R
+import com.blockshift.R
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

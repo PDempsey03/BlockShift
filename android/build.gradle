@@ -14,7 +14,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-kapt'
 
 android {
-  namespace "com.gdxblkshkt"
+  namespace "com.blockshift"
   compileSdk 34
   sourceSets {
     main {
@@ -36,7 +36,7 @@ android {
 		}
   }
   defaultConfig {
-    applicationId 'com.gdxblkshkt'
+    applicationId 'com.blockshift'
     minSdkVersion 21
     targetSdkVersion 34
     versionCode 1
@@ -143,7 +143,7 @@ tasks.register('run', Exec) {
   }
 
   def adb = path + "/platform-tools/adb"
-  commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.gdxblkshkt/com.gdxblkshkt.android.AndroidLauncher'
+  commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.blockshift/com.blockshift.android.AndroidLauncher'
 }
 
 eclipse.project.name = appName + "-android"

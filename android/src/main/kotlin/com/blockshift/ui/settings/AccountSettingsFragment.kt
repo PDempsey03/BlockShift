@@ -24,7 +24,7 @@ import com.blockshift.ui.login.LoginActivity
 import com.blockshift.ui.login.LoginManager
 import com.blockshift.utils.buildAlertMessage
 import com.blockshift.utils.showBasicBanner
-import com.gdxblkshkt.R
+import com.blockshift.R
 import com.google.android.material.snackbar.Snackbar
 
 /**

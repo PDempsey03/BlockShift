@@ -16,7 +16,7 @@ import com.blockshift.model.db.HighScore
 import com.blockshift.model.db.OfflineHighScoreViewModel
 import com.blockshift.model.login.UserViewModel
 import com.blockshift.ui.settings.SettingsActivity
-import com.gdxblkshkt.R
+import com.blockshift.R
 
 /**
  * A simple [Fragment] subclass.

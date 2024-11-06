@@ -20,7 +20,7 @@ import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
-import com.gdxblkshkt.R
+import com.blockshift.R
 import kotlin.math.min
 
 /**
