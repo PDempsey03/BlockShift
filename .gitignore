@@ -22,6 +22,9 @@ gradle-app.setting
 hs_err_pid*
 .attach_pid*
 
+## Tiled:
+*.tiled-session
+
 ## Android:
 /android/libs/armeabi-v7a/
 /android/libs/arm64-v8a/

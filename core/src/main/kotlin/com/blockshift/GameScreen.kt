@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.XmlReader
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.blockshift.Block.Companion.DIR.*
@@ -16,8 +18,8 @@ import kotlin.math.sqrt
 class GameScreen : Screen {
     // world parameters
     companion object {
-        const val TILES_PER_ROW = 4
-        const val TILES_PER_COL = 9
+        const val TILES_PER_ROW = 6 // width
+        const val TILES_PER_COL = 9 // height
         const val TILE_WIDTH = 16f
         const val SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW).toFloat()
         const val SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL).toFloat()
@@ -36,25 +38,76 @@ class GameScreen : Screen {
     private var blockTexture: Texture = Texture("block.png")
 
     // tilt
-    private var basePitch: Float = 0f;
-    private var baseRoll: Float = 0f;
+    private var basePitch: Float = 0f
+    private var baseRoll: Float = 0f
     private val tiltDelay: Float = .5f
     private var delay: Float = 0f
     private val threshold: Float = 10f
 
-    // game objects
-    private var player: Block = Block(0, setOf(Tile(0, TILE_WIDTH, playerTexture)), false)
-    private var b1: Block = Block(1, setOf
-        (
-        Tile(6, TILE_WIDTH, blockTexture),
-        Tile(7, TILE_WIDTH, blockTexture),
-        Tile(11, TILE_WIDTH, blockTexture),
-        Tile(13, TILE_WIDTH, blockTexture),
-        Tile(14, TILE_WIDTH, blockTexture),
-        Tile(15, TILE_WIDTH, blockTexture),
-        ))
-    private var blocks: Set<Block> = setOf(player, b1)
-    private var level: Level = Level(blocks)
+    private var level: Level = loadLevel(3)
+
+    private fun loadLevel(levelID: Int): Level {
+        val file = Gdx.files.internal("BlockShiftTiledProject/Levels/Level$levelID.tmx")
+        val xmlReader = XmlReader()
+        val rootElement = xmlReader.parse(file)
+
+        // handle tmx file parsing
+        val mapAttributes = rootElement.attributes
+
+        val levelWidth = mapAttributes["width"]
+        val levelHeight = mapAttributes["height"]
+
+        // gets all the entities in the map
+        val layers = rootElement.getChildrenByName("layer")
+
+        val blocks = mutableSetOf<Block>()
+
+        // first parse the player
+        val playerLayer = layers.single { it.attributes["name"] == "Player" }
+        val playerLocation = playerLayer
+            .getChildByName("data")
+            .text
+            .split(",")
+            .map { it.trim().toInt() }
+            .withIndex()
+            .single { it.value != 0 }
+            .index
+
+        // add player to world
+        blocks.add(Block(0, setOf(Tile(playerLocation, TILE_WIDTH, playerTexture)), Color.WHITE, false))
+
+        // remove player from list so the rest are standard blocks
+        layers.removeValue(playerLayer, true)
+
+        // loop over the remaining layers which are block layers
+        for(i in 0 until layers.size) {
+            val layer = layers[i]
+
+            val blockLocations = layer
+                .getChildByName("data") // get the data inside the layer
+                .text // convert the layer object to string format
+                .split(",") // split the data based on csv format
+                .map { it.trim().toInt() } // convert items to actual ints
+                .withIndex() // get index with each value
+                .filter { it.value != 0 } // keep positions with non-zero components as a tile is there
+                .map { it.index } // only need to keep the index since its value is irrelevant
+
+            // get the color of the block
+            val colorString = layer.attributes["tintcolor"]
+            val color = Color(Color.valueOf(colorString))
+
+            // generate tiles for the block
+            val tiles = mutableSetOf<Tile>()
+            for(idx in blockLocations) {
+                tiles.add(Tile(idx, TILE_WIDTH, blockTexture))
+            }
+
+            // handle edge case of possibly no tiles being part of the block
+            if(tiles.isNotEmpty())
+                blocks.add(Block(i + 1, tiles, color))
+        }
+        return Level(blocks)
+    }
 
     override fun render(delta: Float) {
         batch.begin()
@@ -74,7 +127,7 @@ class GameScreen : Screen {
     }
 
     private fun resetFlags() {
-        for (block in blocks) {
+        for (block in level.blocks) {
             block.ignoredIds = mutableSetOf(block.id)
             block.hasActions = true
             block.hasMoved = false
@@ -162,7 +215,7 @@ class GameScreen : Screen {
     }
 
     private fun setTouched(idx: Int) {
-        for (block in blocks) {
+        for (block in level.blocks) {
             if (block.isHoldable) {
                 for (tile in block.tiles) {
                     if (tile.idx == idx) {

@@ -1,5 +1,6 @@
 package com.blockshift
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.blockshift.Block.Companion.DIR
 import com.blockshift.Block.Companion.DIR.*
@@ -62,7 +63,11 @@ class Level(val blocks: Set<Block>) {
 
     fun draw(batch: Batch) {
         for (block in blocks) {
+            batch.color = block.color
             block.draw(batch)
         }
+
+        // reset the tint to white (no tint)
+        batch.color = Color.WHITE
     }
 }
