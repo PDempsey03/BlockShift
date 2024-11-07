@@ -56,15 +56,28 @@ class HomePageFragment : Fragment() {
         val displayText = "Welcome $displayName!"
         welcomeText.setText(displayText)
 
+        val level1Button = view.findViewById<Button>(R.id.level1_button)
+        level1Button.setOnClickListener {
+            loadLevel(1)
+        }
+
+        val level2Button = view.findViewById<Button>(R.id.level2_button)
+        level2Button.setOnClickListener {
+            loadLevel(2)
+        }
+
+        val level3Button = view.findViewById<Button>(R.id.level3_button)
+        level3Button.setOnClickListener {
+            loadLevel(3)
+        }
+
 
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
 
         // temp code to make sure we can load the game
         continueButton.setOnClickListener {
-            val intent = Intent(requireContext(), AndroidLauncher::class.java)
-            intent.putExtra("level",1)
-            startActivity(intent)
+            loadLevel(1)
         }
 
         if(username == "lcl") {
@@ -81,15 +94,19 @@ class HomePageFragment : Fragment() {
                 continueButton.setOnClickListener {
                     //
                     Log.d(javaClass.simpleName,"Starting level $nextLevel")
-                    val intent = Intent(requireContext(), AndroidLauncher::class.java)
-                    intent.putExtra("level",nextLevel)
-                    startActivity(intent)
+                    loadLevel(nextLevel)
                 }
             })
         }
 
 
         return view
+    }
+
+    private fun loadLevel(level:Int) {
+        val intent = Intent(requireContext(), AndroidLauncher::class.java)
+        intent.putExtra("level",level)
+        startActivity(intent)
     }
 
     private fun getUserLevelProgress(scores:List<HighScore>): Int {
