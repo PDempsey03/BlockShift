@@ -21,6 +21,8 @@ gradle-app.setting
 *.ear
 hs_err_pid*
 .attach_pid*
+google-services.json
+app/build/generated/res/processDebugGoogleServices/values/values.xml
 
 ## Tiled:
 *.tiled-session
