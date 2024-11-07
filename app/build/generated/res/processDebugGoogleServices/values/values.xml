@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">257241027892</string>
+    <string name="google_api_key" translatable="false">AIzaSyDiyILI_SZpmkuKLT0gsZ45Wk5jLtlac5w</string>
+    <string name="google_app_id" translatable="false">1:257241027892:android:31a4e219621202f4ae0161</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDiyILI_SZpmkuKLT0gsZ45Wk5jLtlac5w</string>
+    <string name="google_storage_bucket" translatable="false">blockshift-1061d.appspot.com</string>
+    <string name="project_id" translatable="false">blockshift-1061d</string>
+</resources>

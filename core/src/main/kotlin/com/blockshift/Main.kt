@@ -3,11 +3,11 @@ package com.blockshift
 import com.badlogic.gdx.Game
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
-class Main : Game() {
+class Main(private val level: Int) : Game() {
     lateinit var gameScreen: GameScreen
 
     override fun create() {
-        gameScreen = GameScreen()
+        gameScreen = GameScreen(level)
         setScreen(gameScreen)
     }
 

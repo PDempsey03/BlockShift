@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.blockshift.app-mergeDebugResources-70:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\jacks\\.gradle\\caches\\transforms-4\\90ed707f64924046938f05896198cb11\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\jacks\\.gradle\\caches\\transforms-4\\4fea040c692e698a22382bdd92295d7c\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
+                    }
+                }
+            ]
+        }
+    ]
+}

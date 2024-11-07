@@ -62,7 +62,9 @@ class HomePageFragment : Fragment() {
 
         // temp code to make sure we can load the game
         continueButton.setOnClickListener {
-            startActivity(Intent(requireContext(), AndroidLauncher::class.java))
+            val intent = Intent(requireContext(), AndroidLauncher::class.java)
+            intent.putExtra("level",1)
+            startActivity(intent)
         }
 
         if(username == "lcl") {
@@ -79,6 +81,9 @@ class HomePageFragment : Fragment() {
                 continueButton.setOnClickListener {
                     //
                     Log.d(javaClass.simpleName,"Starting level $nextLevel")
+                    val intent = Intent(requireContext(), AndroidLauncher::class.java)
+                    intent.putExtra("level",nextLevel)
+                    startActivity(intent)
                 }
             })
         }

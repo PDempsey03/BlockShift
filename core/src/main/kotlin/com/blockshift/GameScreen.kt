@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.blockshift.Block.Companion.DIR.*
 import kotlin.math.sqrt
 
-class GameScreen : Screen {
+class GameScreen(toLoad:Int) : Screen {
     // world parameters
     companion object {
         const val TILES_PER_ROW = 6 // width
@@ -44,7 +44,7 @@ class GameScreen : Screen {
     private var delay: Float = 0f
     private val threshold: Float = 10f
 
-    private var level: Level = loadLevel(3)
+    private var level: Level = loadLevel(toLoad)
 
     private fun loadLevel(levelID: Int): Level {
         // update before loading any level
