@@ -17,6 +17,7 @@ import com.blockshift.model.db.OfflineHighScoreViewModel
 import com.blockshift.model.login.UserViewModel
 import com.blockshift.ui.settings.SettingsActivity
 import com.blockshift.R
+import com.blockshift.model.repositories.UserTableNames
 
 /**
  * A simple [Fragment] subclass.
@@ -56,6 +57,8 @@ class HomePageFragment : Fragment() {
         val displayText = "Welcome $displayName!"
         welcomeText.setText(displayText)
 
+        // TODO: loop through level buttons
+
         val level1Button = view.findViewById<Button>(R.id.level1_button)
         level1Button.setOnClickListener {
             loadLevel(1)
@@ -74,6 +77,11 @@ class HomePageFragment : Fragment() {
         val level4Button = view.findViewById<Button>(R.id.level4_button)
         level4Button.setOnClickListener {
             loadLevel(4)
+        }
+
+        val level5Button = view.findViewById<Button>(R.id.level5_button)
+        level5Button.setOnClickListener {
+            loadLevel(5)
         }
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
@@ -109,6 +117,8 @@ class HomePageFragment : Fragment() {
     private fun loadLevel(level:Int) {
         val intent = Intent(requireContext(), AndroidLauncher::class.java)
         intent.putExtra("level",level)
+        intent.putExtra(UserTableNames.USERNAME, userViewModel.currentUser.value?.username)
+        intent.putExtra(UserTableNames.DISPLAY_NAME, userViewModel.currentUser.value?.displayname)
         startActivity(intent)
     }
 

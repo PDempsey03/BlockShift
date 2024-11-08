@@ -44,6 +44,10 @@ class GameScreen(toLoad:Int) : Screen {
     private var delay: Float = 0f
     private val threshold: Float = 10f
 
+    // score
+    var isFinished: Boolean = false
+    var moves: Int = 0
+
     private var level: Level = loadLevel(toLoad)
 
     private fun loadLevel(levelID: Int): Level {
@@ -130,6 +134,8 @@ class GameScreen(toLoad:Int) : Screen {
         resetFlags()
         detectInput(delta)
 
+        checkLevelComplete()
+
         // static bg
         renderBg(delta)
 
@@ -137,6 +143,15 @@ class GameScreen(toLoad:Int) : Screen {
         level.draw(batch)
 
         batch.end()
+    }
+
+    private fun checkLevelComplete() {
+        for (player in level.blockMap[0]!!.tiles) {
+            if (level.bottomBoundary.contains(player.idx)) {
+                moves = level.moves
+                isFinished = true
+            }
+        }
     }
 
     private fun resetFlags() {
@@ -172,17 +187,11 @@ class GameScreen(toLoad:Int) : Screen {
         }
 
         // keyboard input
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            level.slide(LEFT)
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            level.slide(RIGHT)
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            level.slide(UP)
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            level.slide(DOWN)
+        when {
+            Gdx.input.isKeyPressed(Input.Keys.LEFT) -> level.slide(LEFT)
+            Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> level.slide(RIGHT)
+            Gdx.input.isKeyPressed(Input.Keys.UP) -> level.slide(UP)
+            Gdx.input.isKeyPressed(Input.Keys.DOWN) -> level.slide(DOWN)
         }
     }
 
@@ -198,14 +207,11 @@ class GameScreen(toLoad:Int) : Screen {
         val relativePitch = basePitch - currentPitch
         val relativeRoll = baseRoll - currentRoll
 
-        if (relativePitch > threshold) {
-            tilt(LEFT)
-        } else if (relativePitch < -threshold) {
-            tilt(RIGHT)
-        } else if (relativeRoll > threshold) {
-            tilt(UP)
-        } else if (relativeRoll < -threshold) {
-            tilt(DOWN)
+        when {
+            (relativePitch > threshold) -> tilt(LEFT)
+            (relativePitch < -threshold) -> tilt(RIGHT)
+            (relativeRoll > threshold) -> tilt(UP)
+            (relativeRoll < -threshold) -> tilt(DOWN)
         }
     }
 

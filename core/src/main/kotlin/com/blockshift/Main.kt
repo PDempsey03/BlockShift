@@ -4,7 +4,17 @@ import com.badlogic.gdx.Game
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
 class Main(private val level: Int) : Game() {
-    lateinit var gameScreen: GameScreen
+    private lateinit var gameScreen: GameScreen
+    private lateinit var winCallback: WinCallback
+
+    // callback for android launcher
+    interface WinCallback {
+        fun returnToLevelSelect(moves: Int)
+    }
+
+    fun setCallback(callback: WinCallback) {
+        winCallback = callback
+    }
 
     override fun create() {
         gameScreen = GameScreen(level)
@@ -16,6 +26,9 @@ class Main(private val level: Int) : Game() {
     }
 
     override fun render() {
+        if (gameScreen.isFinished) {
+            winCallback.returnToLevelSelect(gameScreen.moves)
+        }
         super.render()
     }
 

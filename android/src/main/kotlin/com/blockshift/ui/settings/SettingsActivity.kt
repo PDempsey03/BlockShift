@@ -1,6 +1,7 @@
 package com.blockshift.ui.settings
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -37,7 +38,12 @@ class SettingsActivity : AppCompatActivity() {
         userViewModel.currentUser.value = UserData(currentUsername,currentDisplayName)
         UserRepository.startListeningForUser(userViewModel)
 
+        if (intent.hasExtra("score")) {
+            val moves: Int = intent.getIntExtra("score", 0)
+            Log.d("score", "$moves")
 
+            // TODO: write score
+        }
 
         offlineHighScoreModel = ViewModelProvider(this).get(OfflineHighScoreViewModel::class.java)
         offlineUserModel = ViewModelProvider(this).get(OfflineUserViewModel::class.java)

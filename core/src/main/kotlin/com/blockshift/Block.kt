@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
 // Block is a collection of one or more Tiles
-class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable: Boolean = true, var hasMoved: Boolean = false, var hasActions: Boolean = true, var isTouched: Boolean = false) {
+class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable: Boolean = true, var hasMoved: Boolean = false) {
+    var hasActions: Boolean = true
+    var isTouched: Boolean = false
+
     // collision checks will treat ids in ignoredIds as part of the Block
     var ignoredIds = mutableSetOf(id)
 
