@@ -71,7 +71,10 @@ class HomePageFragment : Fragment() {
             loadLevel(3)
         }
 
-
+        val level4Button = view.findViewById<Button>(R.id.level4_button)
+        level4Button.setOnClickListener {
+            loadLevel(4)
+        }
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
 

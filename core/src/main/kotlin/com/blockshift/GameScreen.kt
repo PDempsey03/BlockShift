@@ -18,16 +18,16 @@ import kotlin.math.sqrt
 class GameScreen(toLoad:Int) : Screen {
     // world parameters
     companion object {
-        const val TILES_PER_ROW = 6 // width
-        const val TILES_PER_COL = 9 // height
-        const val TILE_WIDTH = 16f
-        const val SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW).toFloat()
-        const val SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL).toFloat()
+        const val TILE_WIDTH: Float = 16f
+        var TILES_PER_ROW: Int = 6 // width
+        var TILES_PER_COL: Int = 9 // height
+        var SCREEN_WIDTH: Float = 0f
+        var SCREEN_HEIGHT: Float = 0f
     }
 
     // screen
-    private var camera: Camera = OrthographicCamera()
-    private var viewport: Viewport = StretchViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera)
+    private lateinit var camera: Camera
+    private lateinit var viewport: Viewport
 
     // graphics
     private var batch: SpriteBatch = SpriteBatch()
@@ -57,8 +57,11 @@ class GameScreen(toLoad:Int) : Screen {
         // handle tmx file parsing
         val mapAttributes = rootElement.attributes
 
-        val levelWidth = mapAttributes["width"]
-        val levelHeight = mapAttributes["height"]
+        TILES_PER_ROW = mapAttributes["width"].toInt()
+        TILES_PER_COL = mapAttributes["height"].toInt()
+
+        // now that dimensions of world are known, can load the camera/viewport settings
+        loadCameraSettings()
 
         // gets all the entities in the map
         val layers = rootElement.getChildrenByName("layer")
@@ -110,6 +113,13 @@ class GameScreen(toLoad:Int) : Screen {
                 blocks.add(Block(i + 1, tiles, color))
         }
         return Level(blocks)
+    }
+
+    private fun loadCameraSettings() {
+        camera = OrthographicCamera()
+        SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW)
+        SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL)
+        viewport = StretchViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera)
     }
 
     override fun render(delta: Float) {

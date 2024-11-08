@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="4" height="10" tilewidth="256" tileheight="256" infinite="0" nextlayerid="6" nextobjectid="1">
+ <tileset firstgid="1" source="../Tiles.tsx"/>
+ <layer id="1" name="Block1" width="4" height="10" tintcolor="#ff0000">
+  <data encoding="csv">
+1,0,1,0,
+1,0,1,0,
+1,1,1,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="Player" width="4" height="10">
+  <data encoding="csv">
+0,0,0,0,
+0,2,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="Block2" width="4" height="10" tintcolor="#0000ff">
+  <data encoding="csv">
+0,0,0,0,
+0,0,0,0,
+0,0,0,1,
+0,1,1,1,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="Block3" width="4" height="10" tintcolor="#00aa00">
+  <data encoding="csv">
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+1,0,0,0,
+1,0,0,0,
+1,0,0,0,
+1,0,0,0,
+1,0,0,0
+</data>
+ </layer>
+ <layer id="5" name="Block4" width="4" height="10" tintcolor="#aa55ff">
+  <data encoding="csv">
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,0,0,
+0,0,1,0,
+0,0,1,0,
+0,0,1,0,
+0,0,1,0
+</data>
+ </layer>
+</map>
