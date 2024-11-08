@@ -34,14 +34,17 @@ class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable:
     // Tiles or exceed bounds after moving one tile toward dir
     fun canMove(dir: DIR, level: Level): Boolean {
         var indices = mutableSetOf<Int>()
-        var transformedIndices = mutableSetOf<Int>()
+        var extendedTransformedIndices = mutableSetOf<Int>()
+        var baseTransformedIndices = level.blockMap[id]!!.tiles
+            .map{tile -> tile.idx + offset(dir)}
+            .toMutableSet()
 
         for (id in ignoredIds) {
             indices = indices
                 .plus(level.blockMap[id]!!.tiles
                     .map{tile -> tile.idx}
                     .toMutableSet()) as MutableSet<Int>
-            transformedIndices = transformedIndices
+            extendedTransformedIndices = extendedTransformedIndices
                 .plus(level.blockMap[id]!!.tiles
                     .map{tile -> tile.idx + offset(dir)}
                     .toMutableSet()) as MutableSet<Int>
@@ -55,7 +58,12 @@ class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable:
         }
 
         // Block on Block collision
-        val id = level.willCauseCollision(transformedIndices, ignoredIds)
+        var id = level.willCauseCollision(baseTransformedIndices, mutableSetOf(id))
+
+        if (id > -1) {
+            id = level.willCauseCollision(extendedTransformedIndices, ignoredIds)
+        }
+
         if (id > -1) {
             val obstacle = level.blockMap[id]
             if (obstacle!!.hasMoved && !obstacle.isTouched) {

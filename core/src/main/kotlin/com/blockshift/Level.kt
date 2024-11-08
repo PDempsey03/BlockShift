@@ -17,7 +17,7 @@ class Level(val blocks: Set<Block>) {
     val topBoundary: Set<Int> = (0 .. TILES_PER_ROW - 1).toSet()
     val bottomBoundary = ((TILES_PER_ROW * TILES_PER_COL) - TILES_PER_ROW .. TILES_PER_ROW * TILES_PER_COL).toSet()
 
-    // call slide on each Block while a Block has actions remaining
+    // call move on each Block while a Block has actions remaining
     fun slide(dir: DIR) {
         while (actionsRemaining()) {
             for (block in blocks) {
