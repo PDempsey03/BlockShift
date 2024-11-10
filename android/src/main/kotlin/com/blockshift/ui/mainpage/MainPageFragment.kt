@@ -17,6 +17,8 @@ import com.blockshift.model.db.OfflineHighScoreViewModel
 import com.blockshift.model.login.UserViewModel
 import com.blockshift.ui.settings.SettingsActivity
 import com.blockshift.R
+import com.blockshift.model.repositories.HighScoreRepository
+import com.blockshift.model.repositories.HighScoreTableNames
 import com.blockshift.model.repositories.UserTableNames
 
 /**
@@ -98,7 +100,6 @@ class HomePageFragment : Fragment() {
             }
 
              */
-
             offHighScoreViewModel.readByUsername.observe(viewLifecycleOwner, Observer {
                 scores ->
                 val nextLevel = getUserLevelProgress(scores)
@@ -109,7 +110,24 @@ class HomePageFragment : Fragment() {
                 }
             })
 
-
+        } else {
+            HighScoreRepository.getHighScoresByUsername(username ?: "???", {
+                //On Success
+                highScoreList ->
+                var nextLevel = 1
+                for(score in highScoreList) {
+                    if(score.levelid == nextLevel.toString()) {
+                        nextLevel++
+                    }
+                }
+                continueButton.setOnClickListener {
+                    loadLevel(nextLevel)
+                }
+            }, {
+                //On Failure
+                exception ->
+                Log.e(javaClass.simpleName,"Unable to Load Scores",exception)
+            })
         }
 
 

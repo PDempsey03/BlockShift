@@ -51,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
         if (intent.hasExtra("moves") && intent.hasExtra("time") && intent.hasExtra("distance") && intent.hasExtra("level")) {
             val level: Int = intent.getIntExtra("level",-1)
             var time: Int = intent.getIntExtra("time",Int.MAX_VALUE)
-            var distance: Int = intent.getIntExtra("distance",Int.MIN_VALUE)
+            var distance: Int = intent.getIntExtra("distance",Int.MAX_VALUE)
             var moves: Int = intent.getIntExtra("score", Int.MAX_VALUE)
             Log.d("score", "$moves")
             // TODO: write score
@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun offlineDBInit(highScoreVM:OfflineHighScoreViewModel,userVM:OfflineUserViewModel) {
         userVM.addUser(User("lcl","Guest"))
         for(i in 1..12) {
-            highScoreVM.addHighScore(HighScore("lcl",i,Int.MIN_VALUE,Int.MAX_VALUE,Int.MAX_VALUE))
+            highScoreVM.addHighScore(HighScore("lcl",i,Int.MAX_VALUE,Int.MAX_VALUE,Int.MAX_VALUE))
         }
     }
 

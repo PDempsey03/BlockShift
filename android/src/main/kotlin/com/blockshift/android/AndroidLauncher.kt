@@ -35,7 +35,7 @@ class AndroidLauncher : AndroidApplication(), Main.WinCallback {
         val intent: Intent = Intent(this, SettingsActivity::class.java)
         intent.putExtra("moves", moves)
         intent.putExtra("time",Int.MAX_VALUE)
-        intent.putExtra("distance",Int.MIN_VALUE)
+        intent.putExtra("distance",Int.MAX_VALUE)
         intent.putExtra("level",level)
         intent.putExtra(UserTableNames.USERNAME, username)
         intent.putExtra(UserTableNames.DISPLAY_NAME, displayName)

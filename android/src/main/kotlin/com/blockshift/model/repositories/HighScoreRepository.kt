@@ -95,6 +95,17 @@ object HighScoreRepository {
             }
             .addOnFailureListener(onFailureCallback)
     }
+
+    fun getHighScoresByUsername(username: String, onSuccessCallback: (List<HighScoreData>) -> Unit, onFailureCallback: (Exception) -> Unit) {
+        dataBaseHighScores.whereEqualTo(UserTableNames.USERNAME, username)
+            .orderBy(HighScoreTableNames.LEVEL_ID)
+            .limit(12)
+            .get(Source.SERVER)
+            .addOnSuccessListener { querySnapshot ->
+                onSuccessCallback(querySnapshot.toObjects(HighScoreData::class.java))
+            }
+            .addOnFailureListener(onFailureCallback)
+    }
 }
 
 data class HighScoreData(
