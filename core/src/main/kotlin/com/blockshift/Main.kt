@@ -9,7 +9,7 @@ class Main(private val level: Int) : Game() {
 
     // callback for android launcher
     interface WinCallback {
-        fun returnToLevelSelect(moves: Int)
+        fun returnToLevelSelect(moves: Int, level: Int)
     }
 
     fun setCallback(callback: WinCallback) {
@@ -27,7 +27,7 @@ class Main(private val level: Int) : Game() {
 
     override fun render() {
         if (gameScreen.isFinished) {
-            winCallback.returnToLevelSelect(gameScreen.moves)
+            winCallback.returnToLevelSelect(gameScreen.moves, gameScreen.toLoad)
         }
         super.render()
     }

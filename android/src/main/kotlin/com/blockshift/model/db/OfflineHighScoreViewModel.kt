@@ -25,4 +25,14 @@ class OfflineHighScoreViewModel(application: Application) : AndroidViewModel(app
             repository.addHighScore(score)
         }
     }
+
+    fun updateHighScore(score: HighScore) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateHighScore(score)
+        }
+    }
+
+    fun getHighScoreByLevel(level:Int): LiveData<HighScore> {
+        return repository.getHighScoreByLevel(level)
+    }
 }

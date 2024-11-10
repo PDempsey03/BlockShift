@@ -15,7 +15,10 @@ interface HighScoreDao {
     @Query("SELECT * FROM highScore WHERE username = :username")
     fun getHighScores(username: String): LiveData<List<HighScore>>
 
-    @Update
+    @Query("SELECT * FROM highScore WHERE username = :username AND levelID = :levelID")
+    fun getHighScoreByLevel(username: String, levelID: Int): LiveData<HighScore>
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(highScore: HighScore)
 
     @Delete

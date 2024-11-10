@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.blockshift.Block.Companion.DIR.*
 import kotlin.math.sqrt
 
-class GameScreen(toLoad:Int) : Screen {
+class GameScreen(val toLoad:Int) : Screen {
     // world parameters
     companion object {
         const val TILE_WIDTH: Float = 16f

@@ -19,6 +19,7 @@ import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.mainpage.HighScorePageFragment
 import com.blockshift.R
+import kotlin.math.min
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -38,13 +39,6 @@ class SettingsActivity : AppCompatActivity() {
         userViewModel.currentUser.value = UserData(currentUsername,currentDisplayName)
         UserRepository.startListeningForUser(userViewModel)
 
-        if (intent.hasExtra("score")) {
-            val moves: Int = intent.getIntExtra("score", 0)
-            Log.d("score", "$moves")
-
-            // TODO: write score
-        }
-
         offlineHighScoreModel = ViewModelProvider(this).get(OfflineHighScoreViewModel::class.java)
         offlineUserModel = ViewModelProvider(this).get(OfflineUserViewModel::class.java)
         offlineHighScoreModel.readByUsername.observe(this, Observer {
@@ -53,6 +47,27 @@ class SettingsActivity : AppCompatActivity() {
                 offlineDBInit(offlineHighScoreModel,offlineUserModel)
             }
         })
+
+        if (intent.hasExtra("moves") && intent.hasExtra("time") && intent.hasExtra("distance") && intent.hasExtra("level")) {
+            val level: Int = intent.getIntExtra("level",-1)
+            var time: Int = intent.getIntExtra("time",Int.MAX_VALUE)
+            var distance: Int = intent.getIntExtra("distance",Int.MIN_VALUE)
+            var moves: Int = intent.getIntExtra("score", Int.MAX_VALUE)
+            Log.d("score", "$moves")
+            // TODO: write score
+            if(currentUsername == "lcl") {
+                offlineHighScoreModel.getHighScoreByLevel(level).observe(this, Observer {
+                    score ->
+                    moves = min(moves,score.moves)
+                    time = min(time,score.time)
+                    distance = min(distance,score.distance)
+
+                    offlineHighScoreModel.updateHighScore(HighScore("lcl",level,distance,time,moves))
+                })
+            } else {
+                //TODO: Update Firebase
+            }
+        }
 
 
         // always load the account settings by default
@@ -88,7 +103,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun offlineDBInit(highScoreVM:OfflineHighScoreViewModel,userVM:OfflineUserViewModel) {
         userVM.addUser(User("lcl","Guest"))
         for(i in 1..12) {
-            highScoreVM.addHighScore(HighScore("lcl",i,0,0,0))
+            highScoreVM.addHighScore(HighScore("lcl",i,Int.MIN_VALUE,Int.MAX_VALUE,Int.MAX_VALUE))
         }
     }
 
