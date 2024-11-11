@@ -136,7 +136,7 @@ class HomePageFragment : Fragment() {
 
     private fun loadLevel(level:Int) {
         val intent = Intent(requireContext(), AndroidLauncher::class.java)
-        intent.putExtra("level",level)
+        intent.putExtra(HighScoreTableNames.LEVEL_ID, level)
         intent.putExtra(UserTableNames.USERNAME, userViewModel.currentUser.value?.username)
         intent.putExtra(UserTableNames.DISPLAY_NAME, userViewModel.currentUser.value?.displayname)
         startActivity(intent)

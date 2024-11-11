@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.blockshift.Main
+import com.blockshift.model.repositories.HighScoreTableNames
 import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.settings.SettingsActivity
 
@@ -20,7 +21,7 @@ class AndroidLauncher : AndroidApplication(), Main.WinCallback {
         username = intent.getStringExtra(UserTableNames.USERNAME).toString()
         displayName = intent.getStringExtra(UserTableNames.DISPLAY_NAME).toString()
 
-        val level = intent.getIntExtra("level",1)
+        val level = intent.getIntExtra(HighScoreTableNames.LEVEL_ID,1)
         val main: Main = Main(level)
 
         main.setCallback(this)
@@ -31,12 +32,12 @@ class AndroidLauncher : AndroidApplication(), Main.WinCallback {
         })
     }
 
-    override fun returnToLevelSelect(moves: Int, level: Int) {
+    override fun returnToLevelSelect(moves: Int, time: Long, distance: Int, level: Int) {
         val intent: Intent = Intent(this, SettingsActivity::class.java)
-        intent.putExtra("moves", moves)
-        intent.putExtra("time",Int.MAX_VALUE)
-        intent.putExtra("distance",Int.MAX_VALUE)
-        intent.putExtra("level",level)
+        intent.putExtra(HighScoreTableNames.MOVES, moves)
+        intent.putExtra(HighScoreTableNames.TIME, time)
+        intent.putExtra(HighScoreTableNames.DISTANCE, distance)
+        intent.putExtra(HighScoreTableNames.LEVEL_ID, level)
         intent.putExtra(UserTableNames.USERNAME, username)
         intent.putExtra(UserTableNames.DISPLAY_NAME, displayName)
         startActivity(intent)

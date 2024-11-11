@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.XmlReader
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -45,8 +46,11 @@ class GameScreen(val toLoad:Int) : Screen {
     private val threshold: Float = 10f
 
     // score
+    private var hasMadeFirstMove = false
     var isFinished: Boolean = false
     var moves: Int = 0
+    var time: Long = 0
+    var distance: Int = 0
 
     private var level: Level = loadLevel(toLoad)
 
@@ -148,7 +152,10 @@ class GameScreen(val toLoad:Int) : Screen {
     private fun checkLevelComplete() {
         for (player in level.blockMap[0]!!.tiles) {
             if (level.bottomBoundary.contains(player.idx)) {
-                moves = level.moves
+                // update appropriate score values now that level is complete
+                distance = level.blockMap[0]!!.distanceTraveled // distance traveled by player
+                time = TimeUtils.timeSinceMillis(time) // time since level begun
+                println("Moves = $moves\nDistance = $distance\nTime = $time")
                 isFinished = true
             }
         }
@@ -188,10 +195,10 @@ class GameScreen(val toLoad:Int) : Screen {
 
         // keyboard input
         when {
-            Gdx.input.isKeyPressed(Input.Keys.LEFT) -> level.slide(LEFT)
-            Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> level.slide(RIGHT)
-            Gdx.input.isKeyPressed(Input.Keys.UP) -> level.slide(UP)
-            Gdx.input.isKeyPressed(Input.Keys.DOWN) -> level.slide(DOWN)
+            Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> slideLevel(LEFT)
+            Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> slideLevel(RIGHT)
+            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> slideLevel(UP)
+            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> slideLevel(DOWN)
         }
     }
 
@@ -218,7 +225,16 @@ class GameScreen(val toLoad:Int) : Screen {
     private fun tilt(direction: Block.Companion.DIR) {
         Gdx.app.log("GAME SCREEN", "MOVING ${direction.name}")
         delay = tiltDelay
+        slideLevel(direction)
+    }
+
+    private fun slideLevel(direction: Block.Companion.DIR) {
+        if(!hasMadeFirstMove) {
+            hasMadeFirstMove = true
+            time = TimeUtils.millis() // record starting time once first move is made
+        }
         level.slide(direction)
+        moves++
     }
 
     // source: https://wiki.dfrobot.com/How_to_Use_a_Three-Axis_Accelerometer_for_Tilt_Sensing
