@@ -16,10 +16,10 @@ data class HighScore(
     val username: String,
     val levelID: Int,
     @ColumnInfo(name = "distance") val distance: Int,
-    @ColumnInfo(name = "time") val time: Int,
+    @ColumnInfo(name = "time") val time: Long,
     @ColumnInfo(name = "moves") val moves: Int
 )
 
 fun scoreIsZero(score:HighScore): Boolean {
-    return score.distance == 0 && score.time == 0 && score.moves == 0
+    return score.distance == 0 && score.time == 0L && score.moves == 0
 }

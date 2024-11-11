@@ -145,7 +145,7 @@ class HomePageFragment : Fragment() {
     private fun getUserLevelProgress(scores:List<HighScore>): Int {
         for(i in 0..minOf(11,scores.size-1)) {
             val scoreAt = scores[i]
-            if(scoreAt.distance == Int.MIN_VALUE && scoreAt.time == Int.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
+            if(scoreAt.distance == Int.MIN_VALUE && scoreAt.time == Long.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
                 return i+1
             }
         }

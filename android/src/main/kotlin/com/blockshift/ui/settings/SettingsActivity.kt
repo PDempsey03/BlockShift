@@ -19,12 +19,16 @@ import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.mainpage.HighScorePageFragment
 import com.blockshift.R
+import com.blockshift.model.repositories.HighScoreData
+import com.blockshift.model.repositories.HighScoreRepository
+import com.blockshift.model.repositories.HighScoreTableNames
 import kotlin.math.min
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var offlineHighScoreModel: OfflineHighScoreViewModel
     private lateinit var offlineUserModel: OfflineUserViewModel
+    private val TAG: String = javaClass.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,13 +52,18 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
-        if (intent.hasExtra("moves") && intent.hasExtra("time") && intent.hasExtra("distance") && intent.hasExtra("level")) {
-            val level: Int = intent.getIntExtra("level",-1)
-            var time: Int = intent.getIntExtra("time",Int.MAX_VALUE)
-            var distance: Int = intent.getIntExtra("distance",Int.MAX_VALUE)
-            var moves: Int = intent.getIntExtra("score", Int.MAX_VALUE)
-            Log.d("score", "$moves")
-            // TODO: write score
+        // if coming back from game and it was a win, update possible new highscores
+        if (intent.hasExtra(HighScoreTableNames.MOVES)
+            && intent.hasExtra(HighScoreTableNames.TIME)
+            && intent.hasExtra(HighScoreTableNames.DISTANCE)
+            && intent.hasExtra(HighScoreTableNames.LEVEL_ID)) {
+
+            val level: Int = intent.getIntExtra(HighScoreTableNames.LEVEL_ID,-1)
+            var time: Long = intent.getLongExtra(HighScoreTableNames.TIME, Long.MAX_VALUE)
+            var distance: Int = intent.getIntExtra(HighScoreTableNames.DISTANCE,Int.MAX_VALUE)
+            var moves: Int = intent.getIntExtra(HighScoreTableNames.MOVES, Int.MAX_VALUE)
+
+            // store score for guest on offline local db
             if(currentUsername == "lcl") {
                 offlineHighScoreModel.getHighScoreByLevel(level).observe(this, Observer {
                     score ->
@@ -65,7 +74,23 @@ class SettingsActivity : AppCompatActivity() {
                     offlineHighScoreModel.updateHighScore(HighScore("lcl",level,distance,time,moves))
                 })
             } else {
-                //TODO: Update Firebase
+                // Store high score on firebase
+                HighScoreRepository.updateHighScore(HighScoreData(
+                    currentUsername, level.toString(), distance.toLong(), moves.toLong(), time),
+                    /*
+                     * TODO:
+                     *  if for some reason high scores weren't / couldn't stored, consider storing locally
+                     *  and attempting to sync next time the app starts which would need its own
+                     *  implementation. i.e store any un-uploaded high scores in local room database
+                     *  and when the app starts, run a new thread to sync firebase with local room
+                     *  database (for now just printing some debug messages)
+                     */
+                    { success ->
+                        Log.d(TAG, if(success) "Successfully updated high score" else "Failed to upload high score")
+                    },
+                    { exception ->
+                        Log.e(TAG, "Failed to upload high score due to exception", exception)
+                    })
             }
         }
 
@@ -103,7 +128,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun offlineDBInit(highScoreVM:OfflineHighScoreViewModel,userVM:OfflineUserViewModel) {
         userVM.addUser(User("lcl","Guest"))
         for(i in 1..12) {
-            highScoreVM.addHighScore(HighScore("lcl",i,Int.MAX_VALUE,Int.MAX_VALUE,Int.MAX_VALUE))
+            highScoreVM.addHighScore(HighScore("lcl", i, Int.MAX_VALUE, Long.MAX_VALUE, Int.MAX_VALUE))
         }
     }
 
