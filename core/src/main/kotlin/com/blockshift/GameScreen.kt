@@ -31,23 +31,32 @@ class GameScreen(val toLoad:Int) : Screen {
     private lateinit var viewport: Viewport
 
     // graphics
-    private var batch: SpriteBatch = SpriteBatch()
+    private val batch: SpriteBatch = SpriteBatch()
+
+    // gui
+    val guiHeight = 8f // height of menu bar, win glow
+    val guiPadding = 2f // padding around buttons
+    val buttonWidth = 8f
+    val buttonHeight = 4f
 
     // load textures
-    private var background: Texture = Texture("flat_brown.png")
-    private var playerTexture: Texture = Texture("player.png")
-    private var blockTexture: Texture = Texture("block.png")
+    private val background: Texture = Texture("flat_brown.png")
+    private val playerTexture: Texture = Texture("player.png")
+    private val blockTexture: Texture = Texture("block.png")
+    private val menuTexture: Texture = Texture("menu.png")
+    private val winGlow: Texture = Texture("glow.png")
+    private val backTexture: Texture = Texture("back.png")
 
     // tilt
-    private var basePitch: Float = 0f
-    private var baseRoll: Float = 0f
+    private val threshold: Float = 10f
     private val tiltDelay: Float = .5f
     private var delay: Float = 0f
-    private val threshold: Float = 10f
+    private var basePitch: Float = 0f
+    private var baseRoll: Float = 0f
 
     // score
     private var hasMadeFirstMove = false
-    var isFinished: Boolean = false
+    var isFinished: Int = 0
     var moves: Int = 0
     var time: Long = 0
     var distance: Int = 0
@@ -126,7 +135,7 @@ class GameScreen(val toLoad:Int) : Screen {
     private fun loadCameraSettings() {
         camera = OrthographicCamera()
         SCREEN_WIDTH = (TILE_WIDTH * TILES_PER_ROW)
-        SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL)
+        SCREEN_HEIGHT = (TILE_WIDTH * TILES_PER_COL) + guiHeight
         viewport = StretchViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera)
     }
 
@@ -146,7 +155,24 @@ class GameScreen(val toLoad:Int) : Screen {
         // tiles
         level.draw(batch)
 
+        // gui
+        renderGui()
+
         batch.end()
+    }
+
+    private fun renderGui() {
+        // menu bg
+        batch.color = Color.valueOf("E89815")
+        batch.draw(menuTexture, 0f, SCREEN_HEIGHT - guiHeight, SCREEN_WIDTH, guiHeight)
+
+        // glow at win region
+        batch.color = Color.valueOf("EFDB6A")
+        batch.draw(winGlow, 0f, 0f, SCREEN_WIDTH, guiHeight)
+
+        // menu buttons
+        batch.color = Color.WHITE
+        batch.draw(backTexture, guiPadding, SCREEN_HEIGHT - guiHeight + guiPadding, buttonWidth, buttonHeight)
     }
 
     private fun checkLevelComplete() {
@@ -156,7 +182,7 @@ class GameScreen(val toLoad:Int) : Screen {
                 distance = level.blockMap[0]!!.distanceTraveled // distance traveled by player
                 time = TimeUtils.timeSinceMillis(time) // time since level begun
                 println("Moves = $moves\nDistance = $distance\nTime = $time")
-                isFinished = true
+                isFinished = 1
             }
         }
     }
@@ -184,8 +210,19 @@ class GameScreen(val toLoad:Int) : Screen {
     private fun detectInput(delta: Float) {
         // touch input
         if (Gdx.input.isTouched) {
-            val idx = getIdx(Gdx.input.getX(), Gdx.input.getY())
-            setTouched(idx)
+            val menuRegion = (guiHeight / SCREEN_HEIGHT) * viewport.screenHeight
+            val backButtonRegion = ((buttonWidth + guiPadding) / SCREEN_WIDTH) * viewport.screenWidth
+
+            val x = Gdx.input.x.toFloat()
+            var y = Gdx.input.y.toFloat()
+
+            if (y > menuRegion) {
+                y -= menuRegion
+                val idx = getIdx(menuRegion, x, y)
+                setTouched(idx)
+            } else if (y < menuRegion && x < backButtonRegion){
+                isFinished = -1
+            }
         }
 
         // tilt input
@@ -193,12 +230,18 @@ class GameScreen(val toLoad:Int) : Screen {
             checkTilt(delta)
         }
 
-        // keyboard input
+        /*
+         * keyboard input
+         * isKeyPressed will send many events while held (wrong score)
+         * isKeyJustPressed will send a single event, but requires an
+         * InputProcessor and InputMultiplexer
+         * https://stackoverflow.com/a/20048019
+         */
         when {
-            Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> slideLevel(LEFT)
-            Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> slideLevel(RIGHT)
-            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> slideLevel(UP)
-            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> slideLevel(DOWN)
+            Gdx.input.isKeyPressed(Input.Keys.LEFT) -> slideLevel(LEFT)
+            Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> slideLevel(RIGHT)
+            Gdx.input.isKeyPressed(Input.Keys.UP) -> slideLevel(UP)
+            Gdx.input.isKeyPressed(Input.Keys.DOWN) -> slideLevel(DOWN)
         }
     }
 
@@ -262,17 +305,15 @@ class GameScreen(val toLoad:Int) : Screen {
         }
     }
 
-    private fun getIdx(x: Int, y: Int): Int {
+    private fun getIdx(menuRegion: Float, x: Float, y: Float): Int {
         // compute width based on resolution
-        val tileHeight = Gdx.graphics.height / TILES_PER_COL
-        val tileWidth = Gdx.graphics.width / TILES_PER_ROW
+        val tileHeight = (viewport.screenHeight - menuRegion) / TILES_PER_COL
+        val tileWidth = viewport.screenWidth.toFloat() / TILES_PER_ROW
 
-        val col = x / tileWidth
-        val row = y / tileHeight
+        val row = (y / tileHeight).toInt()
+        val col = (x / tileWidth).toInt()
 
-        val idx = col + (row * TILES_PER_ROW)
-
-        return idx
+        return (col + (row * TILES_PER_ROW)).toInt()
     }
 
     private fun renderBg(delta: Float) {

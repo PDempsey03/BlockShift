@@ -11,7 +11,7 @@ import com.blockshift.model.repositories.UserTableNames
 import com.blockshift.ui.settings.SettingsActivity
 
 /** Launches the Android application. */
-class AndroidLauncher : AndroidApplication(), Main.WinCallback {
+class AndroidLauncher : AndroidApplication(), Main.ExitCallback {
     private lateinit var username: String
     private lateinit var displayName: String
 
@@ -32,15 +32,16 @@ class AndroidLauncher : AndroidApplication(), Main.WinCallback {
         })
     }
 
-    override fun returnToLevelSelect(moves: Int, time: Long, distance: Int, level: Int) {
+    override fun returnToLevelSelect(moves: Int?, time: Long?, distance: Int?, level: Int?) {
         val intent: Intent = Intent(this, SettingsActivity::class.java)
-        intent.putExtra(HighScoreTableNames.MOVES, moves)
-        intent.putExtra(HighScoreTableNames.TIME, time)
-        intent.putExtra(HighScoreTableNames.DISTANCE, distance)
-        intent.putExtra(HighScoreTableNames.LEVEL_ID, level)
+        if (moves != null) {
+            intent.putExtra(HighScoreTableNames.MOVES, moves)
+            intent.putExtra(HighScoreTableNames.TIME, time)
+            intent.putExtra(HighScoreTableNames.DISTANCE, distance)
+            intent.putExtra(HighScoreTableNames.LEVEL_ID, level)
+        }
         intent.putExtra(UserTableNames.USERNAME, username)
         intent.putExtra(UserTableNames.DISPLAY_NAME, displayName)
         startActivity(intent)
     }
-
 }

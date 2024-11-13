@@ -5,15 +5,15 @@ import com.badlogic.gdx.Game
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
 class Main(private val level: Int) : Game() {
     private lateinit var gameScreen: GameScreen
-    private lateinit var winCallback: WinCallback
+    private lateinit var exitCallback: ExitCallback
 
     // callback for android launcher
-    interface WinCallback {
-        fun returnToLevelSelect(moves: Int, time: Long, distance: Int, level: Int)
+    interface ExitCallback {
+        fun returnToLevelSelect(moves: Int? = null, time: Long? = null, distance: Int? = null, level: Int? = null)
     }
 
-    fun setCallback(callback: WinCallback) {
-        winCallback = callback
+    fun setCallback(callback: ExitCallback) {
+        exitCallback = callback
     }
 
     override fun create() {
@@ -26,8 +26,10 @@ class Main(private val level: Int) : Game() {
     }
 
     override fun render() {
-        if (gameScreen.isFinished) {
-            winCallback.returnToLevelSelect(gameScreen.moves, gameScreen.time, gameScreen.distance, gameScreen.toLoad)
+        if (gameScreen.isFinished == 1) {
+            exitCallback.returnToLevelSelect(gameScreen.moves, gameScreen.time, gameScreen.distance, gameScreen.toLoad)
+        } else if (gameScreen.isFinished == -1) {
+            exitCallback.returnToLevelSelect()
         }
         super.render()
     }
