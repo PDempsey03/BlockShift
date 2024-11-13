@@ -136,7 +136,7 @@ class HomePageFragment : Fragment() {
 
     private fun loadLevel(level:Int) {
         val intent = Intent(requireContext(), AndroidLauncher::class.java)
-        intent.putExtra("level",level)
+        intent.putExtra(HighScoreTableNames.LEVEL_ID, level)
         intent.putExtra(UserTableNames.USERNAME, userViewModel.currentUser.value?.username)
         intent.putExtra(UserTableNames.DISPLAY_NAME, userViewModel.currentUser.value?.displayname)
         startActivity(intent)
@@ -145,7 +145,7 @@ class HomePageFragment : Fragment() {
     private fun getUserLevelProgress(scores:List<HighScore>): Int {
         for(i in 0..minOf(11,scores.size-1)) {
             val scoreAt = scores[i]
-            if(scoreAt.distance == Int.MIN_VALUE && scoreAt.time == Int.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
+            if(scoreAt.distance == Int.MIN_VALUE && scoreAt.time == Long.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
                 return i+1
             }
         }

@@ -2,15 +2,13 @@ package com.blockshift
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.utils.TimeUtils
 import com.blockshift.Block.Companion.DIR
 import com.blockshift.Block.Companion.DIR.*
 import com.blockshift.GameScreen.Companion.TILES_PER_COL
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
 class Level(val blocks: Set<Block>) {
-    // moves counter
-    var moves: Int = 0
-
     // map of id to Tiles with that id
     val blockMap = blocks.map{ it -> Pair(it.id, it)}.toMap()
 
@@ -27,7 +25,6 @@ class Level(val blocks: Set<Block>) {
                 block.move(dir, this)
             }
         }
-        moves++
     }
 
     // check whether every Block took its turn

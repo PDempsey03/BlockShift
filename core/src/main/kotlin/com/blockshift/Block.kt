@@ -8,6 +8,7 @@ import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable: Boolean = true, var hasMoved: Boolean = false) {
     var hasActions: Boolean = true
     var isTouched: Boolean = false
+    var distanceTraveled: Int = 0
 
     // collision checks will treat ids in ignoredIds as part of the Block
     var ignoredIds = mutableSetOf(id)
@@ -88,6 +89,7 @@ class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable:
     fun move(dir: DIR, level: Level) {
         if (!isTouched && canMove(dir, level)) {
             this.update(offset(dir))
+            distanceTraveled++
         }
     }
 
