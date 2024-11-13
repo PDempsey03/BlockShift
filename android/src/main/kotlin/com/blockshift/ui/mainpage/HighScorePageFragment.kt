@@ -22,6 +22,7 @@ import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.R
 import kotlin.math.min
+import kotlin.io.path.Path
 
 /**
  * A simple [Fragment] subclass.
@@ -90,12 +91,12 @@ class HighScorePageFragment : Fragment() {
         }
 
         val levelSelectSpinner = view.findViewById<Spinner>(R.id.high_scores_level_select_drop_down)
-        val levelSelectData = listOf(1, 2, 3, 4, 5, 6, 8, 9, 10) // TODO: change to searching files
+        val levelSelectData = (1..12).toList()
         val levelSelectAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, levelSelectData)
         levelSelectSpinner.adapter = levelSelectAdapter
         levelSelectSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val newLevel = levelSelectData[position].toString() // TODO: will need to change this as above TODO changes
+                val newLevel = levelSelectData[position].toString()
 
                 if(newLevel != selectedLevel) {
                     selectedLevel = newLevel
@@ -177,6 +178,12 @@ class HighScorePageFragment : Fragment() {
             { highScoreList ->
 
                 val usernames = highScoreList.map { it.username }
+
+                if(usernames.isEmpty()) {
+                    highScoreDataList = listOf()
+                    loadNewPage(recyclerView, noDataTextView, columnTitlesLayout, true)
+                    return@getHighScoresInRange
+                }
 
                 // once retrieved the high scores, query the user database to find matching users
                 UserRepository.getUsers(usernames, { userDataList ->
