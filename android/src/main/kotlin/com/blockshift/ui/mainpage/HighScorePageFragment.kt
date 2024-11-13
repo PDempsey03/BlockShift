@@ -22,7 +22,6 @@ import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.R
 import kotlin.math.min
-import kotlin.io.path.Path
 
 /**
  * A simple [Fragment] subclass.
