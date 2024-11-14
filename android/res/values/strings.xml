@@ -59,6 +59,7 @@
     <string name="high_score_time">Time</string>
     <string name="high_score_moves">Moves</string>
     <string name="high_score_distance">Distance</string>
+    <string name="high_score_beyond_max_time">Too Long</string>
 
     <!-- Main Page -->
     <string name="continue_message">Continue</string>
