@@ -24,7 +24,7 @@ import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
 import kotlin.math.min
 
-class SettingsActivity : AppCompatActivity() {
+open class SettingsActivity : AppCompatActivity() {
 
     private lateinit var offlineHighScoreModel: OfflineHighScoreViewModel
     private lateinit var offlineUserModel: OfflineUserViewModel
@@ -96,13 +96,16 @@ class SettingsActivity : AppCompatActivity() {
 
 
         // always load the account settings by default
-        loadFragment(AccountSettingsFragment())
+        //loadFragment(AccountSettingsFragment())
+        loadFragment(HomePageFragment())
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val fragment = when(tab?.position ?: 0) {
-                    0 -> AccountSettingsFragment()
-                    1 -> HomePageFragment()
+                    0 -> HomePageFragment()
+                    1 -> AccountSettingsFragment()
+                    //0 -> AccountSettingsFragment()
+                    //1 -> HomePageFragment()
                     2 -> HighScorePageFragment()
                     else -> null
                 }

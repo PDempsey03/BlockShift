@@ -15,13 +15,13 @@
             android:id="@+id/settings_account_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account Settings"/>
+            android:text="Level Select"/>
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/settings_level_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Level Select"/>
+            android:text="Account Settings"/>
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/settings_high_scores"

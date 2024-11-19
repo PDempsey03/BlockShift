@@ -17,7 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class LoginActivity : AppCompatActivity() {
+open class LoginActivity : AppCompatActivity() {
     private val TAG: String = javaClass.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
