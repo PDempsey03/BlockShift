@@ -1,0 +1,81 @@
+<resources>
+    <!-- Universal -->
+    <string name="app_name">BlockShift</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="welcome_back">Welcome Back In Spanish</string>
+    <string name="welcome_message">Welcome!</string>
+    <string name="ok">OK</string>
+    <string name="update">Update</string>
+    <string name="cancel">Cancel</string>
+    <string name="back_text">Back</string>
+    <string name="server_connection_error_message">Error Connecting to Server</string>
+
+    <!-- Account -->
+    <string name="username_text">Username</string>
+    <string name="password_text">Password</string>
+    <string name="display_name_text">Display Name</string>
+    <string name="user_text">User</string>
+    <string name="username_hint">Enter Username</string>
+    <string name="password_hint">Enter Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="change_password_text">Change Password</string>
+    <string name="old_password_text">Old Password</string>
+    <string name="new_password_text">New Password</string>
+    <string name="confirm_new_password_text">Confirm New Password</string>
+    <string name="enter_login_info">Login</string>
+    <string name="new_user">New User</string>
+    <string name="username_invalid_error">Invalid Username</string>
+    <string name="password_invalid_error">Invalid Password</string>
+    <string name="username_password_invalid_error">Invalid Username or Password</string>
+    <string name="confirm_password_mismatch_error">Passwords Must Match</string>
+    <string name="username_taken_error">Username Taken</string>
+    <string name="create_account">Create Account</string>
+    <string name="account_creation_success">Successfully Created Account</string>
+    <string name="account_creation_failure">Failed to Create Account</string>
+    <string name="username_criteria_title">Username Criteria</string>
+    <string name="username_criteria_one">Contain %d - %d characters</string>
+    <string name="username_criteria_two">Contain only alpha-numeric characters</string>
+    <string name="password_criteria_title">Password Criteria</string>
+    <string name="password_criteria_one">Contain %d - %d characters</string>
+    <string name="password_criteria_two">Contain at least one capital letter</string>
+    <string name="password_criteria_three">Contain at least one digit</string>
+    <string name="password_criteria_four">Cannot be the same as old password</string>
+    <string name="confirm_password_criteria_title">Confirm Password Criteria</string>
+    <string name="confirm_password_criteria_one">Password Must Match </string>
+    <string name="password_update_success">Password Successfully Updated</string>
+    <string name="password_update_fail">Old Password Doesn\'t Match</string>
+    <string name="display_name_criteria_title">Display Name Criteria</string>
+    <string name="display_name_criteria_one">Contain %d - %d characters</string>
+    <string name="display_name_criteria_two">Contain only alpha-numeric characters, or spaces</string>
+    <string name="display_name_update_success">Display Name Successfully Updated</string>
+    <string name="display_name_update_failure">Display Name Could Not Be Updated</string>
+    <string name="delete_account_text">Delete Account</string>
+    <string name="account_deletion_failure">Account Could Not Be Deleted</string>
+    <string name="logout_text">Logout</string>
+    <string name="play_guest">Play as Guest</string>
+    <string name="account_settings_text">Account Settings</string>
+
+    <!-- High Scores -->
+    <string name="high_score_rank">Rank</string>
+    <string name="high_score_time">Time</string>
+    <string name="high_score_moves">Moves</string>
+    <string name="high_score_distance">Distance</string>
+    <string name="high_score_beyond_max_time">Too Long</string>
+    <string name="high_scores_text">High Scores</string>
+
+    <!-- Main Page -->
+    <string name="continue_message">Continue</string>
+    <string name="level_select_text">Level Select</string>
+    <string name="level_number1">Level 1</string>
+    <string name="level_number2">Level 2</string>
+    <string name="level_number3">Level 3</string>
+    <string name="level_number4">Level 4</string>
+    <string name="level_number5">Level 5</string>
+    <string name="level_number6">Level 6</string>
+    <string name="level_number7">Level 7</string>
+    <string name="level_number8">Level 8</string>
+    <string name="level_number9">Level 9</string>
+    <string name="level_number10">Level 10</string>
+    <string name="level_number11">Level 11</string>
+    <string name="level_number12">Level 12</string>
+</resources>
