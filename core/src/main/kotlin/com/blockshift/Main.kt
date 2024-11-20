@@ -27,8 +27,10 @@ class Main(private val level: Int) : Game() {
 
     override fun render() {
         if (gameScreen.isFinished == 1) {
+            dispose()
             exitCallback.returnToLevelSelect(gameScreen.moves, gameScreen.time, gameScreen.distance, gameScreen.toLoad)
         } else if (gameScreen.isFinished == -1) {
+            dispose()
             exitCallback.returnToLevelSelect()
         }
         super.render()

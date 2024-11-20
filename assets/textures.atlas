@@ -1,0 +1,17 @@
+textures.png
+size:2048,2048
+repeat:none
+back
+bounds:1074,1790,512,256
+block
+bounds:1074,1532,256,256
+flat_brown
+bounds:2,2,1070,2044
+glow
+bounds:1332,1772,16,16
+immovableblock
+bounds:1074,1274,256,256
+menu
+bounds:1846,2030,16,16
+player
+bounds:1588,1790,256,256

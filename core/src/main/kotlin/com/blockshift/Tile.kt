@@ -1,7 +1,7 @@
 package com.blockshift
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.blockshift.GameScreen.Companion.TILES_PER_COL
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
@@ -11,7 +11,7 @@ import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 // 0 1 2
 // 3 . .
 // . . n
-class Tile (var idx: Int, val width: Float, val tileTexture: Texture) {
+class Tile (var idx: Int, val width: Float, val tileTexture: TextureRegion) {
     var x: Float = 0f
     var y: Float = 0f
     var id: Int = 0
