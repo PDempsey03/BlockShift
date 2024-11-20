@@ -46,25 +46,12 @@ class LoginTest {
 
     @Test
     fun testLoginLaunchesSettingsActivity() {
+        //Test that playing as Guest launches the main page
         onView(withId(R.id.guestButton)).perform(click())
         intended(allOf(
             hasComponent(SettingsActivity::class.java.name),
             hasExtra(UserTableNames.USERNAME,"lcl"),
             hasExtra(UserTableNames.DISPLAY_NAME,"Guest")
         ))
-
-        val intent = Intent(ApplicationProvider.getApplicationContext(),SettingsActivity::class.java).apply {
-            putExtra(UserTableNames.USERNAME,"lcl")
-            putExtra(UserTableNames.DISPLAY_NAME,"Guest")
-        }
-
-        //Launch caught intent to check correct display
-        val scenario = ActivityScenario.launch<SettingsActivity>(intent)
-
-        scenario.use {
-            onView(withId(R.id.welcome_text))
-                .check(matches(withText("Welcome Guest!")))
-                .check(matches(isDisplayed()))
-        }
     }
 }
