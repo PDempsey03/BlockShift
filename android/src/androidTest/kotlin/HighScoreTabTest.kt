@@ -1,11 +1,18 @@
 import android.content.Intent
+import android.view.View
+import android.view.ViewManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.FailureHandler
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasMinimumChildCount
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -19,6 +26,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.test.espresso.matcher.ViewMatchers.*
+import com.blockshift.ui.mainpage.HighScorePageFragment
+import java.util.regex.Matcher
 
 @RunWith(AndroidJUnit4::class)
 class HighScoreTabTest {
@@ -48,20 +58,29 @@ class HighScoreTabTest {
         val scenario = ActivityScenario.launch<SettingsActivity>(intent)
 
         scenario.use {
+            actScenario ->
             onView(withText("High Scores")).perform(click())
+            actScenario.onActivity {
+                activity ->
+                val fragment = activity.supportFragmentManager.findFragmentByTag(HighScorePageFragment::class.java.simpleName)
 
+                val recyclerView = fragment?.view?.findViewById<RecyclerView>(R.id.high_scores_recycler_view)
+
+                waitForLoading(recyclerView)
+            }
+            //Check for visibility and loading data
             onView(withId(R.id.high_scores_recycler_view))
-                .check(matches(hasMinimumChildCount(1)))
+                .check(matches(isDisplayed()))
+            onView(withId(R.id.high_scores_recycler_view)).check(matches(hasMinimumChildCount(1)))
         }
     }
 
-    private fun waitForLoading(id: Int, timeout:Long = 500000L) {
+    private fun waitForLoading(view: RecyclerView?, timeout:Long = 5000L) {
         val startTime = System.currentTimeMillis()
+        //Check if loading occurs within 5 seconds, if not exit and error
         while(System.currentTimeMillis() - startTime < timeout) {
-            try {
-                onView(withId(id)).check(matches(hasMinimumChildCount(1)))
-            } catch (e:Exception) {
-                Thread.sleep(100)
+            if(view?.visibility == View.VISIBLE) {
+                return
             }
         }
     }
