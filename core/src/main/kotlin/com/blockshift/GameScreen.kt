@@ -3,10 +3,10 @@ package com.blockshift
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.TimeUtils
@@ -39,13 +39,9 @@ class GameScreen(val toLoad:Int) : Screen {
     val buttonWidth = 8f
     val buttonHeight = 4f
 
-    // load textures
-    private val background: Texture = Texture("flat_brown.png")
-    private val playerTexture: Texture = Texture("player.png")
-    private val blockTexture: Texture = Texture("block.png")
-    private val menuTexture: Texture = Texture("menu.png")
-    private val winGlow: Texture = Texture("glow.png")
-    private val backTexture: Texture = Texture("back.png")
+    // asset manager
+    private val assetManager = AssetManager()
+    private val assets = Assets(assetManager)
 
     // tilt
     private val threshold: Float = 10f
@@ -97,7 +93,7 @@ class GameScreen(val toLoad:Int) : Screen {
             .index
 
         // add player to world
-        blocks.add(Block(0, setOf(Tile(playerLocation, TILE_WIDTH, playerTexture)), Color.WHITE, false))
+        blocks.add(Block(0, setOf(Tile(playerLocation, TILE_WIDTH, assets.textures.playerTexture)), Color.WHITE, false))
 
         // remove player from list so the rest are standard blocks
         layers.removeValue(playerLayer, true)
@@ -122,7 +118,7 @@ class GameScreen(val toLoad:Int) : Screen {
             // generate tiles for the block
             val tiles = mutableSetOf<Tile>()
             for(idx in blockLocations) {
-                tiles.add(Tile(idx, TILE_WIDTH, blockTexture))
+                tiles.add(Tile(idx, TILE_WIDTH, assets.textures.blockTexture))
             }
 
             // handle edge case of possibly no tiles being part of the block
@@ -164,15 +160,15 @@ class GameScreen(val toLoad:Int) : Screen {
     private fun renderGui() {
         // menu bg
         batch.color = Color.valueOf("E89815")
-        batch.draw(menuTexture, 0f, SCREEN_HEIGHT - guiHeight, SCREEN_WIDTH, guiHeight)
+        batch.draw(assets.textures.menuTexture, 0f, SCREEN_HEIGHT - guiHeight, SCREEN_WIDTH, guiHeight)
 
         // glow at win region
         batch.color = Color.valueOf("EFDB6A")
-        batch.draw(winGlow, 0f, 0f, SCREEN_WIDTH, guiHeight)
+        batch.draw(assets.textures.winGlow, 0f, 0f, SCREEN_WIDTH, guiHeight)
 
         // menu buttons
         batch.color = Color.WHITE
-        batch.draw(backTexture, guiPadding, SCREEN_HEIGHT - guiHeight + guiPadding, buttonWidth, buttonHeight)
+        batch.draw(assets.textures.backTexture, guiPadding, SCREEN_HEIGHT - guiHeight + guiPadding, buttonWidth, buttonHeight)
     }
 
     private fun checkLevelComplete() {
@@ -317,7 +313,7 @@ class GameScreen(val toLoad:Int) : Screen {
     }
 
     private fun renderBg(delta: Float) {
-        batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        batch.draw(assets.textures.background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -342,6 +338,8 @@ class GameScreen(val toLoad:Int) : Screen {
     }
 
     override fun dispose() {
-
+        Gdx.app.log("GAME SCREEN", "diposed res")
+        batch.dispose()
+        assetManager.dispose()
     }
 }

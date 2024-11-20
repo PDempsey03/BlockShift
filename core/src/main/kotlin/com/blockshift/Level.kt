@@ -2,7 +2,6 @@ package com.blockshift
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.utils.TimeUtils
 import com.blockshift.Block.Companion.DIR
 import com.blockshift.Block.Companion.DIR.*
 import com.blockshift.GameScreen.Companion.TILES_PER_COL
