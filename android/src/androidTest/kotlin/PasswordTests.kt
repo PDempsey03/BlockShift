@@ -37,7 +37,9 @@ class PasswordTests {
 
         // ensure all valid passwords are returning as valid
         for(password in passwords) {
-            assert(LoginManager.isValidPassword(password))
+            assert(LoginManager.isValidPassword(password)) {
+                "password $password was found to be invalid"
+            }
         }
     }
 
@@ -60,7 +62,9 @@ class PasswordTests {
 
         // ensure all invalid passwords are returning as invalid
         for(password in passwords) {
-            assert(!LoginManager.isValidPassword(password))
+            assert(!LoginManager.isValidPassword(password)) {
+                "password $password was found to be valid"
+            }
         }
     }
 
@@ -73,7 +77,9 @@ class PasswordTests {
         val hashedPasswordTwo = LoginManager.hashPassword(testPassword, sameSalt)
 
         // ensure same password and salt generate same hash
-        assertEquals(hashedPasswordOne, hashedPasswordTwo)
+        assertEquals(hashedPasswordOne, hashedPasswordTwo) {
+            "Password hashing on same password and salt didn't yield the same hash"
+        }
     }
 
     @Test
@@ -89,6 +95,8 @@ class PasswordTests {
         val hashedPasswordTwo = LoginManager.hashPassword(testPassword, saltTwo)
 
         // ensure no 2 different salt values will generate the same hash
-        assertNotEquals(hashedPasswordOne, hashedPasswordTwo)
+        assertNotEquals(hashedPasswordOne, hashedPasswordTwo) {
+            "Same password on different salts yielded the same hash"
+        }
     }
 }
