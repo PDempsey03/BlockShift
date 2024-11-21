@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    
+    <string name="app_name">BlockShift</string>
+    <string name="title_activity_login">Actividad de inicio de sesión</string>
+    <string name="welcome_back">Bienvenido de nuevo</string>
+    <string name="welcome_message">¡Bienvenido!</string>
+    <string name="ok">Aceptar</string>
+    <string name="update">Actualizar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back_text">Atrás</string>
+    <string name="server_connection_error_message">Error al conectar con el servidor</string>
+
+    
+    <string name="username_text">Nombre de usuario</string>
+    <string name="password_text">Contraseña</string>
+    <string name="display_name_text">Nombre para mostrar</string>
+    <string name="user_text">Usuario</string>
+    <string name="username_hint">Introduzca el nombre de usuario</string>
+    <string name="password_hint">Introduzca la contraseña</string>
+    <string name="confirm_password_hint">Confirmar contraseña</string>
+    <string name="change_password_text">Cambiar contraseña</string>
+    <string name="old_password_text">Contraseña antigua</string>
+    <string name="new_password_text">Contraseña nueva</string>
+    <string name="confirm_new_password_text">Confirmar contraseña nueva</string>
+    <string name="enter_login_info">Iniciar sesión</string>
+    <string name="new_user">Nuevo usuario</string>
+    <string name="username_invalid_error">Nombre de usuario inválido</string>
+    <string name="password_invalid_error">Contraseña inválida</string>
+    <string name="username_password_invalid_error">Nombre de usuario o contraseña inválidos</string>
+    <string name="confirm_password_mismatch_error">Las contraseñas deben coincidir</string>
+    <string name="username_taken_error">Nombre de usuario ya tomado</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="account_creation_success">Cuenta creada correctamente</string>
+    <string name="account_creation_failure">Error al crear la cuenta</string>
+    <string name="username_criteria_title">Criterios para el nombre de usuario</string>
+    <string name="username_criteria_one">Contener %d - %d caracteres</string>
+    <string name="username_criteria_two">Contener solo caracteres alfanuméricos</string>
+    <string name="password_criteria_title">Criterios para la contraseña</string>
+    <string name="password_criteria_one">Contener %d - %d caracteres</string>
+    <string name="password_criteria_two">Contener al menos una letra mayúscula</string>
+    <string name="password_criteria_three">Contener al menos un dígito</string>
+    <string name="password_criteria_four">No puede ser la misma que la contraseña anterior</string>
+    <string name="confirm_password_criteria_title">Criterios para confirmar la contraseña</string>
+    <string name="confirm_password_criteria_one">Las contraseñas deben coincidir</string>
+    <string name="password_update_success">Contraseña actualizada correctamente</string>
+    <string name="password_update_fail">La contraseña antigua no coincide</string>
+    <string name="display_name_criteria_title">Criterios para el nombre para mostrar</string>
+    <string name="display_name_criteria_one">Contener %d - %d caracteres</string>
+    <string name="display_name_criteria_two">Contener solo caracteres alfanuméricos o espacios</string>
+    <string name="display_name_update_success">Nombre para mostrar actualizado correctamente</string>
+    <string name="display_name_update_failure">No se pudo actualizar el nombre para mostrar</string>
+    <string name="delete_account_text">Eliminar cuenta</string>
+    <string name="account_deletion_failure">No se pudo eliminar la cuenta</string>
+    <string name="logout_text">Cerrar sesión</string>
+    <string name="play_guest">Jugar como invitado</string>
+    <string name="account_settings_text">Ajustes de cuenta</string>
+
+    
+    <string name="high_score_rank">Rango</string>
+    <string name="high_score_time">Tiempo</string>
+    <string name="high_score_moves">Movimientos</string>
+    <string name="high_score_distance">Distancia</string>
+    <string name="high_score_beyond_max_time">Demasiado largo</string>
+    <string name="high_scores_text">Puntuaciones altas</string>
+
+    
+    <string name="continue_message">Continuar</string>
+    <string name="level_select_text">Selección de nivel</string>
+    <string name="level_number1">Nivel 1</string>
+    <string name="level_number2">Nivel 2</string>
+    <string name="level_number3">Nivel 3</string>
+    <string name="level_number4">Nivel 4</string>
+    <string name="level_number5">Nivel 5</string>
+    <string name="level_number6">Nivel 6</string>
+    <string name="level_number7">Nivel 7</string>
+    <string name="level_number8">Nivel 8</string>
+    <string name="level_number9">Nivel 9</string>
+    <string name="level_number10">Nivel 10</string>
+    <string name="level_number11">Nivel 11</string>
+    <string name="level_number12">Nivel 12</string>
+</resources>
