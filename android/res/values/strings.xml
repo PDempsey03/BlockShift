@@ -54,6 +54,7 @@
     <string name="delete_account_confirmation_warning">I understand that this action is irreversible</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
+    <string name="remember_me">Remember Me</string>
     <string name="logout_text">Logout</string>
     <string name="play_guest">Play as Guest</string>
     <string name="account_settings_text">Account Settings</string>

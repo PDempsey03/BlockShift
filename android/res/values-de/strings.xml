@@ -52,6 +52,7 @@
     <string name="display_name_update_failure">Anzeigename konnte nicht aktualisiert werden</string>
     <string name="delete_account_text">Konto löschen</string>
     <string name="account_deletion_failure">Konto konnte nicht gelöscht werden</string>
+    <string name="remember_me">Erinnere dich an mich</string>
     <string name="logout_text">Abmelden</string>
     <string name="play_guest">Als Gast spielen</string>
     <string name="account_settings_text">Kontoeinstellungen</string>

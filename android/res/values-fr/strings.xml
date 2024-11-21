@@ -52,6 +52,7 @@
     <string name="display_name_update_failure">Le nom d\'affichage n\'a pas pu être mis à jour</string>
     <string name="delete_account_text">Supprimer le compte</string>
     <string name="account_deletion_failure">Le compte n\'a pas pu être supprimé</string>
+    <string name="remember_me">Souviens-toi de moi</string>
     <string name="logout_text">Déconnexion</string>
     <string name="play_guest">Jouer en tant qu\'invité</string>
     <string name="account_settings_text">Paramètres du compte</string>

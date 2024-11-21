@@ -52,6 +52,7 @@
     <string name="display_name_update_failure">No se pudo actualizar el nombre para mostrar</string>
     <string name="delete_account_text">Eliminar cuenta</string>
     <string name="account_deletion_failure">No se pudo eliminar la cuenta</string>
+    <string name="remember_me">"Acuérdate de mí "</string>
     <string name="logout_text">Cerrar sesión</string>
     <string name="play_guest">Jugar como invitado</string>
     <string name="account_settings_text">Ajustes de cuenta</string>
