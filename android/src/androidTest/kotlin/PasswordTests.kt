@@ -58,7 +58,7 @@ class PasswordTests {
             noCapitalLetter,
             noDigit)
 
-        // ensure all invalid passwords are returning as valid
+        // ensure all invalid passwords are returning as invalid
         for(password in passwords) {
             assert(!LoginManager.isValidPassword(password))
         }
