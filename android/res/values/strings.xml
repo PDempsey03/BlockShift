@@ -50,6 +50,9 @@
     <string name="display_name_update_success">Display Name Successfully Updated</string>
     <string name="display_name_update_failure">Display Name Could Not Be Updated</string>
     <string name="delete_account_text">Delete Account</string>
+    <string name="delete_account_confirm_message">Are you sure you want to delete your account?</string>
+    <string name="delete_account_confirmation_warning">I understand that this action is irreversible</string>
+    <string name="confirm_delete">Confirm Delete</string>
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
     <string name="logout_text">Logout</string>
     <string name="play_guest">Play as Guest</string>

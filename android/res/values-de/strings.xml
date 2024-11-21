@@ -79,4 +79,7 @@
     <string name="level_number10">Stufe 10</string>
     <string name="level_number11">Stufe 11</string>
     <string name="level_number12">Stufe 12</string>
+    <string name="delete_account_confirm_message">Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
+    <string name="delete_account_confirmation_warning">Ich verstehe, dass diese Aktion irreversibel ist</string>
+    <string name="confirm_delete">Bestätigen Sie Löschen</string>
 </resources>

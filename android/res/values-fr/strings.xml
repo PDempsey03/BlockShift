@@ -79,4 +79,7 @@
     <string name="level_number10">Niveau 10</string>
     <string name="level_number11">Niveau 11</string>
     <string name="level_number12">Niveau 12</string>
+    <string name="delete_account_confirm_message">" Êtes-vous sûr de vouloir supprimer votre compte?"</string>
+    <string name="delete_account_confirmation_warning">Je comprends que cette action est irréversible</string>
+    <string name="confirm_delete">Confirmer la suppression</string>
 </resources>
