@@ -58,6 +58,8 @@
     <string name="account_settings_text">Kontoeinstellungen</string>
 
 
+    <string name="level">Ebene</string>
+    <string name="type">Typ</string>
     <string name="high_score_rank">Rang</string>
     <string name="high_score_time">Zeit</string>
     <string name="high_score_moves">Züge</string>

@@ -58,6 +58,8 @@
     <string name="account_settings_text">Paramètres du compte</string>
 
 
+    <string name="level">Niveau</string>
+    <string name="type">Taper</string>
     <string name="high_score_rank">Rang</string>
     <string name="high_score_time">Temps</string>
     <string name="high_score_moves">Déplacements</string>

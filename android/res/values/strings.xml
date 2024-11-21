@@ -60,6 +60,8 @@
     <string name="account_settings_text">Account Settings</string>
 
     <!-- High Scores -->
+    <string name="level">Level</string>
+    <string name="type">Type</string>
     <string name="high_score_rank">Rank</string>
     <string name="high_score_time">Time</string>
     <string name="high_score_moves">Moves</string>

@@ -58,6 +58,8 @@
     <string name="account_settings_text">Ajustes de cuenta</string>
 
 
+    <string name="level">Nivel</string>
+    <string name="type">Tipo</string>
     <string name="high_score_rank">Rango</string>
     <string name="high_score_time">Tiempo</string>
     <string name="high_score_moves">Movimientos</string>
