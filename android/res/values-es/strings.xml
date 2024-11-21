@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    
+
     <string name="app_name">BlockShift</string>
     <string name="title_activity_login">Actividad de inicio de sesión</string>
     <string name="welcome_back">Bienvenido de nuevo</string>
-    <string name="welcome_message">¡Bienvenido!</string>
+    <string name="welcome_message">¡Bienvenido %s!</string>
     <string name="ok">Aceptar</string>
     <string name="update">Actualizar</string>
     <string name="cancel">Cancelar</string>
     <string name="back_text">Atrás</string>
     <string name="server_connection_error_message">Error al conectar con el servidor</string>
 
-    
+
     <string name="username_text">Nombre de usuario</string>
     <string name="password_text">Contraseña</string>
     <string name="display_name_text">Nombre para mostrar</string>
@@ -56,7 +56,7 @@
     <string name="play_guest">Jugar como invitado</string>
     <string name="account_settings_text">Ajustes de cuenta</string>
 
-    
+
     <string name="high_score_rank">Rango</string>
     <string name="high_score_time">Tiempo</string>
     <string name="high_score_moves">Movimientos</string>
@@ -64,7 +64,7 @@
     <string name="high_score_beyond_max_time">Demasiado largo</string>
     <string name="high_scores_text">Puntuaciones altas</string>
 
-    
+
     <string name="continue_message">Continuar</string>
     <string name="level_select_text">Selección de nivel</string>
     <string name="level_number1">Nivel 1</string>

@@ -4,7 +4,7 @@
     <string name="app_name">BlockShift</string>
     <string name="title_activity_login">Anmeldeaktivität</string>
     <string name="welcome_back">Willkommen zurück</string>
-    <string name="welcome_message">Willkommen!</string>
+    <string name="welcome_message">Willkommen %s!</string>
     <string name="ok">OK</string>
     <string name="update">Aktualisieren</string>
     <string name="cancel">Abbrechen</string>

@@ -3,7 +3,7 @@
     <string name="app_name">BlockShift</string>
     <string name="title_activity_login">Login Activity</string>
     <string name="welcome_back">Welcome Back</string>
-    <string name="welcome_message">Welcome!</string>
+    <string name="welcome_message">Welcome %s!</string>
     <string name="ok">OK</string>
     <string name="update">Update</string>
     <string name="cancel">Cancel</string>

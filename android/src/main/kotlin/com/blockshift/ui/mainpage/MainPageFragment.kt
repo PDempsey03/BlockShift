@@ -57,8 +57,8 @@ class HomePageFragment : Fragment() {
         val welcomeText = view.findViewById<TextView>(R.id.welcome_text)
         val username = userViewModel.currentUser.value?.username
         val displayName = userViewModel.currentUser.value?.displayname
-        val displayText = "Welcome $displayName!"
-        welcomeText.setText(displayText)
+        val displayText = getString(R.string.welcome_message, displayName)
+        welcomeText.text = displayText
 
         // TODO: loop through level buttons
 

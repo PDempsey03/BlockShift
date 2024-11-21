@@ -4,7 +4,7 @@
     <string name="app_name">Décalage de bloc</string>
     <string name="title_activity_login">Activité de connexion</string>
     <string name="welcome_back">Bienvenue de retour</string>
-    <string name="welcome_message">Bienvenue!</string>
+    <string name="welcome_message">Bienvenue %s!</string>
     <string name="ok">D\'ACCORD</string>
     <string name="update">Mise à jour</string>
     <string name="cancel">Annuler</string>
