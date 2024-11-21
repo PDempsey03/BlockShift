@@ -13,7 +13,7 @@ import com.blockshift.model.db.OfflineUserViewModel
 import com.blockshift.model.db.User
 import com.blockshift.model.login.UserViewModel
 import com.google.android.material.tabs.TabLayout
-import com.blockshift.ui.mainpage.HomePageFragment
+import com.blockshift.ui.mainpage.MainPageFragment
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
@@ -97,12 +97,12 @@ open class SettingsActivity : AppCompatActivity() {
 
         // always load the account settings by default
         //loadFragment(AccountSettingsFragment())
-        loadFragment(HomePageFragment())
+        loadFragment(MainPageFragment())
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val fragment = when(tab?.position ?: 0) {
-                    0 -> HomePageFragment()
+                    0 -> MainPageFragment()
                     1 -> AccountSettingsFragment()
                     //0 -> AccountSettingsFragment()
                     //1 -> HomePageFragment()

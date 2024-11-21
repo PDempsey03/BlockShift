@@ -24,10 +24,10 @@ import com.blockshift.model.repositories.UserTableNames
 
 /**
  * A simple [Fragment] subclass.
- * Use the [HomePageFragment.newInstance] factory method to
+ * Use the [MainPageFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomePageFragment : Fragment() {
+class MainPageFragment : Fragment() {
     /*
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,7 +151,7 @@ class HomePageFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() =
-            HomePageFragment().apply {
+            MainPageFragment().apply {
                 arguments = Bundle().apply {
                 }
             }
