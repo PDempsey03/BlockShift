@@ -1,9 +1,13 @@
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blockshift.model.repositories.AccountCreationResult
+import com.blockshift.model.repositories.UserAuthenticationData
+import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
+import com.blockshift.ui.login.LoginManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firestore.v1.StructuredAggregationQuery.Aggregation.Count
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -16,7 +20,7 @@ import java.util.concurrent.TimeUnit
 class FirebaseTests {
 
     @Test
-    fun addAndCheckUserExistence() {
+    fun userExistence() {
         val username = "TestUsername"
         val password = "ExamplePassword1"
 
@@ -110,6 +114,183 @@ class FirebaseTests {
         assertEquals("Account creation result was $secondTestResult", AccountCreationResult.USERNAME_TAKEN, secondTestResult)
     }
 
+    @Test
+    fun updatePassword() {
+        val username = "TestUsername3"
+        val password = "ExamplePassword3"
+        val newPassword = "NewExamplePassword3"
+
+        val latch = CountDownLatch(1)
+        var testResult: AccountCreationResult? = null
+
+        UserRepository.createUser(
+            username,
+            password,
+            { accountCreationResult ->
+                testResult = accountCreationResult
+                latch.countDown()
+            },
+            { exception ->
+                fail("User creation failed: ${exception.message}")
+                latch.countDown()
+            }
+        )
+
+        latch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertEquals("User account creation was not successful", AccountCreationResult.SUCCESS, testResult)
+
+        val passwordLatch = CountDownLatch(1)
+        var passwordChangeSuccess = false
+        UserRepository.updateUserPassword(
+            username,
+            password,
+            newPassword,
+            { success ->
+                passwordChangeSuccess = success
+                passwordLatch.countDown()
+            },
+            { exception ->
+                passwordLatch.countDown()
+                fail("Exception thrown in password change ${exception.message}")
+            }
+        )
+
+        passwordLatch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertTrue("Password change was not successful", passwordChangeSuccess)
+    }
+
+    @Test
+    fun updateDisplayName() {
+        val username = "TestUsername4"
+        val password = "ExamplePassword4"
+        val newDisplayName = "TestDisplayName4"
+
+        val latch = CountDownLatch(1)
+        var testResult: AccountCreationResult? = null
+
+        UserRepository.createUser(
+            username,
+            password,
+            { accountCreationResult ->
+                testResult = accountCreationResult
+                latch.countDown()
+            },
+            { exception ->
+                fail("User creation failed: ${exception.message}")
+                latch.countDown()
+            }
+        )
+
+        latch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertEquals("User account creation was not successful", AccountCreationResult.SUCCESS, testResult)
+
+        val displayNameLatch = CountDownLatch(1)
+        var displayNameChangeSuccess = false
+        UserRepository.updateUserDisplayName(
+            username,
+            newDisplayName,
+            { success ->
+                displayNameChangeSuccess = success
+                displayNameLatch.countDown()
+            },
+            { exception ->
+                displayNameLatch.countDown()
+                fail("Exception thrown in password change ${exception.message}")
+            }
+        )
+
+        displayNameLatch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertTrue("Password change was not successful", displayNameChangeSuccess)
+    }
+
+    @Test
+    fun deleteUser() {
+        val username = "TestUsername5"
+        val password = "ExamplePassword5"
+
+        val latch = CountDownLatch(1)
+        var testResult: AccountCreationResult? = null
+
+        UserRepository.createUser(
+            username,
+            password,
+            { accountCreationResult ->
+                testResult = accountCreationResult
+                latch.countDown()
+            },
+            { exception ->
+                fail("User creation failed: ${exception.message}")
+                latch.countDown()
+            }
+        )
+
+        latch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertEquals("User account creation was not successful", AccountCreationResult.SUCCESS, testResult)
+
+        val deleteLatch = CountDownLatch(1)
+        var deletedAccount = false
+        val userData = UserData(username, username)
+
+        UserRepository.deleteUser(
+            userData,
+            { success ->
+                deletedAccount = success
+                deleteLatch.countDown()
+            },
+            { exception ->
+                deleteLatch.countDown()
+                fail("Exception thrown when attempting to delete user ${exception.message}")
+            }
+        )
+
+        deleteLatch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertTrue("Account was not successfully deleted", deletedAccount)
+    }
+
+    @Test
+    fun userAuthData() {
+        val username = "TestUsername6"
+        val password = "ExamplePassword6"
+
+        val latch = CountDownLatch(1)
+        var testResult: AccountCreationResult? = null
+
+        UserRepository.createUser(
+            username,
+            password,
+            { accountCreationResult ->
+                testResult = accountCreationResult
+                latch.countDown()
+            },
+            { exception ->
+                fail("User creation failed: ${exception.message}")
+                latch.countDown()
+            }
+        )
+
+        latch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertEquals("User account creation was not successful", AccountCreationResult.SUCCESS, testResult)
+
+        val addAuthLatch = CountDownLatch(1)
+        val userAuthData = UserAuthenticationData("4hfeuiwhu4b", 3294823582311L)
+        var addedAuthData = false
+
+        UserRepository.addUserAuthToken(
+            username,
+            userAuthData,
+            { success ->
+                addedAuthData = success
+                addAuthLatch.countDown()
+            },
+            { exception ->
+                fail("Exception thrown when adding auth data ${exception.message}")
+                addAuthLatch.countDown()
+            })
+
+        addAuthLatch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+        assertTrue("Auth data was not added", addedAuthData)
+    }
+
     companion object {
 
     /*
@@ -184,8 +365,8 @@ class FirebaseTests {
                 .collection(UserTableNames.USERS)
                 .get()
                 .addOnSuccessListener { querySnapshot ->
-                    latch.countDown()
                     documentsLatch = CountDownLatch(querySnapshot.size())
+                    latch.countDown()
                     querySnapshot.documents.forEach {
                         it.reference.delete()
                             .addOnSuccessListener {
