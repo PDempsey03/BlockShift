@@ -21,6 +21,7 @@ import com.blockshift.model.repositories.HighScoreRepository
 import com.blockshift.model.repositories.HighScoreTableNames
 import com.blockshift.model.repositories.UserTableNames
 
+
 /**
  * A simple [Fragment] subclass.
  * Use the [HomePageFragment.newInstance] factory method to
@@ -142,17 +143,7 @@ class HomePageFragment : Fragment() {
         startActivity(intent)
     }
 
-    private fun getUserLevelProgress(scores:List<HighScore>): Int {
-        for(i in 0..minOf(11,scores.size-1)) {
-            val scoreAt = scores[i]
-            if(scoreAt.distance == Int.MIN_VALUE && scoreAt.time == Long.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
-                return i+1
-            }
-        }
 
-        //Have the first level be the default if all levels are complete
-        return 1
-    }
 
     companion object {
         /**
@@ -169,4 +160,16 @@ class HomePageFragment : Fragment() {
                 }
             }
     }
+}
+
+fun getUserLevelProgress(scores:List<HighScore>): Int {
+    for(i in 0..minOf(11,scores.size-1)) {
+        val scoreAt = scores[i]
+        if(scoreAt.distance == Int.MAX_VALUE && scoreAt.time == Long.MAX_VALUE && scoreAt.moves == Int.MAX_VALUE) {
+            return i+1
+        }
+    }
+
+    //Have the first level be the default if all levels are complete
+    return 1
 }
