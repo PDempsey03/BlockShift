@@ -1,8 +1,10 @@
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blockshift.model.repositories.AccountCreationResult
 import com.blockshift.model.repositories.UserRepository
+import com.blockshift.model.repositories.UserTableNames
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -161,7 +163,7 @@ class FirebaseTests {
                     latch.countDown()
                 }
                 .addOnFailureListener {
-                    // ff it fails, then assume that there is no firebase emulator connected
+                    // if it fails, then assume that there is no firebase emulator connected
                     connected = false
                     latch.countDown()
                 }
@@ -170,6 +172,39 @@ class FirebaseTests {
             if(!connected) {
                 fail("Firebase emulator must be running to run firebase tests")
             }
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun cleanup() {
+            val latch = CountDownLatch(1)
+            lateinit var documentsLatch: CountDownLatch
+
+            firestore
+                .collection(UserTableNames.USERS)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    latch.countDown()
+                    documentsLatch = CountDownLatch(querySnapshot.size())
+                    querySnapshot.documents.forEach {
+                        it.reference.delete()
+                            .addOnSuccessListener {
+                                documentsLatch.countDown()
+                            }
+                            .addOnFailureListener {
+                                documentsLatch.countDown()
+                            }
+                    }
+
+                }
+                .addOnFailureListener {
+                    latch.countDown()
+                }
+
+            latch.await(FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+            documentsLatch.await(3 * FIRESTORE_TIMEOUT_LENGTH, TimeUnit.SECONDS)
+            assertTrue("Could not access User Collection", latch.count == 0L)
+            assertTrue("Not all documents were deleted", documentsLatch.count == 0L)
         }
     }
 }
