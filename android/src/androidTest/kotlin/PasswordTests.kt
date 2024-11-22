@@ -77,9 +77,8 @@ class PasswordTests {
         val hashedPasswordTwo = LoginManager.hashPassword(testPassword, sameSalt)
 
         // ensure same password and salt generate same hash
-        assertEquals(hashedPasswordOne, hashedPasswordTwo) {
-            "Password hashing on same password and salt didn't yield the same hash"
-        }
+        assertEquals("Password hashing on same password and salt didn't yield the same hash",
+            hashedPasswordOne, hashedPasswordTwo)
     }
 
     @Test
@@ -95,8 +94,6 @@ class PasswordTests {
         val hashedPasswordTwo = LoginManager.hashPassword(testPassword, saltTwo)
 
         // ensure no 2 different salt values will generate the same hash
-        assertNotEquals(hashedPasswordOne, hashedPasswordTwo) {
-            "Same password on different salts yielded the same hash"
-        }
+        assertNotEquals("Same password on different salts yielded the same hash", hashedPasswordOne, hashedPasswordTwo)
     }
 }
