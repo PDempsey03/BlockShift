@@ -122,6 +122,10 @@ open class SettingsActivity : AppCompatActivity() {
                 // Handle tab reselected
             }
         })
+
+        savedInstanceState?.getInt("selectedTab")?.let { selectedTab ->
+            tabLayout.getTabAt(selectedTab)?.select()
+        }
     }
 
     fun getOfflineViewModel(): OfflineHighScoreViewModel {
@@ -140,4 +144,12 @@ open class SettingsActivity : AppCompatActivity() {
             .replace(R.id.settings_frame_layout, fragment)
             .commit()
     }
+
+    override fun onSaveInstanceState(outState:Bundle) {
+        super.onSaveInstanceState(outState)
+        val currentTab = findViewById<TabLayout>(R.id.settings_tab_layout)
+        val tabPosition = currentTab.selectedTabPosition
+        outState.putInt("selectedTab",tabPosition)
+    }
+
 }
