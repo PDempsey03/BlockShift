@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    
+    <string name="app_name">BlockShift</string>
+    <string name="title_activity_login">登录活动</string>
+    <string name="welcome_back">欢迎回来</string>
+    <string name="welcome_message">欢迎回来，%s！</string>
+    <string name="ok">确定</string>
+    <string name="update">更新</string>
+    <string name="cancel">取消</string>
+    <string name="back_text">后退</string>
+    <string name="server_connection_error_message">连接服务器错误</string>
+
+    
+    <string name="username_text">用户名</string>
+    <string name="password_text">密码</string>
+    <string name="display_name_text">显示名称</string>
+    <string name="user_text">用户</string>
+    <string name="username_hint">输入用户名</string>
+    <string name="password_hint">输入密码</string>
+    <string name="confirm_password_hint">确认密码</string>
+    <string name="change_password_text">更改密码</string>
+    <string name="old_password_text">旧密码</string>
+    <string name="new_password_text">新密码</string>
+    <string name="confirm_new_password_text">确认新密码</string>
+    <string name="enter_login_info">登录</string>
+    <string name="new_user">新用户</string>
+    <string name="username_invalid_error">无效用户名</string>
+    <string name="password_invalid_error">无效密码</string>
+    <string name="username_password_invalid_error">无效用户名或密码</string>
+    <string name="confirm_password_mismatch_error">密码必须匹配</string>
+    <string name="username_taken_error">用户名已存在</string>
+    <string name="create_account">创建帐户</string>
+    <string name="account_creation_success">帐户创建成功</string>
+    <string name="account_creation_failure">帐户创建失败</string>
+    <string name="username_criteria_title">用户名标准</string>
+    <string name="username_criteria_one">包含 %d - %d 个字符</string>
+    <string name="username_criteria_two">仅包含字母数字字符</string>
+    <string name="password_criteria_title">密码标准</string>
+    <string name="password_criteria_one">包含 %d - %d 个字符</string>
+    <string name="password_criteria_two">至少包含一个大写字母</string>
+    <string name="password_criteria_three">至少包含一个数字</string>
+    <string name="password_criteria_four">不能与旧密码相同</string>
+    <string name="confirm_password_criteria_title">确认密码标准</string>
+    <string name="confirm_password_criteria_one">密码必须匹配</string>
+    <string name="password_update_success">密码更新成功</string>
+    <string name="password_update_fail">旧密码不匹配</string>
+    <string name="display_name_criteria_title">显示名称标准</string>
+    <string name="display_name_criteria_one">包含 %d - %d 个字符</string>
+    <string name="display_name_criteria_two">仅包含字母数字字符或空格</string>
+    <string name="display_name_update_success">显示名称更新成功</string>
+    <string name="display_name_update_failure">显示名称更新失败</string>
+    <string name="delete_account_text">删除帐户</string>
+    <string name="delete_account_confirm_message">您确定要删除您的帐户吗？</string>
+    <string name="delete_account_confirmation_warning">我理解此操作不可逆</string>
+    <string name="confirm_delete">确认删除</string>
+    <string name="account_deletion_failure">帐户无法删除</string>
+    <string name="remember_me">记住我</string>
+    <string name="logout_text">登出</string>
+    <string name="play_guest">访客登录</string>
+    <string name="account_settings_text">帐户设置</string>
+
+    
+    <string name="level">等级</string>
+    <string name="type">类型</string>
+    <string name="high_score_rank">排名</string>
+    <string name="high_score_time">时间</string>
+    <string name="high_score_moves">步数</string>
+    <string name="high_score_distance">距离</string>
+    <string name="high_score_beyond_max_time">太长了</string>
+    <string name="high_scores_text">高分</string>
+
+    
+    <string name="continue_message">继续</string>
+    <string name="level_select_text">关卡选择</string>
+    <string name="level_number1">关卡 1</string>
+    <string name="level_number2">关卡 2</string>
+    <string name="level_number3">关卡 3</string>
+    <string name="level_number4">关卡 4</string>
+    <string name="level_number5">关卡 5</string>
+    <string name="level_number6">关卡 6</string>
+    <string name="level_number7">关卡 7</string>
+    <string name="level_number8">关卡 8</string>
+    <string name="level_number9">关卡 9</string>
+    <string name="level_number10">关卡 10</string>
+    <string name="level_number11">关卡 11</string>
+    <string name="level_number12">关卡 12</string>
+</resources>
