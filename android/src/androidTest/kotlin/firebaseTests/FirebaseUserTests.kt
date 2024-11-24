@@ -1,13 +1,13 @@
+package firebaseTests
+
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blockshift.model.repositories.AccountCreationResult
 import com.blockshift.model.repositories.UserAuthenticationData
 import com.blockshift.model.repositories.UserData
 import com.blockshift.model.repositories.UserRepository
 import com.blockshift.model.repositories.UserTableNames
-import com.blockshift.ui.login.LoginManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firestore.v1.StructuredAggregationQuery.Aggregation.Count
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -17,7 +17,7 @@ import org.junit.BeforeClass
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class FirebaseTests {
+class FirebaseUserTests {
 
     @Test
     fun userExistence() {
@@ -318,12 +318,12 @@ class FirebaseTests {
         private const val FIRESTORE_HOST = "10.0.2.2"
         private const val FIRESTORE_PORT = 8080
         const val FIRESTORE_TIMEOUT_LENGTH = 10L
+        var usingEmulator = false
 
         @JvmStatic
         @BeforeClass
         fun setUp() {
 
-            println("Going for global setup")
             firestore = FirebaseFirestore.getInstance()
             firestore.useEmulator(
                 FIRESTORE_HOST,
@@ -353,11 +353,16 @@ class FirebaseTests {
             if(!connected) {
                 fail("Firebase emulator must be running to run firebase tests")
             }
+            usingEmulator = true
         }
 
         @JvmStatic
         @AfterClass
         fun cleanup() {
+
+            // don't accidentally delete our whole users collection (again)
+            if(!usingEmulator) return
+
             val latch = CountDownLatch(1)
             lateinit var documentsLatch: CountDownLatch
 

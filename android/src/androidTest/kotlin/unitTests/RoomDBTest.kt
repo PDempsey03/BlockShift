@@ -1,5 +1,6 @@
+package unitTests
+
 import android.content.Context
-import android.icu.util.TimeUnit
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -21,7 +22,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeoutException
-import com.blockshift.ui.mainpage.HomePageFragment
 import com.blockshift.ui.mainpage.getUserLevelProgress
 
 @RunWith(AndroidJUnit4::class)

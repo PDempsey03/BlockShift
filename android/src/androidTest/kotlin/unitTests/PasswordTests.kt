@@ -1,3 +1,5 @@
+package unitTests
+
 import com.blockshift.ui.login.LoginManager
 import org.junit.Test
 import org.junit.Assert.*
