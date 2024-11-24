@@ -70,6 +70,10 @@ www-test/
 *.iws
 *.iml
 
+## Firebase emulator:
+firestore-debug.log
+firebase-debug.log
+
 ## Eclipse:
 .classpath
 .project

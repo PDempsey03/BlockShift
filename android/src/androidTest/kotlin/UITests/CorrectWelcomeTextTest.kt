@@ -1,3 +1,5 @@
+package UITests
+
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
