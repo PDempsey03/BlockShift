@@ -24,10 +24,10 @@ import com.blockshift.model.repositories.UserTableNames
 
 /**
  * A simple [Fragment] subclass.
- * Use the [HomePageFragment.newInstance] factory method to
+ * Use the [MainPageFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomePageFragment : Fragment() {
+class MainPageFragment : Fragment() {
     /*
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,31 +60,27 @@ class HomePageFragment : Fragment() {
         val displayText = getString(R.string.welcome_message, displayName)
         welcomeText.text = displayText
 
-        // TODO: loop through level buttons
+        // update level buttons
+        val buttonIds = listOf(
+            R.id.level1_button,
+            R.id.level2_button,
+            R.id.level3_button,
+            R.id.level4_button,
+            R.id.level5_button,
+            R.id.level6_button,
+            R.id.level7_button,
+            R.id.level8_button,
+            R.id.level9_button,
+            R.id.level10_button,
+            R.id.level11_button,
+            R.id.level12_button,
+        )
 
-        val level1Button = view.findViewById<Button>(R.id.level1_button)
-        level1Button.setOnClickListener {
-            loadLevel(1)
-        }
-
-        val level2Button = view.findViewById<Button>(R.id.level2_button)
-        level2Button.setOnClickListener {
-            loadLevel(2)
-        }
-
-        val level3Button = view.findViewById<Button>(R.id.level3_button)
-        level3Button.setOnClickListener {
-            loadLevel(3)
-        }
-
-        val level4Button = view.findViewById<Button>(R.id.level4_button)
-        level4Button.setOnClickListener {
-            loadLevel(4)
-        }
-
-        val level5Button = view.findViewById<Button>(R.id.level5_button)
-        level5Button.setOnClickListener {
-            loadLevel(5)
+        for(i in buttonIds.indices) {
+            val levelButton = view.findViewById<Button>(buttonIds[i])
+            levelButton.setOnClickListener {
+                loadLevel(i + 1)
+            }
         }
 
         val continueButton = view.findViewById<Button>(R.id.continue_level_button)
@@ -155,7 +151,7 @@ class HomePageFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() =
-            HomePageFragment().apply {
+            MainPageFragment().apply {
                 arguments = Bundle().apply {
                 }
             }
