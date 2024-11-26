@@ -315,6 +315,7 @@ class FirebaseUserTests {
      */
 
         private lateinit var firestore: FirebaseFirestore
+        // 10.0.2.2 for emulated device, pc's IPv4 for physical devices
         private const val FIRESTORE_HOST = "10.0.2.2"
         private const val FIRESTORE_PORT = 8080
         const val FIRESTORE_TIMEOUT_LENGTH = 10L
