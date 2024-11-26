@@ -55,10 +55,10 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
-
   kotlin.compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
 
 }
+
 
 repositories {
   // needed for AAPT2, may be needed for other tools
@@ -74,6 +74,7 @@ dependencies {
   implementation 'com.google.firebase:firebase-common-ktx:21.0.0'
   implementation 'com.google.firebase:firebase-firestore-ktx:25.1.1'
   implementation platform('com.google.firebase:firebase-bom:33.5.1')
+  androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
 
   def room_version = "2.6.1"
   implementation "androidx.room:room-ktx:$room_version"
@@ -96,6 +97,8 @@ dependencies {
   androidTestImplementation 'io.mockk:mockk-android:1.13.3'
   //androidTestImplementation 'io.mockk:mockk:1.13.3'
 
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1'
+  testImplementation 'androidx.arch.core:core-testing:2.2.0'
 
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"

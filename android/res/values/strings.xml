@@ -1,9 +1,9 @@
 <resources>
     <!-- Universal -->
     <string name="app_name">BlockShift</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">Login Activity</string>
     <string name="welcome_back">Welcome Back</string>
-    <string name="welcome_message">Welcome!</string>
+    <string name="welcome_message">Welcome %s!</string>
     <string name="ok">OK</string>
     <string name="update">Update</string>
     <string name="cancel">Cancel</string>
@@ -41,7 +41,7 @@
     <string name="password_criteria_three">Contain at least one digit</string>
     <string name="password_criteria_four">Cannot be the same as old password</string>
     <string name="confirm_password_criteria_title">Confirm Password Criteria</string>
-    <string name="confirm_password_criteria_one">Password Must Match </string>
+    <string name="confirm_password_criteria_one">Password Must Match</string>
     <string name="password_update_success">Password Successfully Updated</string>
     <string name="password_update_fail">Old Password Doesn\'t Match</string>
     <string name="display_name_criteria_title">Display Name Criteria</string>
@@ -50,16 +50,24 @@
     <string name="display_name_update_success">Display Name Successfully Updated</string>
     <string name="display_name_update_failure">Display Name Could Not Be Updated</string>
     <string name="delete_account_text">Delete Account</string>
+    <string name="delete_account_confirm_message">Are you sure you want to delete your account?</string>
+    <string name="delete_account_confirmation_warning">I understand that this action is irreversible</string>
+    <string name="confirm_delete">Confirm Delete</string>
     <string name="account_deletion_failure">Account Could Not Be Deleted</string>
+    <string name="remember_me">Remember Me</string>
     <string name="logout_text">Logout</string>
     <string name="play_guest">Play as Guest</string>
+    <string name="account_settings_text">Account Settings</string>
 
     <!-- High Scores -->
+    <string name="level">Level</string>
+    <string name="type">Type</string>
     <string name="high_score_rank">Rank</string>
     <string name="high_score_time">Time</string>
     <string name="high_score_moves">Moves</string>
     <string name="high_score_distance">Distance</string>
     <string name="high_score_beyond_max_time">Too Long</string>
+    <string name="high_scores_text">High Scores</string>
 
     <!-- Main Page -->
     <string name="continue_message">Continue</string>

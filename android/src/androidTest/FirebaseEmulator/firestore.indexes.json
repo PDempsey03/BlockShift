@@ -1,0 +1,61 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "highscores",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "levelid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "distance",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "highscores",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "levelid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "moves",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "highscores",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "levelid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "time",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "highscores",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "username",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "levelid",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

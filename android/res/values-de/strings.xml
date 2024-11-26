@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+
+    <string name="app_name">BlockShift</string>
+    <string name="title_activity_login">Anmeldeaktivität</string>
+    <string name="welcome_back">Willkommen zurück</string>
+    <string name="welcome_message">Willkommen %s!</string>
+    <string name="ok">OK</string>
+    <string name="update">Aktualisieren</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="back_text">Zurück</string>
+    <string name="server_connection_error_message">Verbindung zum Server fehlgeschlagen</string>
+
+
+    <string name="username_text">Benutzername</string>
+    <string name="password_text">Passwort</string>
+    <string name="display_name_text">Anzeigename</string>
+    <string name="user_text">Benutzer</string>
+    <string name="username_hint">Benutzername eingeben</string>
+    <string name="password_hint">Passwort eingeben</string>
+    <string name="confirm_password_hint">Passwort bestätigen</string>
+    <string name="change_password_text">Passwort ändern</string>
+    <string name="old_password_text">Altes Passwort</string>
+    <string name="new_password_text">Neues Passwort</string>
+    <string name="confirm_new_password_text">Neues Passwort bestätigen</string>
+    <string name="enter_login_info">Anmelden</string>
+    <string name="new_user">Neuer Benutzer</string>
+    <string name="username_invalid_error">Ungültiger Benutzername</string>
+    <string name="password_invalid_error">Ungültiges Passwort</string>
+    <string name="username_password_invalid_error">Ungültiger Benutzername oder Passwort</string>
+    <string name="confirm_password_mismatch_error">Passwörter müssen übereinstimmen</string>
+    <string name="username_taken_error">Benutzername vergeben</string>
+    <string name="create_account">Konto erstellen</string>
+    <string name="account_creation_success">Konto erfolgreich erstellt</string>
+    <string name="account_creation_failure">Konto konnte nicht erstellt werden</string>
+    <string name="username_criteria_title">Benutzername-Kriterien</string>
+    <string name="username_criteria_one">Enthält %d - %d Zeichen</string>
+    <string name="username_criteria_two">Enthält nur alphanumerische Zeichen</string>
+    <string name="password_criteria_title">Passwort-Kriterien</string>
+    <string name="password_criteria_one">Enthält %d - %d Zeichen</string>
+    <string name="password_criteria_two">Enthält mindestens einen Großbuchstaben</string>
+    <string name="password_criteria_three">Enthält mindestens eine Ziffer</string>
+    <string name="password_criteria_four">Darf nicht mit dem alten Passwort übereinstimmen</string>
+    <string name="confirm_password_criteria_title">Passwort bestätigen-Kriterien</string>
+    <string name="confirm_password_criteria_one">Passwörter müssen übereinstimmen</string>
+    <string name="password_update_success">Passwort erfolgreich aktualisiert</string>
+    <string name="password_update_fail">Altes Passwort stimmt nicht überein</string>
+    <string name="display_name_criteria_title">Anzeigename-Kriterien</string>
+    <string name="display_name_criteria_one">Enthält %d - %d Zeichen</string>
+    <string name="display_name_criteria_two">Enthält nur alphanumerische Zeichen oder Leerzeichen</string>
+    <string name="display_name_update_success">Anzeigename erfolgreich aktualisiert</string>
+    <string name="display_name_update_failure">Anzeigename konnte nicht aktualisiert werden</string>
+    <string name="delete_account_text">Konto löschen</string>
+    <string name="account_deletion_failure">Konto konnte nicht gelöscht werden</string>
+    <string name="remember_me">Erinnere dich an mich</string>
+    <string name="logout_text">Abmelden</string>
+    <string name="play_guest">Als Gast spielen</string>
+    <string name="account_settings_text">Kontoeinstellungen</string>
+
+
+    <string name="level">Ebene</string>
+    <string name="type">Typ</string>
+    <string name="high_score_rank">Rang</string>
+    <string name="high_score_time">Zeit</string>
+    <string name="high_score_moves">Züge</string>
+    <string name="high_score_distance">Distanz</string>
+    <string name="high_score_beyond_max_time">Zu lang</string>
+    <string name="high_scores_text">Highscores</string>
+
+
+    <string name="continue_message">Fortfahren</string>
+    <string name="level_select_text">Levelauswahl</string>
+    <string name="level_number1">Stufe 1</string>
+    <string name="level_number2">Stufe 2</string>
+    <string name="level_number3">Stufe 3</string>
+    <string name="level_number4">Stufe 4</string>
+    <string name="level_number5">Stufe 5</string>
+    <string name="level_number6">Stufe 6</string>
+    <string name="level_number7">Stufe 7</string>
+    <string name="level_number8">Stufe 8</string>
+    <string name="level_number9">Stufe 9</string>
+    <string name="level_number10">Stufe 10</string>
+    <string name="level_number11">Stufe 11</string>
+    <string name="level_number12">Stufe 12</string>
+    <string name="delete_account_confirm_message">Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
+    <string name="delete_account_confirmation_warning">Ich verstehe, dass diese Aktion irreversibel ist</string>
+    <string name="confirm_delete">Bestätigen Sie Löschen</string>
+</resources>

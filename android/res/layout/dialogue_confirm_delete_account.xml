@@ -9,7 +9,7 @@
         android:id="@+id/delete_account_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to delete your account?"
+        android:text="@string/delete_account_confirm_message"
         android:textSize="18sp"
         android:paddingBottom="8dp" />
 
@@ -17,12 +17,12 @@
         android:id="@+id/delete_account_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="I understand that this action is irreversible" />
+        android:text="@string/delete_account_confirmation_warning" />
 
     <Button
         android:id="@+id/delete_account_confirm_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm Delete"
+        android:text="@string/confirm_delete"
         android:enabled="false" />
 </LinearLayout>

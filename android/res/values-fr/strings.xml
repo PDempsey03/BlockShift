@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+
+    <string name="app_name">Décalage de bloc</string>
+    <string name="title_activity_login">Activité de connexion</string>
+    <string name="welcome_back">Bienvenue de retour</string>
+    <string name="welcome_message">Bienvenue %s!</string>
+    <string name="ok">D\'ACCORD</string>
+    <string name="update">Mise à jour</string>
+    <string name="cancel">Annuler</string>
+    <string name="back_text">Retour</string>
+    <string name="server_connection_error_message">Erreur de connexion au serveur</string>
+
+
+    <string name="username_text">Nom d\'utilisateur</string>
+    <string name="password_text">Mot de passe</string>
+    <string name="display_name_text">Nom d\'affichage</string>
+    <string name="user_text">Utilisateur</string>
+    <string name="username_hint">Entrez le nom d\'utilisateur</string>
+    <string name="password_hint">Entrez le mot de passe</string>
+    <string name="confirm_password_hint">Confirmez le mot de passe</string>
+    <string name="change_password_text">Modifier le mot de passe</string>
+    <string name="old_password_text">Ancien mot de passe</string>
+    <string name="new_password_text">Nouveau mot de passe</string>
+    <string name="confirm_new_password_text">Confirmez le nouveau mot de passe</string>
+    <string name="enter_login_info">Connexion</string>
+    <string name="new_user">Nouvel utilisateur</string>
+    <string name="username_invalid_error">Nom d\'utilisateur non valide</string>
+    <string name="password_invalid_error">Mot de passe non valide</string>
+    <string name="username_password_invalid_error">Nom d\'utilisateur ou mot de passe non valide</string>
+    <string name="confirm_password_mismatch_error">Les mots de passe doivent correspondre</string>
+    <string name="username_taken_error">Nom d\'utilisateur déjà utilisé</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="account_creation_success">Compte créé avec succès</string>
+    <string name="account_creation_failure">Échec de la création du compte</string>
+    <string name="username_criteria_title">Critères de nom d\'utilisateur</string>
+    <string name="username_criteria_one">Contenir %d - %d caractères</string>
+    <string name="username_criteria_two">Contenir uniquement des caractères alphanumériques</string>
+    <string name="password_criteria_title">Critères de mot de passe</string>
+    <string name="password_criteria_one">Contenir %d - %d caractères</string>
+    <string name="password_criteria_two">Contenir au moins une majuscule</string>
+    <string name="password_criteria_three">Contenir au moins un chiffre</string>
+    <string name="password_criteria_four">Ne peut pas être identique à l\'ancien mot de passe</string>
+    <string name="confirm_password_criteria_title">Critères de confirmation du mot de passe</string>
+    <string name="confirm_password_criteria_one">Le mot de passe doit correspondre</string>
+    <string name="password_update_success">Mot de passe mis à jour avec succès</string>
+    <string name="password_update_fail">L\'ancien mot de passe ne correspond pas</string>
+    <string name="display_name_criteria_title">Critères de nom d\'affichage</string>
+    <string name="display_name_criteria_one">Contenir %d - %d caractères</string>
+    <string name="display_name_criteria_two">Contenir uniquement des caractères alphanumériques ou des espaces</string>
+    <string name="display_name_update_success">Nom d\'affichage mis à jour avec succès</string>
+    <string name="display_name_update_failure">Le nom d\'affichage n\'a pas pu être mis à jour</string>
+    <string name="delete_account_text">Supprimer le compte</string>
+    <string name="account_deletion_failure">Le compte n\'a pas pu être supprimé</string>
+    <string name="remember_me">Souviens-toi de moi</string>
+    <string name="logout_text">Déconnexion</string>
+    <string name="play_guest">Jouer en tant qu\'invité</string>
+    <string name="account_settings_text">Paramètres du compte</string>
+
+
+    <string name="level">Niveau</string>
+    <string name="type">Taper</string>
+    <string name="high_score_rank">Rang</string>
+    <string name="high_score_time">Temps</string>
+    <string name="high_score_moves">Déplacements</string>
+    <string name="high_score_distance">Distance</string>
+    <string name="high_score_beyond_max_time">Trop long</string>
+    <string name="high_scores_text">Meilleurs scores</string>
+
+
+    <string name="continue_message">Continuer</string>
+    <string name="level_select_text">Sélection de niveau</string>
+    <string name="level_number1">Niveau 1</string>
+    <string name="level_number2">Niveau 2</string>
+    <string name="level_number3">Niveau 3</string>
+    <string name="level_number4">Niveau 4</string>
+    <string name="level_number5">Niveau 5</string>
+    <string name="level_number6">Niveau 6</string>
+    <string name="level_number7">Niveau 7</string>
+    <string name="level_number8">Niveau 8</string>
+    <string name="level_number9">Niveau 9</string>
+    <string name="level_number10">Niveau 10</string>
+    <string name="level_number11">Niveau 11</string>
+    <string name="level_number12">Niveau 12</string>
+    <string name="delete_account_confirm_message">" Êtes-vous sûr de vouloir supprimer votre compte?"</string>
+    <string name="delete_account_confirmation_warning">Je comprends que cette action est irréversible</string>
+    <string name="confirm_delete">Confirmer la suppression</string>
+</resources>

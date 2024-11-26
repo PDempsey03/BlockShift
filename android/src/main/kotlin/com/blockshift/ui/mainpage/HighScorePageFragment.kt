@@ -108,12 +108,12 @@ class HighScorePageFragment : Fragment() {
         }
 
         val highScoreTypeSpinner = view.findViewById<Spinner>(R.id.high_scores_high_score_type_drop_down)
-        val highScoreTypeData = listOf(HighScoreTableNames.TIME, HighScoreTableNames.MOVES, HighScoreTableNames.DISTANCE)
+        val highScoreTypeData = listOf(getString(R.string.high_score_time), getString(R.string.high_score_moves), getString(R.string.high_score_distance))
         val highScoreTypeAdapter = ArrayAdapter(requireContext(), R.layout.level_select_drop_down_item, highScoreTypeData)
         highScoreTypeSpinner.adapter = highScoreTypeAdapter
         highScoreTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, innerView: View?, position: Int, id: Long) {
-                val newHighScoreType = highScoreTypeData[position]
+                val newHighScoreType = convertTypePositionToHighScoreType(position)
                 if(newHighScoreType != selectedHighScoreType) {
                     selectedHighScoreType = newHighScoreType
                     nextStartingRank = 1
@@ -199,6 +199,15 @@ class HighScorePageFragment : Fragment() {
             highScoreDataList = listOf()
             Log.e(TAG, "Failed to load high scores (High Score Section)", exception)
         })
+    }
+
+    private fun convertTypePositionToHighScoreType(position: Int): String {
+        return when(position) {
+            0 -> HighScoreTableNames.TIME
+            1 -> HighScoreTableNames.MOVES
+            2 -> HighScoreTableNames.DISTANCE
+            else -> HighScoreTableNames.TIME
+        }
     }
 
     companion object {

@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    
+    <string name="app_name">BlockShift</string>
+    <string name="title_activity_login">लॉगिन गतिविधि</string>
+    <string name="welcome_back">स्वागत वापस</string>
+    <string name="welcome_message">स्वागत %s!</string>
+    <string name="ok">ठीक है</string>
+    <string name="update">अपडेट करें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="back_text">वापस</string>
+    <string name="server_connection_error_message">सर्वर से कनेक्ट करने में त्रुटि</string>
+
+    
+    <string name="username_text">उपयोगकर्ता नाम</string>
+    <string name="password_text">पासवर्ड</string>
+    <string name="display_name_text">प्रदर्शन नाम</string>
+    <string name="user_text">उपयोगकर्ता</string>
+    <string name="username_hint">उपयोगकर्ता नाम दर्ज करें</string>
+    <string name="password_hint">पासवर्ड दर्ज करें</string>
+    <string name="confirm_password_hint">पासवर्ड की पुष्टि करें</string>
+    <string name="change_password_text">पासवर्ड बदलें</string>
+    <string name="old_password_text">पुराना पासवर्ड</string>
+    <string name="new_password_text">नया पासवर्ड</string>
+    <string name="confirm_new_password_text">नए पासवर्ड की पुष्टि करें</string>
+    <string name="enter_login_info">लॉगिन करें</string>
+    <string name="new_user">नया उपयोगकर्ता</string>
+    <string name="username_invalid_error">अमान्य उपयोगकर्ता नाम</string>
+    <string name="password_invalid_error">अमान्य पासवर्ड</string>
+    <string name="username_password_invalid_error">अमान्य उपयोगकर्ता नाम या पासवर्ड</string>
+    <string name="confirm_password_mismatch_error">पासवर्ड मेल खाने चाहिए</string>
+    <string name="username_taken_error">उपयोगकर्ता नाम लिया गया</string>
+    <string name="create_account">खाता बनाएँ</string>
+    <string name="account_creation_success">खाता सफलतापूर्वक बनाया गया</string>
+    <string name="account_creation_failure">खाता बनाने में विफल</string>
+    <string name="username_criteria_title">उपयोगकर्ता नाम मानदंड</string>
+    <string name="username_criteria_one">%d - %d वर्ण शामिल करें</string>
+    <string name="username_criteria_two">केवल अल्फ़ान्यूमेरिक वर्ण शामिल करें</string>
+    <string name="password_criteria_title">पासवर्ड मानदंड</string>
+    <string name="password_criteria_one">%d - %d वर्ण शामिल करें</string>
+    <string name="password_criteria_two">कम से कम एक बड़ा अक्षर शामिल करें</string>
+    <string name="password_criteria_three">कम से कम एक अंक शामिल करें</string>
+    <string name="password_criteria_four">पुराने पासवर्ड के समान नहीं हो सकता</string>
+    <string name="confirm_password_criteria_title">पासवर्ड पुष्टि मानदंड</string>
+    <string name="confirm_password_criteria_one">पासवर्ड मेल खाना चाहिए</string>
+    <string name="password_update_success">पासवर्ड सफलतापूर्वक अपडेट किया गया</string>
+    <string name="password_update_fail">पुराना पासवर्ड मेल नहीं खाता</string>
+    <string name="display_name_criteria_title">प्रदर्शन नाम मानदंड</string>
+    <string name="display_name_criteria_one">%d - %d वर्ण शामिल करें</string>
+    <string name="display_name_criteria_two">केवल अल्फ़ान्यूमेरिक वर्ण</string>
+    <string name="display_name_update_success"> या रिक्त स्थान शामिल करें</string>
+    <string name="display_name_update_failure">प्रदर्शन नाम सफलतापूर्वक अपडेट किया गया</string>
+    <string name="delete_account_text">प्रदर्शन नाम अपडेट नहीं किया जा सका</string>
+    <string name="delete_account_confirm_message">खाता हटाएं</string>
+    <string name="delete_account_confirmation_warning">क्या आप अपना खाता हटाना सुनिश्चित करते हैं?</string>
+    <string name="confirm_delete">मैं समझता हूँ कि यह क्रिया अपरिवर्तनीय है</string>
+    <string name="account_deletion_failure">हटाएँ की पुष्टि करें</string>
+    <string name="remember_me">खाता नहीं हटाया जा सका</string>
+    <string name="logout_text">मुझे याद रखें</string>
+    <string name="play_guest">लॉगआउट करें</string>
+    <string name="account_settings_text">अतिथि के रूप में खेलें</string>
+
+    
+    <string name="level">खाता सेटिंग्स</string>
+    <string name="type">स्तर</string>
+    <string name="high_score_rank">प्रकार</string>
+    <string name="high_score_time">रैंक</string>
+    <string name="high_score_moves">समय</string>
+    <string name="high_score_distance">चाल</string>
+    <string name="high_score_beyond_max_time">दूरी</string>
+    <string name="high_scores_text">बहुत लंबा</string>
+
+    
+    <string name="continue_message">उच्च स्कोर</string>
+    <string name="level_select_text">जारी रखें</string>
+    <string name="level_number1">स्तर का चयन करें</string>
+    <string name="level_number2">स्तर 1</string>
+    <string name="level_number3">स्तर 2</string>
+    <string name="level_number4">स्तर 3</string>
+    <string name="level_number5">स्तर 4</string>
+    <string name="level_number6">स्तर 5</string>
+    <string name="level_number7">स्तर 6</string>
+    <string name="level_number8">स्तर 7</string>
+    <string name="level_number9">स्तर 8</string>
+    <string name="level_number10">स्तर 9</string>
+    <string name="level_number11">स्तर 10</string>
+    <string name="level_number12">स्तर 11</string>
+</resources>
