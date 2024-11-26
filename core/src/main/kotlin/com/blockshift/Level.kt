@@ -1,7 +1,7 @@
 package com.blockshift
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.utils.Queue
 import com.blockshift.Block.Companion.DIR
 import com.blockshift.Block.Companion.DIR.*
 import com.blockshift.GameScreen.Companion.TILES_PER_COL
@@ -19,6 +19,7 @@ class Level(val blocks: Set<Block>) {
 
     // call move on each Block while a Block has actions remaining
     fun slide(dir: DIR) {
+        GameScreen.graphicsNeedUpdated = true
         while (actionsRemaining()) {
             for (block in blocks) {
                 block.move(dir, this)
@@ -61,13 +62,9 @@ class Level(val blocks: Set<Block>) {
         }
     }
 
-    fun draw(batch: Batch) {
+    fun queue(queue: Queue<Sprite>) {
         for (block in blocks) {
-            batch.color = block.color
-            block.draw(batch)
+            block.queue(queue)
         }
-
-        // reset the tint to white (no tint)
-        batch.color = Color.WHITE
     }
 }

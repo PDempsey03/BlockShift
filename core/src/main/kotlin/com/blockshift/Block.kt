@@ -1,7 +1,8 @@
 package com.blockshift
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.utils.Queue
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
 // Block is a collection of one or more Tiles
@@ -100,9 +101,9 @@ class Block(val id: Int, val tiles: Set<Tile>, val color: Color, val isHoldable:
         }
     }
 
-    fun draw(batch: Batch) {
+    fun queue(queue: Queue<Sprite>) {
         for (tile in tiles) {
-            tile.draw(batch)
+            tile.queue(queue, color)
         }
     }
 }

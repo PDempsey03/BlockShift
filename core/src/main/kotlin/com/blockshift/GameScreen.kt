@@ -7,8 +7,12 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.Queue
+import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.XmlReader
 import com.badlogic.gdx.utils.viewport.StretchViewport
@@ -24,6 +28,7 @@ class GameScreen(val toLoad:Int) : Screen {
         var TILES_PER_COL: Int = 9 // height
         var SCREEN_WIDTH: Float = 0f
         var SCREEN_HEIGHT: Float = 0f
+        var graphicsNeedUpdated = true
     }
 
     // screen
@@ -31,7 +36,9 @@ class GameScreen(val toLoad:Int) : Screen {
     private lateinit var viewport: Viewport
 
     // graphics
-    private val batch: SpriteBatch = SpriteBatch()
+    // size should roughly correspond to batch.maxSpritesInBatch
+    private val batch: SpriteBatch = SpriteBatch(100)
+    private val renderQueue = Queue<Sprite>()
 
     // gui
     val guiHeight = 8f // height of menu bar, win glow
@@ -56,6 +63,10 @@ class GameScreen(val toLoad:Int) : Screen {
     var moves: Int = 0
     var time: Long = 0
     var distance: Int = 0
+
+    val profiler: GLProfiler = GLProfiler(Gdx.graphics)
+
+//    init { profiler.enable() }
 
     private var level: Level = loadLevel(toLoad)
 
@@ -136,39 +147,55 @@ class GameScreen(val toLoad:Int) : Screen {
     }
 
     override fun render(delta: Float) {
-        batch.begin()
+        ScreenUtils.clear(Color.BLACK)
 
         updateDelay(delta)
+        detectInput()
 
-        resetFlags()
-        detectInput(delta)
+        if (graphicsNeedUpdated) {
+            queueBg(renderQueue) // static bg
+            queueGui(renderQueue) // menu bar buttons, win glow
+            level.queue(renderQueue) // tiles
+
+            batch.begin()
+            for (sprite in renderQueue) {
+                sprite.draw(batch)
+            }
+            batch.end()
+        }
 
         checkLevelComplete()
+        resetFlags()
+        renderQueue.clear()
 
-        // static bg
-        renderBg(delta)
-
-        // tiles
-        level.draw(batch)
-
-        // gui
-        renderGui()
-
-        batch.end()
+        if (profiler.isEnabled) {
+            Gdx.app.log("bindings", "${profiler.textureBindings}")
+            profiler.reset()
+        }
     }
 
-    private fun renderGui() {
-        // menu bg
-        batch.color = Color.valueOf("E89815")
-        batch.draw(assets.textures.menuTexture, 0f, SCREEN_HEIGHT - guiHeight, SCREEN_WIDTH, guiHeight)
+    private fun queueGui(queue: Queue<Sprite>) {
+        val menuBg = Sprite(assets.textures.menuTexture)
+        val winGlow = Sprite(assets.textures.winGlow)
+        val backButton = Sprite(assets.textures.backTexture)
 
-        // glow at win region
-        batch.color = Color.valueOf("EFDB6A")
-        batch.draw(assets.textures.winGlow, 0f, 0f, SCREEN_WIDTH, guiHeight)
+        menuBg.setOrigin(0f, 0f)
+        winGlow.setOrigin(0f, 0f)
+        backButton.setOrigin(0f, 0f)
 
-        // menu buttons
-        batch.color = Color.WHITE
-        batch.draw(assets.textures.backTexture, guiPadding, SCREEN_HEIGHT - guiHeight + guiPadding, buttonWidth, buttonHeight)
+        backButton.setScale(buttonWidth / backButton.width, buttonHeight / backButton.height)
+        menuBg.setScale(SCREEN_WIDTH / menuBg.width, guiHeight / menuBg.height)
+        winGlow.setScale(SCREEN_WIDTH / winGlow.width, guiHeight / winGlow.height)
+
+        menuBg.setPosition(0f, SCREEN_HEIGHT - guiHeight)
+        backButton.setPosition(guiPadding, SCREEN_HEIGHT - guiHeight + guiPadding)
+
+        menuBg.setColor(Color.valueOf("E89815"))
+        winGlow.setColor(Color.valueOf("EFDB6A"))
+
+        queue.addLast(menuBg)
+        queue.addLast(winGlow)
+        queue.addLast(backButton)
     }
 
     private fun checkLevelComplete() {
@@ -203,14 +230,14 @@ class GameScreen(val toLoad:Int) : Screen {
         }
     }
 
-    private fun detectInput(delta: Float) {
+    private fun detectInput() {
         // touch input
         if (Gdx.input.isTouched) {
-            val menuRegion = (guiHeight / SCREEN_HEIGHT) * viewport.screenHeight
+            val menuRegion = ((guiHeight.toFloat() / SCREEN_HEIGHT) * viewport.screenHeight).toInt()
             val backButtonRegion = ((buttonWidth + guiPadding) / SCREEN_WIDTH) * viewport.screenWidth
 
-            val x = Gdx.input.x.toFloat()
-            var y = Gdx.input.y.toFloat()
+            val x = Gdx.input.x
+            var y = Gdx.input.y
 
             if (y > menuRegion) {
                 y -= menuRegion
@@ -223,7 +250,7 @@ class GameScreen(val toLoad:Int) : Screen {
 
         // tilt input
         if (delay <= 0) {
-            checkTilt(delta)
+            checkTilt()
         }
 
         /*
@@ -241,7 +268,7 @@ class GameScreen(val toLoad:Int) : Screen {
         }
     }
 
-    private fun checkTilt(delta: Float) {
+    private fun checkTilt() {
         val accelX = Gdx.input.accelerometerX
         val accelY = Gdx.input.accelerometerY
         val accelZ = Gdx.input.accelerometerZ
@@ -301,19 +328,22 @@ class GameScreen(val toLoad:Int) : Screen {
         }
     }
 
-    private fun getIdx(menuRegion: Float, x: Float, y: Float): Int {
+    private fun getIdx(menuRegion: Int, x: Int, y: Int): Int {
         // compute width based on resolution
         val tileHeight = (viewport.screenHeight - menuRegion) / TILES_PER_COL
-        val tileWidth = viewport.screenWidth.toFloat() / TILES_PER_ROW
+        val tileWidth = viewport.screenWidth / TILES_PER_ROW
 
-        val row = (y / tileHeight).toInt()
-        val col = (x / tileWidth).toInt()
+        val row = (y / tileHeight)
+        val col = (x / tileWidth)
 
-        return (col + (row * TILES_PER_ROW)).toInt()
+        return (col + (row * TILES_PER_ROW))
     }
 
-    private fun renderBg(delta: Float) {
-        batch.draw(assets.textures.background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+    private fun queueBg(queue: Queue<Sprite>) {
+        val bg = Sprite(assets.textures.background)
+        bg.setScale( SCREEN_WIDTH / bg.width)
+        bg.setOrigin(0f, 0f)
+        queue.addLast(bg)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -338,7 +368,6 @@ class GameScreen(val toLoad:Int) : Screen {
     }
 
     override fun dispose() {
-        Gdx.app.log("GAME SCREEN", "diposed res")
         batch.dispose()
         assetManager.dispose()
     }

@@ -1,6 +1,7 @@
 package com.blockshift
 
 import com.badlogic.gdx.Game
+import com.badlogic.gdx.Gdx
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
 class Main(private val level: Int) : Game() {
@@ -17,6 +18,7 @@ class Main(private val level: Int) : Game() {
     }
 
     override fun create() {
+        Gdx.graphics.isContinuousRendering = false
         gameScreen = GameScreen(level)
         setScreen(gameScreen)
     }

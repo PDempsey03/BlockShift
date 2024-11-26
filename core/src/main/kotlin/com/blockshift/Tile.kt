@@ -1,7 +1,9 @@
 package com.blockshift
 
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.utils.Queue
 import com.blockshift.GameScreen.Companion.TILES_PER_COL
 import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 
@@ -11,13 +13,15 @@ import com.blockshift.GameScreen.Companion.TILES_PER_ROW
 // 0 1 2
 // 3 . .
 // . . n
-class Tile (var idx: Int, val width: Float, val tileTexture: TextureRegion) {
-    var x: Float = 0f
-    var y: Float = 0f
-    var id: Int = 0
+class Tile (var idx: Int, val width: Float, tileTexture: TextureRegion) {
+    private var x = 0.0f
+    private var y = 0.0f
+    var id = 0
+    val sprite = Sprite(tileTexture)
 
     init {
         update(idx)
+        sprite.setOrigin(0f, 0f)
     }
 
     fun update(idx: Int) {
@@ -26,8 +30,11 @@ class Tile (var idx: Int, val width: Float, val tileTexture: TextureRegion) {
         x = (idx % TILES_PER_ROW) * width
     }
 
-    fun draw(batch: Batch) {
-        batch.draw(tileTexture, x, y, width, width)
+    fun queue(queue: Queue<Sprite>, color: Color) {
+        sprite.setColor(color)
+        sprite.setScale(width / sprite.width)
+        sprite.setPosition(x, y)
+        queue.addLast(sprite)
     }
 }
 
